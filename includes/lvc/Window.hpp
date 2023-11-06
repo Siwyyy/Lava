@@ -2,7 +2,7 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <iostream>
+#include <string>
 
 namespace lvc
 {
@@ -13,7 +13,7 @@ namespace lvc
 		Window() = delete;
 		~Window();
 
-		inline GLFWwindow* window() { return m_window; }
+		inline GLFWwindow* handle() { return m_window; }
 		
 	private:
 		GLFWwindow* m_window;

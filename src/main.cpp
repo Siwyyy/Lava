@@ -1,13 +1,12 @@
 #include "lvc/Application.hpp"
 
+#include <iostream>
+
 int main()
 {
     lvc::Application app;
 
-    try
-    {
-        app.run();
-    }
+    try { app.run(); }
     catch (const std::exception& e)
     {
         std::cerr << e.what() << std::endl;

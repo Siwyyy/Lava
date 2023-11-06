@@ -8,18 +8,18 @@ namespace lvc
 	class Instance
 	{
 	public:
-		Instance(const char* appName, const char* engineName, bool enableValidationLayers);
+		Instance(const char* appName, const char* engineName);
 		Instance() = delete;
 		~Instance();
 
-		inline VkInstance& handle() { return m_instance; }
-
-		static const std::vector<const char*> validationLayers;
+		inline const VkInstance& handle() const { return m_instance; }
 
 	private:
 		VkInstance m_instance;
-		bool m_enableValidationLayers;
+		static const bool m_enableValidationLayers;
+		static const std::vector<const char*> m_validationLayers;
 
+		static bool checkValidationLayerSupport();
 		static void getRequiredExtensions(std::vector<const char*> &extensions);
 	};
 }
