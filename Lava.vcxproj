@@ -160,14 +160,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\lvc\DebugUtilsMessanger.cpp" />
+    <ClCompile Include="src\lvc\DebugUtilsMessenger.cpp" />
     <ClCompile Include="src\lvc\Instance.cpp" />
     <ClCompile Include="src\lvc\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lvc\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="includes\lvc\DebugUtilsMessanger.h" />
+    <ClInclude Include="includes\lvc\DebugUtilsMessenger.hpp" />
     <ClInclude Include="includes\lvc\Application.hpp" />
     <ClInclude Include="includes\lvc\Window.hpp" />
     <ClInclude Include="includes\lvc\Instance.hpp" />

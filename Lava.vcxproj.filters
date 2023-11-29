@@ -27,7 +27,7 @@
     <ClCompile Include="src\lvc\Instance.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\lvc\DebugUtilsMessanger.cpp">
+    <ClCompile Include="src\lvc\DebugUtilsMessenger.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="includes\lvc\Instance.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="includes\lvc\DebugUtilsMessanger.h">
+    <ClInclude Include="includes\lvc\DebugUtilsMessenger.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

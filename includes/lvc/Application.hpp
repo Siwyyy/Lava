@@ -1,7 +1,8 @@
 #pragma once
 
-#include "lvc/Window.hpp"
 #include "lvc/Instance.hpp"
+#include "lvc/DebugUtilsMessenger.hpp"
+#include "lvc/Window.hpp"
 
 #include <vector>
 
@@ -15,8 +16,9 @@ namespace lvc
 		void run() { mainLoop(); }
 
 	private:
-		lvc::Window window;
 		lvc::Instance instance;
+		lvc::DebugUtilsMessenger debugMessenger;
+		lvc::Window window;
 
 		void mainLoop();
 	};
