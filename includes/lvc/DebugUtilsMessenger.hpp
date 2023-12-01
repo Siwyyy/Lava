@@ -10,6 +10,7 @@ namespace lvc
     {
     public:
         explicit DebugUtilsMessenger(const Instance& instance);
+
         ~DebugUtilsMessenger() noexcept(false);
 
         inline const VkDebugUtilsMessengerEXT handle() const { return m_debugMessanger; }
@@ -19,12 +20,15 @@ namespace lvc
             VkDebugUtilsMessageTypeFlagsEXT messageType,
             const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
             void* pUserData);
+        static void populateDebugUtilsMessengerInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
     private:
         VkDebugUtilsMessengerEXT m_debugMessanger;
         const Instance& m_instance;
 
-        void populateDebugUtilsMessengerInfo(
-            VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+        VkResult CreateDebugUtilsMessengerEXT(
+            const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+            const VkAllocationCallbacks* pAllocator);
+        void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator);
     };
 }

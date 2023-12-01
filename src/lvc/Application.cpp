@@ -7,8 +7,8 @@ const uint32_t HEIGHT = 600;
 
 lvc::Application::Application()
     : instance("LavaCore", "No Engine")
-    , debugMessenger(instance)
     , window(WIDTH,HEIGHT,"LavaCore - Test")
+    , debugMessenger(instance)
 {}
 
 void Application::mainLoop()

@@ -17,8 +17,8 @@ namespace lvc
 
 	private:
 		lvc::Instance instance;
-		lvc::DebugUtilsMessenger debugMessenger;
 		lvc::Window window;
+		lvc::DebugUtilsMessenger debugMessenger;
 
 		void mainLoop();
 	};

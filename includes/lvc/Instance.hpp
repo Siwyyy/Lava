@@ -13,6 +13,7 @@ namespace lvc
 		~Instance();
 
 		inline const VkInstance& handle() const { return m_instance; }
+		inline bool validationLayersEnabled() const { return m_enableValidationLayers; }
 
 	private:
 		VkInstance m_instance;

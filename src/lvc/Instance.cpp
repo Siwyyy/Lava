@@ -1,5 +1,7 @@
 #include "lvc/Instance.hpp"
 
+#include "lvc/DebugUtilsMessenger.hpp"
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <stdexcept>
@@ -37,10 +39,14 @@ Instance::Instance(const char* appName, const char* engineName)
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
     if (m_enableValidationLayers)
     {
         createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
         createInfo.ppEnabledLayerNames = m_validationLayers.data();
+
+        DebugUtilsMessenger::populateDebugUtilsMessengerInfo(debugCreateInfo);
+        createInfo.pNext = &debugCreateInfo;
     }
     else
     {
@@ -52,10 +58,7 @@ Instance::Instance(const char* appName, const char* engineName)
         throw std::runtime_error("failed to create instance!");
 }
 
-Instance::~Instance()
-{
-	vkDestroyInstance(m_instance, nullptr);
-}
+Instance::~Instance() { vkDestroyInstance(m_instance, nullptr); }
 
 bool Instance::checkValidationLayerSupport() {
     uint32_t layerCount;
