@@ -1,9 +1,13 @@
 #include "lvc/Device.hpp"
 
+#include "lvc/QueueFamily.hpp"
+
 #include <iostream>
 #include <map>
 
-lvc::Device::Device(const Instance& instance,
+using namespace lvc;
+
+Device::Device(const Instance& instance,
 					const Window& window)
 	:m_physical(VK_NULL_HANDLE)
 	,m_instance(instance)
@@ -13,11 +17,11 @@ lvc::Device::Device(const Instance& instance,
 
 }
 
-lvc::Device::~Device()
+Device::~Device()
 {
 }
 
-void lvc::Device::pickPhysicalDevice()
+void Device::pickPhysicalDevice()
 {
 	// Check for GPUs with Vulkan support
 	uint32_t deviceCount = 0;
@@ -43,7 +47,7 @@ void lvc::Device::pickPhysicalDevice()
 		throw std::runtime_error("Failed to find suitable GPU!");
 }
 
-int lvc::Device::rateDeviceSuitability(VkPhysicalDevice device)
+int Device::rateDeviceSuitability(VkPhysicalDevice device)
 {
 	VkPhysicalDeviceProperties deviceProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
@@ -63,7 +67,9 @@ int lvc::Device::rateDeviceSuitability(VkPhysicalDevice device)
 	return score;
 }
 
-bool lvc::Device::isDeviceSuitable(const VkPhysicalDevice& device)
+bool Device::isDeviceSuitable(const VkPhysicalDevice& device)
 {
-	return true;
+	QueueFamilyIndices indices = QueueFamily::FindQueueFamilies(device);
+
+	return indices.isComplete();
 }

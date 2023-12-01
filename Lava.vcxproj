@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\lvc\QueueFamily.cpp" />
     <ClCompile Include="src\lvc\Device.cpp" />
     <ClCompile Include="src\lvc\DebugUtilsMessenger.cpp" />
     <ClCompile Include="src\lvc\Instance.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="includes\lvc\Application.hpp" />
     <ClInclude Include="includes\lvc\Window.hpp" />
     <ClInclude Include="includes\lvc\Instance.hpp" />
+    <ClInclude Include="includes\lvc\QueueFamily.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

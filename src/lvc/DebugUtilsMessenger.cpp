@@ -4,7 +4,7 @@
 
 using namespace lvc;
 
-lvc::DebugUtilsMessenger::DebugUtilsMessenger(const Instance& instance)
+DebugUtilsMessenger::DebugUtilsMessenger(const Instance& instance)
 	: m_debugMessanger(VK_NULL_HANDLE)
 	, m_instance(instance)
 {
@@ -18,7 +18,7 @@ lvc::DebugUtilsMessenger::DebugUtilsMessenger(const Instance& instance)
 		throw std::runtime_error("Failed to setup Debug Utils Messenger");
 }
 
-lvc::DebugUtilsMessenger::~DebugUtilsMessenger() noexcept(false)
+DebugUtilsMessenger::~DebugUtilsMessenger() noexcept(false)
 {
 	if (!m_instance.validationLayersEnabled())
 		return;
@@ -52,7 +52,7 @@ void lvc::DebugUtilsMessenger::populateDebugUtilsMessengerInfo(
 	createInfo.pUserData = nullptr;
 }
 
-VkResult lvc::DebugUtilsMessenger::CreateDebugUtilsMessengerEXT(
+VkResult DebugUtilsMessenger::CreateDebugUtilsMessengerEXT(
 	const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
 	const VkAllocationCallbacks* pAllocator)
 {
@@ -66,7 +66,7 @@ VkResult lvc::DebugUtilsMessenger::CreateDebugUtilsMessengerEXT(
 		return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
-void lvc::DebugUtilsMessenger::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator)
+void DebugUtilsMessenger::DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator)
 {
 	auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
 		m_instance.handle(), "vkDestroyDebugUtilsMessengerEXT");
