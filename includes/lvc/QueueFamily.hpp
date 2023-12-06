@@ -5,19 +5,12 @@
 
 namespace lvc
 {
-	struct QueueFamilyIndices
-	{
-		std::optional<uint32_t> graphicsFamily;
-
-		inline bool isComplete() const { return graphicsFamily.has_value(); }
-	};
-
 	class QueueFamily
 	{
 	public:
-		QueueFamily() = delete;
-		~QueueFamily() = delete;
+		std::optional<uint32_t> graphicsFamily;
 
-		static QueueFamilyIndices FindQueueFamilies(const VkPhysicalDevice& device);
+		inline bool isComplete() const { return graphicsFamily.has_value(); }
+		static QueueFamily FindQueueFamilies(const VkPhysicalDevice& device);
 	};
 }

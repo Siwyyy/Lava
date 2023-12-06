@@ -19,6 +19,10 @@ namespace lvc
 
 	private:
 		VkPhysicalDevice m_physical;
+		VkDevice m_logical;
+
+		VkQueue m_graphicsQueue;
+
 		const lvc::Instance m_instance;
 		const lvc::Window m_window;
 

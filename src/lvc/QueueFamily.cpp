@@ -4,9 +4,9 @@
 
 using namespace lvc;
 
-QueueFamilyIndices QueueFamily::FindQueueFamilies(const VkPhysicalDevice& device)
+QueueFamily QueueFamily::FindQueueFamilies(const VkPhysicalDevice& device)
 {
-    QueueFamilyIndices indices;
+    QueueFamily indices;
 
     // Get queue families
     uint32_t familyCount;

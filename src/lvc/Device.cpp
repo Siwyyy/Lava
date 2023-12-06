@@ -12,9 +12,9 @@ Device::Device(const Instance& instance,
 	:m_physical(VK_NULL_HANDLE)
 	,m_instance(instance)
 	,m_window(window)
+	,m_graphicsQueue(VK_NULL_HANDLE)
 {
 	pickPhysicalDevice();
-
 }
 
 Device::~Device()
@@ -69,7 +69,7 @@ int Device::rateDeviceSuitability(VkPhysicalDevice device)
 
 bool Device::isDeviceSuitable(const VkPhysicalDevice& device)
 {
-	QueueFamilyIndices indices = QueueFamily::FindQueueFamilies(device);
+	QueueFamily indices = QueueFamily::FindQueueFamilies(device);
 
-	return indices.isComplete();
+	return indices.isComplete();l
 }
