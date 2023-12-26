@@ -1,0 +1,21 @@
+
+[*.{c,c++,c++m,cc,ccm,cginc,compute,cp,cpp,cppm,cu,cuh,cxx,cxxm,fx,fxh,h,hh,hlsl,hlsli,hlslinc,hpp,hxx,inc,inl,ino,ipp,ixx,mpp,mq4,mq5,mqh,mxx,tpp,usf,ush}]
+indent_style = tab
+indent_size = tab
+tab_width = 2
+
+[*]
+
+# ReSharper properties
+resharper_cpp_empty_block_style = together_same_line
+resharper_cpp_indent_style = tab
+resharper_cpp_keep_blank_lines_in_code = 1
+resharper_cpp_keep_blank_lines_in_declarations = 1
+resharper_cpp_keep_user_linebreaks = false
+resharper_cpp_tab_width = 2
+resharper_cpp_use_indent_from_vs = false
+resharper_cpp_wrap_arguments_style = chop_if_long
+resharper_function_declaration_return_type_style = on_single_line
+resharper_line_break_before_comma_in_member_initializer_lists = true
+resharper_simple_block_style = on_single_line
+resharper_toplevel_function_declaration_return_type_style = on_single_line

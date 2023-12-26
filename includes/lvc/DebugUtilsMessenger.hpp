@@ -9,26 +9,26 @@ namespace lvc
     class DebugUtilsMessenger
     {
     public:
-        explicit DebugUtilsMessenger(const Instance& instance);
+        explicit DebugUtilsMessenger(const Instance* instance);
 
         ~DebugUtilsMessenger() noexcept(false);
 
-        inline const VkDebugUtilsMessengerEXT handle() const { return m_debugMessanger; }
+        inline VkDebugUtilsMessengerEXT handle() const { return m_debugMessenger; }
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-            VkDebugUtilsMessageTypeFlagsEXT messageType,
-            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-            void* pUserData);
+            VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+            VkDebugUtilsMessageTypeFlagsEXT message_type,
+            const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
+            void* p_user_data);
         static void populateDebugUtilsMessengerInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
     private:
-        VkDebugUtilsMessengerEXT m_debugMessanger;
-        const Instance& m_instance;
+        VkDebugUtilsMessengerEXT m_debugMessenger;
+        const Instance* m_instance;
 
-        VkResult CreateDebugUtilsMessengerEXT(
-            const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-            const VkAllocationCallbacks* pAllocator);
-        void DestroyDebugUtilsMessengerEXT(const VkAllocationCallbacks* pAllocator);
+        VkResult createDebugUtilsMessengerExt(
+            const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
+            const VkAllocationCallbacks* p_allocator);
+        void destroyDebugUtilsMessengerExt(const VkAllocationCallbacks* p_allocator) const;
     };
 }

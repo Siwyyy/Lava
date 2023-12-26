@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lvc/Instance.hpp"
+#include "lvc/QueueFamilyIndices.hpp"
 #include "lvc/Window.hpp"
 
 #include <vector>
@@ -11,23 +12,26 @@ namespace lvc
 	class Device
 	{
 	public:
-		Device(const Instance& instance,
-			   const Window& window);
+		Device(const Instance* instance, const Window* window, const std::vector<const char*>& extensions);
 		~Device();
 
-		inline const VkPhysicalDevice physical() const { return m_physical; }
+		inline VkPhysicalDevice physical() const { return m_physical; }
+		inline VkDevice logical() const { return m_logical; }
+		inline const QueueFamilyIndices& queueFamilies() const { return m_family_indices; }
 
 	private:
 		VkPhysicalDevice m_physical;
 		VkDevice m_logical;
 
-		VkQueue m_graphicsQueue;
+		QueueFamilyIndices m_family_indices;
+		VkQueue m_graphics_queue;
 
-		const lvc::Instance m_instance;
-		const lvc::Window m_window;
+		const Instance* m_instance;
+		const Window* m_window;
 
 		void pickPhysicalDevice();
-		int rateDeviceSuitability(VkPhysicalDevice device);
-		bool isDeviceSuitable(const VkPhysicalDevice& device);
+		static int rateDeviceSuitability(VkPhysicalDevice physical);
+		static bool isDeviceSuitable(const VkPhysicalDevice& physical);
+		static QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physical);
 	};
 }

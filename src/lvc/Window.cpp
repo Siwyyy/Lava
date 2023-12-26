@@ -2,18 +2,18 @@
 
 using namespace lvc;
 
-Window::Window(const uint32_t& width, const uint32_t& height, const std::string& title)
+Window::Window(const int& width, const int& height, const std::string& title)
 {
-    glfwInit();
+	glfwInit();
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    m_window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+	m_window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 }
 
 Window::~Window()
 {
-    glfwDestroyWindow(m_window);
-    glfwTerminate();
+	glfwDestroyWindow(m_window);
+	glfwTerminate();
 }

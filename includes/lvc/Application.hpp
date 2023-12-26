@@ -1,8 +1,9 @@
 #pragma once
 
 #include "lvc/Instance.hpp"
-#include "lvc/DebugUtilsMessenger.hpp"
 #include "lvc/Window.hpp"
+#include "lvc/DebugUtilsMessenger.hpp"
+#include "lvc/Device.hpp"
 
 #include <vector>
 
@@ -13,14 +14,15 @@ namespace lvc
 	public:
 		Application();
 
-		void run() { mainLoop(); }
+		void run() const { mainLoop(); }
 
 	private:
-		lvc::Instance instance;
-		lvc::Window window;
-		lvc::DebugUtilsMessenger debugMessenger;
+		Instance* m_instance;
+		DebugUtilsMessenger* m_debug_messenger;
+		Window* m_window;
+		Device* m_device;
 
-		void mainLoop();
+		void mainLoop() const;
+		void destroyInstanceComponents() const;
 	};
 }
-

@@ -50,5 +50,8 @@
     <ClInclude Include="includes\lvc\Device.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

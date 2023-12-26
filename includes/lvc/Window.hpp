@@ -9,11 +9,11 @@ namespace lvc
 	class Window
 	{
 	public:
-		Window(const uint32_t& width, const uint32_t& height, const std::string& title);
+		Window(const int& width, const int& height, const std::string& title);
 		Window() = delete;
 		~Window();
 
-		inline GLFWwindow* handle() { return m_window; }
+		inline GLFWwindow* handle() const { return m_window; }
 		
 	private:
 		GLFWwindow* m_window;

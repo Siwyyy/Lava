@@ -2,17 +2,19 @@
 
 using namespace lvc;
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+constexpr int WIDTH = 800;
+constexpr int HEIGHT = 600;
 
-lvc::Application::Application()
-    : instance("LavaCore", "No Engine")
-    , window(WIDTH,HEIGHT,"LavaCore - Test")
-    , debugMessenger(instance)
-{}
+Application::Application() : m_instance(new Instance("LavaCore", "No Engine"))
+                           , m_debug_messenger(new DebugUtilsMessenger(m_instance))
+                           , m_window(new Window(WIDTH, HEIGHT, "LavaCore - Test"))
+                           , m_device(new Device(m_instance, m_window, Instance::device_extensions)) {}
 
-void Application::mainLoop()
+void Application::mainLoop() const { while (!glfwWindowShouldClose(m_window->handle())) glfwPollEvents(); }
+
+void Application::destroyInstanceComponents() const
 {
-    while (!glfwWindowShouldClose(window.handle()))
-        glfwPollEvents();
+	delete m_debug_messenger;
+	delete m_window;
+	delete m_device;
 }
