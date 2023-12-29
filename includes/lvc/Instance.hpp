@@ -1,7 +1,9 @@
 #pragma once
 
-#include <vulkan/vulkan.h>
 #include <vector>
+#include <vulkan/vulkan.h>
+
+#include "InstanceExtensions.hpp"
 
 namespace lvc
 {
@@ -13,15 +15,18 @@ namespace lvc
 		~Instance();
 
 		inline const VkInstance& handle() const { return m_instance; }
+		inline const InstanceExtensions& hInstanceExtensions() const { return m_instance_extensions; }
+
 		static inline bool validationLayersEnabled() { return enable_validation_layers; }
+
 		static const std::vector<const char*> validation_layers;
-		static const std::vector<const char*> device_extensions;
 
 	private:
 		VkInstance m_instance;
+		InstanceExtensions m_instance_extensions;
+
 		static const bool enable_validation_layers;
 
 		static bool checkValidationLayerSupport();
-		static void getRequiredExtensions(std::vector<const char*> &extensions);
 	};
 }

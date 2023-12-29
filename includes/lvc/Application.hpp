@@ -1,11 +1,9 @@
 #pragma once
 
-#include "lvc/Instance.hpp"
-#include "lvc/Window.hpp"
 #include "lvc/DebugUtilsMessenger.hpp"
 #include "lvc/Device.hpp"
-
-#include <vector>
+#include "lvc/Instance.hpp"
+#include "lvc/Window.hpp"
 
 namespace lvc
 {
@@ -14,7 +12,7 @@ namespace lvc
 	public:
 		Application();
 
-		void run() const { mainLoop(); }
+		void run() const;
 
 	private:
 		Instance* m_instance;
@@ -23,6 +21,6 @@ namespace lvc
 		Device* m_device;
 
 		void mainLoop() const;
-		void destroyInstanceComponents() const;
+		void destroyInstance() const;
 	};
 }

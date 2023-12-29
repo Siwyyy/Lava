@@ -94,7 +94,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.268.0\Include;C:\Users\mikos\OneDrive\Documents\Visual Studio 2022\Libraries\glm;C:\Users\mikos\OneDrive\Documents\Visual Studio 2022\Libraries\glfw-3.3.8.bin.WIN64\include;$(Solution)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -112,7 +112,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.268.0\Include;C:\Users\mikos\OneDrive\Documents\Visual Studio 2022\Libraries\glm;C:\Users\mikos\OneDrive\Documents\Visual Studio 2022\Libraries\glfw-3.3.8.bin.WIN64\include;$(Solution)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,7 +130,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.268.0\Include;C:\Users\mikos\OneDrive\Documents\Visual Studio 2022\Libraries\glm;C:\Users\mikos\OneDrive\Documents\Visual Studio 2022\Libraries\glfw-3.3.8.bin.WIN64\include;$(Solution)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,7 +148,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\VulkanSDK\1.3.268.0\Include;C:\Users\mikos\OneDrive\Documents\Visual Studio 2022\Libraries\glm;C:\Users\mikos\OneDrive\Documents\Visual Studio 2022\Libraries\glfw-3.3.8.bin.WIN64\include;$(Solution)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,6 +160,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\lvc\DeviceExtensions.cpp" />
+    <ClCompile Include="src\lvc\InstanceExtensions.cpp" />
     <ClCompile Include="src\lvc\Device.cpp" />
     <ClCompile Include="src\lvc\DebugUtilsMessenger.cpp" />
     <ClCompile Include="src\lvc\Instance.cpp" />
@@ -168,12 +170,13 @@
     <ClCompile Include="src\lvc\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="includes\lvc\DeviceExtensions.hpp" />
     <ClInclude Include="includes\lvc\Device.hpp" />
     <ClInclude Include="includes\lvc\DebugUtilsMessenger.hpp" />
     <ClInclude Include="includes\lvc\Application.hpp" />
     <ClInclude Include="includes\lvc\Window.hpp" />
     <ClInclude Include="includes\lvc\Instance.hpp" />
-    <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp" />
+    <ClInclude Include="includes\lvc\InstanceExtensions.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
