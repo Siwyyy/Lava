@@ -168,6 +168,7 @@
     <ClCompile Include="src\lvc\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lvc\Window.cpp" />
+    <ClCompile Include="src\lvc\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\lvc\DeviceExtensions.hpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="includes\lvc\Window.hpp" />
     <ClInclude Include="includes\lvc\Instance.hpp" />
     <ClInclude Include="includes\lvc\InstanceExtensions.hpp" />
+    <ClInclude Include="includes\lvc\SwapChain.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

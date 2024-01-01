@@ -22,9 +22,6 @@ Device::Device(const Instance* instance,
 {
 	pickPhysicalDevice();
 
-
-	m_family_indices = findQueueFamilies(m_physical, m_window->hSurface());
-
 	// Setup queue families
 	std::set<uint32_t> unique_queue_families = {m_family_indices.graphics_family.value(),
 																							m_family_indices.present_family.value()};
@@ -41,7 +38,7 @@ Device::Device(const Instance* instance,
 		queue_create_infos.push_back(create_info);
 	}
 
-	VkPhysicalDeviceFeatures device_futures = {};
+	// VkPhysicalDeviceFeatures device_futures = {};
 
 	// Setup logical device
 	VkDeviceCreateInfo create_info = {};
@@ -86,22 +83,28 @@ void Device::pickPhysicalDevice()
 	std::vector<VkPhysicalDevice> devices(device_count);
 	vkEnumeratePhysicalDevices(m_instance->handle(), &device_count, devices.data());
 
-	std::multimap<int, VkPhysicalDevice> candidates;
+	std::multimap<int, std::pair<VkPhysicalDevice, DeviceExtensions>> candidates;
 	for (const auto& device : devices)
 	{
-		int score = rateDeviceSuitability(device);
-		candidates.insert(std::make_pair(score, device));
+		const QueueFamilyIndices* queue_families = findQueueFamilies(device, m_window->hSurface());
+		DeviceExtensions device_extensions(&device);
+		int score;
+		if (!queue_families->isComplete() || !device_extensions.isGood())
+			score = 0;
+		else
+			score = rateDeviceSuitability(device, *m_window);
+		candidates.insert(std::make_pair(score, std::make_pair(device, device_extensions)));
 	}
 
-	if (candidates.rbegin()->first > 0)
-		m_physical = candidates.rbegin()->second;
-	else
+	if (candidates.rbegin()->first == 0)
 		throw std::runtime_error("err: Failed to find suitable GPU!\n");
 
-	m_device_extensions = new DeviceExtensions(&m_physical);
+	m_physical = candidates.rbegin()->second.first;
+	m_device_extensions = &candidates.rbegin()->second.second;
+	m_family_indices    = findQueueFamilies(m_physical, m_window->hSurface());
 }
 
-int Device::rateDeviceSuitability(const VkPhysicalDevice physical)
+int Device::rateDeviceSuitability(const VkPhysicalDevice& physical, const Window& window)
 {
 	VkPhysicalDeviceProperties device_properties;
 	VkPhysicalDeviceFeatures device_features;
@@ -109,13 +112,12 @@ int Device::rateDeviceSuitability(const VkPhysicalDevice physical)
 	vkGetPhysicalDeviceFeatures(physical, &device_features);
 
 	std::clog << "\n--- --- --- --- ---\n";
-	std::cout << "GPU found: " << device_properties.deviceName << '\n';
+	std::cout << "GPU: " << device_properties.deviceName << '\n';
 
 	int score = 0;
 
 	if (device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
 		score += 1000;
-
 	score += static_cast<int>(device_properties.limits.maxImageDimension2D);
 
 	if (!device_features.geometryShader)
@@ -124,16 +126,9 @@ int Device::rateDeviceSuitability(const VkPhysicalDevice physical)
 	return score;
 }
 
-bool Device::isDeviceSuitable(const VkPhysicalDevice& physical, const Window& window)
+QueueFamilyIndices* Device::findQueueFamilies(const VkPhysicalDevice& physical, const VkSurfaceKHR surface)
 {
-	const QueueFamilyIndices indices = findQueueFamilies(physical, window.hSurface());
-
-	return indices.isComplete();
-}
-
-QueueFamilyIndices Device::findQueueFamilies(const VkPhysicalDevice& physical, const VkSurfaceKHR surface)
-{
-	QueueFamilyIndices indices;
+	QueueFamilyIndices* indices;
 
 	// Get queue families
 	uint32_t family_count;

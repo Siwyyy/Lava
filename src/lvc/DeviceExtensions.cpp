@@ -8,12 +8,13 @@ using namespace lvc;
 
 DeviceExtensions::DeviceExtensions(const VkPhysicalDevice* physical)
 	: m_physical(physical)
+	, m_is_good(false)
 {
 	m_required_extension_names = {"VK_KHR_device_group",
 																"VK_KHR_swapchain"};
 
 	enumerateDeviceExtensions();
-	checkRequiredExtensions();
+	m_is_good = checkRequiredExtensions();
 }
 
 void DeviceExtensions::enumerateDeviceExtensions()
@@ -30,7 +31,7 @@ void DeviceExtensions::enumerateDeviceExtensions()
 	std::clog << "--- --- --- --- ---\n\n";
 }
 
-void DeviceExtensions::checkRequiredExtensions() const
+bool DeviceExtensions::checkRequiredExtensions() const
 {
 	uint32_t found = 0;
 	std::vector<std::pair<const char*, bool>> extensions;
@@ -54,7 +55,10 @@ void DeviceExtensions::checkRequiredExtensions() const
 			std::clog << extension.first << '\n';
 	std::clog << "--- --- --- --- ---\n";
 	if (found == required().size())
+	{
 		std::clog << '\n';
+		return 1;
+	}
 	else
 	{
 		std::clog << "Missing required device extensions:\n";
@@ -62,5 +66,6 @@ void DeviceExtensions::checkRequiredExtensions() const
 			if (!extension.second)
 				std::clog << extension.first << '\n';
 		std::clog << "--- --- --- --- ---\n\n";
+		return 0;
 	}
 }

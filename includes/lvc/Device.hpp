@@ -28,14 +28,14 @@ namespace lvc
 
 		inline VkPhysicalDevice hPhysical() const { return m_physical; }
 		inline VkDevice hLogical() const { return m_logical; }
-		inline const QueueFamilyIndices& hFamilyIndices() const { return m_family_indices; }
+		inline const QueueFamilyIndices* hFamilyIndices() const { return m_family_indices; }
 
 	private:
 		VkPhysicalDevice m_physical;
 		DeviceExtensions* m_device_extensions;
 		VkDevice m_logical;
 
-		QueueFamilyIndices m_family_indices;
+		QueueFamilyIndices* m_family_indices;
 		VkQueue m_graphics_queue;
 		VkQueue m_present_queue;
 
@@ -43,8 +43,7 @@ namespace lvc
 		const Window* m_window;
 
 		void pickPhysicalDevice();
-		static int rateDeviceSuitability(VkPhysicalDevice physical);
-		static bool isDeviceSuitable(const VkPhysicalDevice& physical, const Window& window);
-		static QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physical, const VkSurfaceKHR surface);
+		static int rateDeviceSuitability(const VkPhysicalDevice& physical, const Window& window);
+		static QueueFamilyIndices* findQueueFamilies(const VkPhysicalDevice& physical, const VkSurfaceKHR surface);
 	};
 }
