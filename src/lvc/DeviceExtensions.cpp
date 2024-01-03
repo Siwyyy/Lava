@@ -6,15 +6,28 @@
 
 using namespace lvc;
 
+const std::vector<const char*> DeviceExtensions::required_extension_names = {
+	"VK_KHR_device_group",
+	"VK_KHR_swapchain"};
+
 DeviceExtensions::DeviceExtensions(const VkPhysicalDevice* physical)
 	: m_physical(physical)
 	, m_is_good(false)
 {
-	m_required_extension_names = {"VK_KHR_device_group",
-																"VK_KHR_swapchain"};
-
 	enumerateDeviceExtensions();
-	m_is_good = checkRequiredExtensions();
+
+	uint32_t found = 0;
+	for (const auto& extension_name : required_extension_names)
+	{
+		for (const auto& available_ext : m_available_extensions)
+		{
+			if (!strcmp(extension_name, available_ext.extensionName))
+			{
+				found++;
+			}
+		}
+	}
+	m_is_good = found == required_extension_names.size();
 }
 
 void DeviceExtensions::enumerateDeviceExtensions()
@@ -24,48 +37,32 @@ void DeviceExtensions::enumerateDeviceExtensions()
 	std::vector<VkExtensionProperties> device_extensions(extension_count);
 	vkEnumerateDeviceExtensionProperties(*m_physical, nullptr, &extension_count, device_extensions.data());
 	m_available_extensions = device_extensions;
+}
 
+void DeviceExtensions::logDeviceExtensions() const
+{
 	std::clog << "Available device extensions:\n";
 	for (const auto& extension : m_available_extensions)
 		std::clog << extension.extensionName << '\n';
-	std::clog << "--- --- --- --- ---\n\n";
 }
 
-bool DeviceExtensions::checkRequiredExtensions() const
+void DeviceExtensions::logRequiredExtensions() const
 {
-	uint32_t found = 0;
-	std::vector<std::pair<const char*, bool>> extensions;
-	for (const auto& extension_name : m_required_extension_names)
+	std::clog << "Required device extensions:\n";
+	for (const auto& extension_name : required_extension_names)
 	{
-		extensions.emplace_back(extension_name, 0);
-		for (const auto& available_ext : m_available_extensions)
+		bool available = false;
+		std::clog << extension_name;
+		for (const auto& available_extension : m_available_extensions)
 		{
-			if (!strcmp(extension_name, available_ext.extensionName))
+			if (!strcmp(extension_name, available_extension.extensionName))
 			{
-				extensions.back().second = true;
-				found++;
+				std::clog << " (Available)\n";
+				available = true;
+				break;
 			}
 		}
-	}
-
-	std::clog << "\n--- --- --- --- ---\n";
-	std::clog << "Available required device extensions:\n";
-	for (const auto& extension : extensions)
-		if (extension.second)
-			std::clog << extension.first << '\n';
-	std::clog << "--- --- --- --- ---\n";
-	if (found == required().size())
-	{
-		std::clog << '\n';
-		return 1;
-	}
-	else
-	{
-		std::clog << "Missing required device extensions:\n";
-		for (const auto& extension : extensions)
-			if (!extension.second)
-				std::clog << extension.first << '\n';
-		std::clog << "--- --- --- --- ---\n\n";
-		return 0;
+		if (!available)
+			std::clog << " (Not available)\n";
 	}
 }

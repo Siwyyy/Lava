@@ -161,7 +161,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\lvc\DeviceExtensions.cpp" />
-    <ClCompile Include="src\lvc\InstanceExtensions.cpp" />
     <ClCompile Include="src\lvc\Device.cpp" />
     <ClCompile Include="src\lvc\DebugUtilsMessenger.cpp" />
     <ClCompile Include="src\lvc\Instance.cpp" />
@@ -177,7 +176,6 @@
     <ClInclude Include="includes\lvc\Application.hpp" />
     <ClInclude Include="includes\lvc\Window.hpp" />
     <ClInclude Include="includes\lvc\Instance.hpp" />
-    <ClInclude Include="includes\lvc\InstanceExtensions.hpp" />
     <ClInclude Include="includes\lvc\SwapChain.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
