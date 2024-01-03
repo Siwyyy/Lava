@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{be1a6106-56a9-4711-a1b6-fd83b284df3f}</ProjectGuid>
-    <RootNamespace>Lava</RootNamespace>
+    <ProjectGuid>{0C8C9346-BB34-4DA2-949E-2F025264568C}</ProjectGuid>
+    <RootNamespace>LavaCore</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>LavaCore</ProjectName>
   </PropertyGroup>

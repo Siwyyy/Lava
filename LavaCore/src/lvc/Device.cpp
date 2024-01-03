@@ -13,6 +13,93 @@
 
 using namespace lvc;
 
+// === === === === === === === === === === === === === === === === === === === === //
+// ===                           Device::PhysicalDevice                        === //
+// === === === === === === === === === === === === === === === === === === === === //
+
+Device::PhysicalDevice::PhysicalDevice(const VkPhysicalDevice* physical, const Window& window)
+	: m_physical(new VkPhysicalDevice(*physical))
+	, m_extensions(nullptr)
+	, m_indices(nullptr)
+	, m_score(0)
+{
+	VkPhysicalDeviceProperties device_properties;
+	vkGetPhysicalDeviceProperties(*m_physical, &device_properties);
+	m_name.append_range(device_properties.deviceName);
+	m_extensions = new DeviceExtensions(m_physical);
+	findQueueFamilies(window.hSurface());
+
+	rateDeviceSuitability(window);
+}
+
+Device::PhysicalDevice::~PhysicalDevice()
+{
+	delete m_extensions;
+	delete m_indices;
+}
+
+void Device::PhysicalDevice::logInfo() const
+{
+	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
+	std::cout << "GPU: " << m_name << '\n';
+	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
+	m_extensions->logDeviceExtensions();
+	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
+	m_extensions->logRequiredExtensions();
+	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
+}
+
+void Device::PhysicalDevice::rateDeviceSuitability(const Window& window)
+{
+	VkPhysicalDeviceProperties device_properties;
+	VkPhysicalDeviceFeatures device_features;
+	vkGetPhysicalDeviceProperties(*m_physical, &device_properties);
+	vkGetPhysicalDeviceFeatures(*m_physical, &device_features);
+
+	if (device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+		m_score += 1000;
+	m_score += static_cast<int>(device_properties.limits.maxImageDimension2D);
+
+	if (!device_features.geometryShader
+			|| !m_indices->isComplete()
+			|| !m_extensions->isGood())
+		m_score = 0;
+}
+
+void Device::PhysicalDevice::findQueueFamilies(const VkSurfaceKHR surface)
+{
+	m_indices = new QueueFamilyIndices;
+
+	// Get queue families
+	uint32_t family_count;
+	vkGetPhysicalDeviceQueueFamilyProperties(*m_physical, &family_count, nullptr);
+	std::vector<VkQueueFamilyProperties> families(family_count);
+	vkGetPhysicalDeviceQueueFamilyProperties(*m_physical, &family_count, families.data());
+
+	// iterate through families until one that supports requirements is found
+	bool found = false;
+	for (int i = 0; !found && i < families.size(); i++)
+	{
+		const auto& family = families[i];
+
+		//  Check for graphics support
+		if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			m_indices->graphics_family = i;
+
+		// Check for surface presentation support
+		VkBool32 present_support = false;
+		vkGetPhysicalDeviceSurfaceSupportKHR(*m_physical, i, surface, &present_support);
+		if (present_support)
+			m_indices->present_family = i;
+
+		found = m_indices->isComplete();
+	}
+}
+
+// === === === === === === === === === === === === === === === === === === === === //
+// ===                                  Device                                 === //
+// === === === === === === === === === === === === === === === === === === === === //
+
 Device::Device(const Instance* instance,
 							 const Window* window)
 	: m_physical(VK_NULL_HANDLE)
@@ -73,85 +160,6 @@ Device::~Device()
 {
 	vkDestroyDevice(m_logical, nullptr);
 	std::clog << "Successfully destroyed device\n";
-}
-
-Device::PhysicalDevice::PhysicalDevice(const VkPhysicalDevice* physical, const Window& window)
-	: m_physical(new VkPhysicalDevice(*physical))
-	, m_extensions(nullptr)
-	, m_indices(nullptr)
-	, m_score(0)
-{
-	VkPhysicalDeviceProperties device_properties;
-	vkGetPhysicalDeviceProperties(*m_physical, &device_properties);
-	m_name.append_range(device_properties.deviceName);
-	m_extensions = new DeviceExtensions(m_physical);
-	findQueueFamilies(window.hSurface());
-
-	rateDeviceSuitability(window);
-}
-
-Device::PhysicalDevice::~PhysicalDevice()
-{
-	delete m_extensions;
-	delete m_indices;
-}
-
-void Device::PhysicalDevice::logInfo() const
-{
-	std::clog << "\n--- --- --- --- ---\n";
-	std::cout << "GPU: " << m_name << '\n';
-	std::clog << "--- --- --- --- ---\n";
-	m_extensions->logDeviceExtensions();
-	std::clog << "--- --- --- --- ---\n";
-	m_extensions->logRequiredExtensions();
-	std::clog << "--- --- --- --- ---\n\n";
-}
-
-void Device::PhysicalDevice::rateDeviceSuitability(const Window& window)
-{
-	VkPhysicalDeviceProperties device_properties;
-	VkPhysicalDeviceFeatures device_features;
-	vkGetPhysicalDeviceProperties(*m_physical, &device_properties);
-	vkGetPhysicalDeviceFeatures(*m_physical, &device_features);
-
-	if (device_properties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
-		m_score += 1000;
-	m_score += static_cast<int>(device_properties.limits.maxImageDimension2D);
-
-	if (!device_features.geometryShader
-			|| !m_indices->isComplete()
-			|| !m_extensions->isGood())
-		m_score = 0;
-}
-
-void Device::PhysicalDevice::findQueueFamilies(const VkSurfaceKHR surface)
-{
-	m_indices = new QueueFamilyIndices;
-
-	// Get queue families
-	uint32_t family_count;
-	vkGetPhysicalDeviceQueueFamilyProperties(*m_physical, &family_count, nullptr);
-	std::vector<VkQueueFamilyProperties> families(family_count);
-	vkGetPhysicalDeviceQueueFamilyProperties(*m_physical, &family_count, families.data());
-
-	// iterate through families until one that supports requirements is found
-	bool found = false;
-	for (int i = 0; !found && i < families.size(); i++)
-	{
-		const auto& family = families[i];
-
-		//  Check for graphics support
-		if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-			m_indices->graphics_family = i;
-
-		// Check for surface presentation support
-		VkBool32 present_support = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(*m_physical, i, surface, &present_support);
-		if (present_support)
-			m_indices->present_family = i;
-
-		found = m_indices->isComplete();
-	}
 }
 
 void Device::pickPhysicalDevice()

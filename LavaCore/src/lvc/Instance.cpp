@@ -19,15 +19,22 @@ const bool Instance::enable_validation_layers = true;
 
 const std::vector<const char*> Instance::validation_layers = {"VK_LAYER_KHRONOS_validation"};
 
+// === === === === === === === === === === === === === === === === === === === === //
+// ===                       Instance::InstanceExtensions                      === //
+// === === === === === === === === === === === === === === === === === === === === //
+
 Instance::InstanceExtensions::InstanceExtensions()
 {
 	m_required_extension_names = {"VK_KHR_surface",
 																"VK_KHR_win32_surface",
 																"VK_KHR_device_group_creation"};
 
+	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
 	enumerateInstanceExtensions();
+	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
 	getRequiredGlfwExtensions();
 	checkRequiredExtensions();
+	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
 }
 
 void Instance::InstanceExtensions::enumerateInstanceExtensions()
@@ -38,11 +45,9 @@ void Instance::InstanceExtensions::enumerateInstanceExtensions()
 	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data());
 	m_available_extensions = extensions;
 
-	std::clog << "--- --- --- --- ---\n";
 	std::clog << "Available instance extensions:\n";
 	for (const auto& extension : extensions)
 		std::cout << extension.extensionName << '\n';
-	std::clog << "--- --- --- --- ---\n";
 }
 
 void Instance::InstanceExtensions::getRequiredGlfwExtensions()
@@ -62,37 +67,28 @@ void Instance::InstanceExtensions::getRequiredGlfwExtensions()
 
 void Instance::InstanceExtensions::checkRequiredExtensions() const
 {
-	uint32_t found = 0;
-	std::vector<std::pair<const char*, bool>> extensions;
+	std::clog << "Required instance extensions:\n";
+	bool available = false;
 	for (const auto& extension_name : m_required_extension_names)
 	{
-		extensions.emplace_back(extension_name, 0);
+		std::clog << extension_name;
 		for (const auto& available_ext : m_available_extensions)
 		{
 			if (!strcmp(extension_name, available_ext.extensionName))
 			{
-				extensions.back().second = true;
-				found++;
+				std::clog << " (Available)\n";
+				available = true;
+				break;
 			}
 		}
-	}
-
-	std::clog << "Available required instance extensions:\n";
-	for (const auto& extension : extensions)
-		if (extension.second)
-			std::clog << extension.first << '\n';
-	std::clog << "--- --- --- --- ---\n";
-	if (found == required().size())
-		std::clog << '\n';
-	else
-	{
-		std::clog << "Missing required instance extensions:\n";
-		for (const auto& extension : extensions)
-			if (!extension.second)
-				std::clog << extension.first << '\n';
-		std::clog << "--- --- --- --- ---\n\n";
+		if (!available)
+			std::clog << " (Not available)\n";
 	}
 }
+
+// === === === === === === === === === === === === === === === === === === === === //
+// ===                                   Instance                              === //
+// === === === === === === === === === === === === === === === === === === === === //
 
 Instance::Instance(const char* app_name, const char* engine_name)
 	: m_instance(VK_NULL_HANDLE)
