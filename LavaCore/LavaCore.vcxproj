@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{be1a6106-56a9-4711-a1b6-fd83b284df3f}</ProjectGuid>
-    <RootNamespace>Lava</RootNamespace>
+    <ProjectGuid>{0C8C9346-BB34-4DA2-949E-2F025264568C}</ProjectGuid>
+    <RootNamespace>LavaCore</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>LavaCore</ProjectName>
   </PropertyGroup>
@@ -161,13 +161,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\lvc\DeviceExtensions.cpp" />
-    <ClCompile Include="src\lvc\InstanceExtensions.cpp" />
     <ClCompile Include="src\lvc\Device.cpp" />
     <ClCompile Include="src\lvc\DebugUtilsMessenger.cpp" />
     <ClCompile Include="src\lvc\Instance.cpp" />
     <ClCompile Include="src\lvc\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lvc\Window.cpp" />
+    <ClCompile Include="src\lvc\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\lvc\DeviceExtensions.hpp" />
@@ -176,7 +176,7 @@
     <ClInclude Include="includes\lvc\Application.hpp" />
     <ClInclude Include="includes\lvc\Window.hpp" />
     <ClInclude Include="includes\lvc\Instance.hpp" />
-    <ClInclude Include="includes\lvc\InstanceExtensions.hpp" />
+    <ClInclude Include="includes\lvc\SwapChain.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

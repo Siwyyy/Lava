@@ -33,10 +33,10 @@
     <ClCompile Include="src\lvc\Device.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\lvc\InstanceExtensions.cpp">
+    <ClCompile Include="src\lvc\DeviceExtensions.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\lvc\DeviceExtensions.cpp">
+    <ClCompile Include="src\lvc\SwapChain.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,10 +56,10 @@
     <ClInclude Include="includes\lvc\Device.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="includes\lvc\InstanceExtensions.hpp">
+    <ClInclude Include="includes\lvc\DeviceExtensions.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="includes\lvc\DeviceExtensions.hpp">
+    <ClInclude Include="includes\lvc\SwapChain.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
