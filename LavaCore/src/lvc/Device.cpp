@@ -117,7 +117,7 @@ Device::Device(const Instance* instance,
 																										m_family_indices->present_family.value()};
 
 	std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-	float priority = 1.0f;
+	const float priority = 1.0f;
 	for (const uint32_t& queue_family : unique_queue_families)
 	{
 		VkDeviceQueueCreateInfo create_info = {};
