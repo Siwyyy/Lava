@@ -5,6 +5,9 @@
 
 namespace lvc
 {
+	class Device;
+	class Window;
+
 	struct SwapChainSupportDetails
 	{
 		VkSurfaceCapabilitiesKHR capabilities;
@@ -15,7 +18,11 @@ namespace lvc
 	class SwapChain
 	{
 	public:
+		SwapChain(const Device* device, const Window* window);
+		~SwapChain() = default;
+
 	private:
+		const Device* m_device;
+		const Window* m_window;
 	};
 }
- 
