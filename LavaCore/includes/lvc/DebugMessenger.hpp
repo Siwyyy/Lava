@@ -6,14 +6,14 @@
 
 namespace lvc
 {
-    class DebugUtilsMessenger
+    class DebugMessenger
     {
     public:
-        explicit DebugUtilsMessenger(const Instance* instance);
+        explicit DebugMessenger(Instance* instance);
 
-        ~DebugUtilsMessenger() noexcept(false);
+        ~DebugMessenger() noexcept(false);
 
-        inline VkDebugUtilsMessengerEXT handle() const { return m_debugMessenger; }
+        inline VkDebugUtilsMessengerEXT handle() const { return m_debug_messenger; }
 
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
             VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
@@ -23,8 +23,8 @@ namespace lvc
         static void populateDebugUtilsMessengerInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
     private:
-        VkDebugUtilsMessengerEXT m_debugMessenger;
-        const Instance* m_instance;
+        VkDebugUtilsMessengerEXT m_debug_messenger;
+        Instance* m_instance;
 
         VkResult createDebugUtilsMessengerExt(
             const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,

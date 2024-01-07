@@ -1,4 +1,4 @@
-#include "lvc/DebugUtilsMessenger.hpp"
+#include "lvc/DebugMessenger.hpp"
 
 #include "lvc/Application.hpp"
 
@@ -6,8 +6,8 @@
 
 using namespace lvc;
 
-DebugUtilsMessenger::DebugUtilsMessenger(const Instance* instance)
-	: m_debugMessenger(VK_NULL_HANDLE)
+DebugMessenger::DebugMessenger(Instance* instance)
+	: m_debug_messenger(VK_NULL_HANDLE)
 	, m_instance(instance)
 {
 	if (!Instance::validationLayersEnabled())
@@ -20,7 +20,7 @@ DebugUtilsMessenger::DebugUtilsMessenger(const Instance* instance)
 		throw std::runtime_error("err: Failed to setup Debug Utils Messenger!\n");
 }
 
-DebugUtilsMessenger::~DebugUtilsMessenger() noexcept(false)
+DebugMessenger::~DebugMessenger() noexcept(false)
 {
 	if (!Instance::validationLayersEnabled())
 		return;
@@ -28,7 +28,7 @@ DebugUtilsMessenger::~DebugUtilsMessenger() noexcept(false)
 	destroyDebugUtilsMessengerExt(nullptr);
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessenger::debugCallback(
+VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessenger::debugCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
 	VkDebugUtilsMessageTypeFlagsEXT message_type,
 	const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
@@ -39,7 +39,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugUtilsMessenger::debugCallback(
 	return false;
 }
 
-void DebugUtilsMessenger::populateDebugUtilsMessengerInfo(
+void DebugMessenger::populateDebugUtilsMessengerInfo(
 	VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 {
 	createInfo                 = {};
@@ -54,7 +54,7 @@ void DebugUtilsMessenger::populateDebugUtilsMessengerInfo(
 	createInfo.pUserData       = nullptr;
 }
 
-VkResult DebugUtilsMessenger::createDebugUtilsMessengerExt(
+VkResult DebugMessenger::createDebugUtilsMessengerExt(
 	const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
 	const VkAllocationCallbacks* p_allocator)
 {
@@ -62,11 +62,11 @@ VkResult DebugUtilsMessenger::createDebugUtilsMessengerExt(
 		vkGetInstanceProcAddr(m_instance->handle(), "vkCreateDebugUtilsMessengerEXT"));
 
 	if (create_func != nullptr)
-		return create_func(m_instance->handle(), p_create_info, p_allocator, &m_debugMessenger);
+		return create_func(m_instance->handle(), p_create_info, p_allocator, &m_debug_messenger);
 	return VK_ERROR_EXTENSION_NOT_PRESENT;
 }
 
-void DebugUtilsMessenger::destroyDebugUtilsMessengerExt(
+void DebugMessenger::destroyDebugUtilsMessengerExt(
 	const VkAllocationCallbacks* p_allocator) const
 {
 	const auto destroy_func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
@@ -75,7 +75,7 @@ void DebugUtilsMessenger::destroyDebugUtilsMessengerExt(
 	std::clog << "";
 	if (destroy_func != nullptr)
 	{
-		destroy_func(m_instance->handle(), m_debugMessenger, p_allocator);
+		destroy_func(m_instance->handle(), m_debug_messenger, p_allocator);
 		std::clog << "Successfully destroyed Debug Utils Messenger\n";
 	}
 	else
