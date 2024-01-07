@@ -160,9 +160,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\lvc\DeviceExtensions.cpp" />
+    <ClCompile Include="src\lvc\PhysicalDevice.cpp" />
     <ClCompile Include="src\lvc\Device.cpp" />
-    <ClCompile Include="src\lvc\DebugUtilsMessenger.cpp" />
+    <ClCompile Include="src\lvc\DebugMessenger.cpp" />
     <ClCompile Include="src\lvc\Instance.cpp" />
     <ClCompile Include="src\lvc\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -170,13 +170,14 @@
     <ClCompile Include="src\lvc\SwapChain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="includes\lvc\DeviceExtensions.hpp" />
     <ClInclude Include="includes\lvc\Device.hpp" />
-    <ClInclude Include="includes\lvc\DebugUtilsMessenger.hpp" />
+    <ClInclude Include="includes\lvc\DebugMessenger.hpp" />
     <ClInclude Include="includes\lvc\Application.hpp" />
     <ClInclude Include="includes\lvc\Window.hpp" />
     <ClInclude Include="includes\lvc\Instance.hpp" />
     <ClInclude Include="includes\lvc\SwapChain.hpp" />
+    <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp" />
+    <ClInclude Include="includes\lvc\PhysicalDevice.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
