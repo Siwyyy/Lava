@@ -1,12 +1,12 @@
 #pragma once
 
-#include "lvc/DebugUtilsMessenger.hpp"
-#include "lvc/Device.hpp"
-#include "lvc/Instance.hpp"
-#include "lvc/Window.hpp"
-
 namespace lvc
 {
+	class Instance;
+	class DebugMessenger;
+	class Window;
+	class Device;
+
 	class Application
 	{
 	public:
@@ -16,7 +16,7 @@ namespace lvc
 
 	private:
 		Instance* m_instance;
-		DebugUtilsMessenger* m_debug_messenger;
+		DebugMessenger* m_debug_messenger;
 		Window* m_window;
 		Device* m_device;
 

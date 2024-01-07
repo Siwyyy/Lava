@@ -1,17 +1,17 @@
 #include "lvc/Window.hpp"
 
-#include "lvc/Application.hpp"
-
-#include <iostream>
+#include "lvc/Instance.hpp"
 
 #include <vulkan/vulkan.h>
+
+#include <iostream>
 
 using namespace lvc;
 
 Window::Window(const int& width,
 							 const int& height,
 							 const char* title,
-							 const Instance* instance)
+							 Instance* instance)
 	: m_window(nullptr)
 	, m_surface(VK_NULL_HANDLE)
 	, m_instance(instance)

@@ -1,100 +1,30 @@
 #include "lvc/Instance.hpp"
 
-#include "lvc/Application.hpp"
-#include "lvc/DebugUtilsMessenger.hpp"
+#include "lvc/DebugMessenger.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
 
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 
 using namespace lvc;
 
 #ifdef NDEBUG
-const bool Instance::enable_validation_layers = false;
+const bool Instance::validation_layers_enabled = false;
 #else
-const bool Instance::enable_validation_layers = true;
+const bool Instance::validation_layers_enabled = true;
 #endif
-
-const std::vector<const char*> Instance::validation_layers = {"VK_LAYER_KHRONOS_validation"};
-
-// === === === === === === === === === === === === === === === === === === === === //
-// ===                       Instance::InstanceExtensions                      === //
-// === === === === === === === === === === === === === === === === === === === === //
-
-Instance::InstanceExtensions::InstanceExtensions()
-{
-	m_required_extension_names = {"VK_KHR_surface",
-																"VK_KHR_win32_surface",
-																"VK_KHR_device_group_creation"};
-
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
-	enumerateInstanceExtensions();
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
-	getRequiredGlfwExtensions();
-	checkRequiredExtensions();
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
-}
-
-void Instance::InstanceExtensions::enumerateInstanceExtensions()
-{
-	uint32_t extension_count;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
-	std::vector<VkExtensionProperties> extensions(extension_count);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data());
-	m_available_extensions = extensions;
-
-	std::clog << "Available instance extensions:\n";
-	for (const auto& extension : extensions)
-		std::cout << extension.extensionName << '\n';
-}
-
-void Instance::InstanceExtensions::getRequiredGlfwExtensions()
-{
-	uint32_t glfw_extension_count = 0;
-	const char** glfw_extensions  = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-
-	std::vector<const char*> extensions = {glfw_extensions,glfw_extensions + glfw_extension_count};
-
-	if (Instance::validationLayersEnabled())
-	{
-		extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-	}
-
-	m_required_extension_names.append_range(extensions);
-}
-
-void Instance::InstanceExtensions::checkRequiredExtensions() const
-{
-	std::clog << "Required instance extensions:\n";
-	bool available = false;
-	for (const auto& extension_name : m_required_extension_names)
-	{
-		std::clog << extension_name;
-		for (const auto& available_ext : m_available_extensions)
-		{
-			if (!strcmp(extension_name, available_ext.extensionName))
-			{
-				std::clog << " (Available)\n";
-				available = true;
-				break;
-			}
-		}
-		if (!available)
-			std::clog << " (Not available)\n";
-	}
-}
-
-// === === === === === === === === === === === === === === === === === === === === //
-// ===                                   Instance                              === //
-// === === === === === === === === === === === === === === === === === === === === //
 
 Instance::Instance(const char* app_name, const char* engine_name)
 	: m_instance(VK_NULL_HANDLE)
 
 {
-	if (enable_validation_layers && !checkValidationLayerSupport())
+	setupExtensions();
+
+	// ReSharper disable once CppRedundantBooleanExpressionArgument
+	if (validation_layers_enabled && !checkValidationLayerSupport())
 		throw std::runtime_error("err: Validation layers requested, but not available!\n");
 
 	VkApplicationInfo app_info{};
@@ -108,19 +38,20 @@ Instance::Instance(const char* app_name, const char* engine_name)
 	VkInstanceCreateInfo create_info{};
 	create_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	create_info.pApplicationInfo        = &app_info;
-	create_info.enabledExtensionCount   = static_cast<uint32_t>(m_instance_extensions.required().size());
-	create_info.ppEnabledExtensionNames = m_instance_extensions.required().data();
+	create_info.enabledExtensionCount   = static_cast<uint32_t>(m_required_extensions.size());
+	create_info.ppEnabledExtensionNames = m_required_extensions.data();
 
-	if (enable_validation_layers)
+	if (validation_layers_enabled)
 	{
 		create_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());
 		create_info.ppEnabledLayerNames = validation_layers.data();
 
 		VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
-		DebugUtilsMessenger::populateDebugUtilsMessengerInfo(debug_create_info);
+		DebugMessenger::populateDebugUtilsMessengerInfo(debug_create_info);
 		create_info.pNext = &debug_create_info;
 	}
 	else
+	// ReSharper disable once CppUnreachableCode
 	{
 		create_info.enabledLayerCount = 0;
 		create_info.pNext             = nullptr;
@@ -132,8 +63,96 @@ Instance::Instance(const char* app_name, const char* engine_name)
 
 Instance::~Instance()
 {
+	std::clog << "--- --- ---\n";
 	vkDestroyInstance(m_instance, nullptr);
+	std::clog << "--- --- ---\n";
 	std::clog << "Successfully destroyed instance\n";
+}
+
+void Instance::setupExtensions()
+{
+	m_required_extensions.append_range(default_extensions);
+
+	queryExtensions();
+	setRequiredExtensions();
+	checkRequiredExtensions();
+
+	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
+	logAvailableExtensions();
+	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
+	logRequiredExtensions();
+	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
+}
+
+void Instance::queryExtensions()
+{
+	uint32_t extension_count;
+	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
+	std::vector<VkExtensionProperties> extensions(extension_count);
+	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data());
+
+	for (const auto& extension : extensions)
+	{
+		const std::string* name = new std::string(extension.extensionName);
+		m_available_extensions.emplace_back(name->c_str());
+	}
+}
+
+void Instance::setRequiredExtensions()
+{
+	uint32_t glfw_extension_count = 0;
+	const char** glfw_extensions  = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
+
+	std::vector<const char*> extensions = {glfw_extensions,glfw_extensions + glfw_extension_count};
+
+	if (validationLayersEnabled())
+	{
+		extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	}
+
+	m_required_extensions.append_range(extensions);
+}
+
+void Instance::checkRequiredExtensions()
+{
+	uint32_t found = 0;
+	for (const auto& required : m_required_extensions)
+		for (const auto& available : m_available_extensions)
+			if (!strcmp(required, available))
+			{
+				found++;
+				break;
+			}
+
+	m_extensions_good = found == m_required_extensions.size();
+}
+
+void Instance::logAvailableExtensions() const
+{
+	std::clog << "Available instance extensions:\n";
+	for (const auto& extension : m_available_extensions)
+		std::cout << extension << '\n';
+}
+
+void Instance::logRequiredExtensions() const
+{
+	std::clog << "Required instance extensions:\n";
+	bool found = false;
+	for (const auto& required : m_required_extensions)
+	{
+		std::clog << required;
+		for (const auto& available : m_available_extensions)
+		{
+			if (!strcmp(required, available))
+			{
+				std::clog << " (Available)\n";
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+			std::clog << " (Not available)\n";
+	}
 }
 
 bool Instance::checkValidationLayerSupport()
