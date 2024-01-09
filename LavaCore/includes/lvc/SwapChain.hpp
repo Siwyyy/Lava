@@ -44,6 +44,8 @@ namespace lvc
 		VkSurfaceFormatKHR m_surface_format;
 		VkPresentModeKHR m_present_mode;
 
+		std::vector<VkImage> m_image_vec;
+
 		VkSwapchainKHR m_swapchain;
 
 		void querySwapchainSupport();

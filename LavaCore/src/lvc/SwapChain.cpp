@@ -68,9 +68,11 @@ void SwapChain::createSwapchain()
 	create_info.oldSwapchain   = VK_NULL_HANDLE;
 
 	if (vkCreateSwapchainKHR(m_device, &create_info, nullptr, &m_swapchain) != VK_SUCCESS)
-	{
 		throw std::runtime_error("err: Failed to create swapchain!\n");
-	}
+
+	vkGetSwapchainImagesKHR(m_device, m_swapchain, &image_count, nullptr);
+	m_image_vec.resize(image_count);
+	vkGetSwapchainImagesKHR(m_device, m_swapchain, &image_count, m_image_vec.data());
 }
 
 void SwapChain::querySwapchainSupport()
