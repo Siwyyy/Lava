@@ -14,7 +14,7 @@ PhysicalDevice::PhysicalDevice(const VkPhysicalDevice* physical, const Window& w
 	m_name.append_range(device_properties.deviceName);
 	queryExtensions();
 	checkExtensionSupport();
-	findQueueFamilies(window.surfaceHandle());
+	findQueueFamilies(window.hSurface());
 
 	rateDeviceSuitability(window);
 }
@@ -52,8 +52,8 @@ void PhysicalDevice::logInfo() const
 	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
 	std::cout << "GPU: " << m_name << '\n';
 	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
-	logDeviceExtensions();
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
+	// logDeviceExtensions();
+	// std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
 	logRequiredExtensions();
 	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
 }

@@ -19,17 +19,17 @@ namespace lvc
 		Device(Instance* instance, Window* window);
 		~Device();
 
-		inline PhysicalDevice* physicalDevice() const { return m_physical; }
-		inline VkDevice hLogical() const { return m_logical; }
+		inline PhysicalDevice* physicalDevice() const { return m_physical_device; }
+		inline VkDevice& hDevice() { return m_device; }
 
 	private:
 		Instance* m_instance;
 		Window* m_window;
 
-		std::vector<PhysicalDevice*> m_physical_devices;
-		PhysicalDevice* m_physical;
+		std::vector<PhysicalDevice*> m_physical_device_vec;
+		PhysicalDevice* m_physical_device;
 
-		VkDevice m_logical;
+		VkDevice m_device;
 
 		VkQueue m_graphics_queue;
 		VkQueue m_present_queue;

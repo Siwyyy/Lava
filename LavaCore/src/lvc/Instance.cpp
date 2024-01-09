@@ -78,8 +78,8 @@ void Instance::setupExtensions()
 	checkRequiredExtensions();
 
 	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
-	logAvailableExtensions();
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
+	// logAvailableExtensions();
+	// std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
 	logRequiredExtensions();
 	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
 }
