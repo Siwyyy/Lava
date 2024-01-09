@@ -37,14 +37,15 @@ namespace lvc
 		uint32_t m_present_family;
 
 		VkSurfaceCapabilitiesKHR m_surface_capabilities;
-		std::vector<VkSurfaceFormatKHR> m_surface_format_vec;
-		std::vector<VkPresentModeKHR> m_present_mode_vec;
+		std::vector<VkSurfaceFormatKHR> m_surface_formats;
+		std::vector<VkPresentModeKHR> m_present_modes;
 
 		VkExtent2D m_extent_2d;
 		VkSurfaceFormatKHR m_surface_format;
 		VkPresentModeKHR m_present_mode;
 
-		std::vector<VkImage> m_image_vec;
+		std::vector<VkImage> m_images;
+		std::vector<VkImageView> m_image_views;
 
 		VkSwapchainKHR m_swapchain;
 
@@ -53,5 +54,6 @@ namespace lvc
 		void setSurfaceFormat();
 		void setSurfacePresentMode();
 		void createSwapchain();
+		void createImageViews();
 	};
 }
