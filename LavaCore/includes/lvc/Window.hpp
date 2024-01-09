@@ -16,8 +16,10 @@ namespace lvc
 		Window() = delete;
 		~Window();
 
-		inline GLFWwindow* handle() const { return m_window; }
-		inline VkSurfaceKHR surfaceHandle() const { return m_surface; }
+		inline GLFWwindow* hWindow() const { return m_window; }
+
+		inline VkSurfaceKHR& hSurface() { return m_surface; }
+		inline const VkSurfaceKHR& hSurface() const { return m_surface; }
 
 	private:
 		GLFWwindow* m_window;

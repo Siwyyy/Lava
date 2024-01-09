@@ -3,6 +3,7 @@
 #include "lvc/DebugMessenger.hpp"
 #include "lvc/Device.hpp"
 #include "lvc/Instance.hpp"
+#include "lvc/SwapChain.hpp"
 #include "lvc/Window.hpp"
 
 #include <iostream>
@@ -16,7 +17,8 @@ Application::Application()
 	: m_instance(new Instance("LavaCore", "No Engine"))
 	, m_debug_messenger(new DebugMessenger(m_instance))
 	, m_window(new Window(WIDTH, HEIGHT, "LavaCore - Test", m_instance))
-	, m_device(new Device(m_instance, m_window)) {}
+	, m_device(new Device(m_instance, m_window))
+	, m_swap_chain(new SwapChain(m_device, m_window)) {}
 
 void Application::run() const
 {
@@ -26,16 +28,17 @@ void Application::run() const
 
 void Application::mainLoop() const
 {
-	while (!glfwWindowShouldClose(m_window->handle()))
+	while (!glfwWindowShouldClose(m_window->hWindow()))
 		glfwPollEvents();
 }
 
 void Application::destroyInstance() const
 {
 	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
-	delete m_debug_messenger;
+	delete m_swap_chain;
 	delete m_window;
 	delete m_device;
+	delete m_debug_messenger;
 	delete m_instance;
 	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
 }

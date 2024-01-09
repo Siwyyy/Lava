@@ -1,7 +1,12 @@
 #pragma once
 
+#include <glfw3.h>
 #include <vector>
 #include <vulkan/vulkan.h>
+
+namespace lvc {
+	struct QueueFamilyIndices;
+}
 
 namespace lvc
 {
@@ -18,11 +23,33 @@ namespace lvc
 	class SwapChain
 	{
 	public:
-		SwapChain(const Device* device, const Window* window);
-		~SwapChain() = default;
+		SwapChain(Device* device, Window* window);
+		SwapChain() = delete;
+		~SwapChain();
 
 	private:
-		const Device* m_device;
-		const Window* m_window;
+		VkDevice& m_device;
+		VkPhysicalDevice& m_physical_device;
+		GLFWwindow* m_window;
+		VkSurfaceKHR& m_surface;
+
+		uint32_t m_graphics_family;
+		uint32_t m_present_family;
+
+		VkSurfaceCapabilitiesKHR m_surface_capabilities;
+		std::vector<VkSurfaceFormatKHR> m_surface_format_vec;
+		std::vector<VkPresentModeKHR> m_present_mode_vec;
+
+		VkExtent2D m_extent_2d;
+		VkSurfaceFormatKHR m_surface_format;
+		VkPresentModeKHR m_present_mode;
+
+		VkSwapchainKHR m_swapchain;
+
+		void querySwapchainSupport();
+		void setExtent2D();
+		void setSurfaceFormat();
+		void setSurfacePresentMode();
+		void createSwapchain();
 	};
 }
