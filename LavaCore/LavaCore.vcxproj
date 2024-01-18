@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\lvc\GraphicsPipeline.cpp" />
     <ClCompile Include="src\lvc\PhysicalDevice.cpp" />
     <ClCompile Include="src\lvc\Device.cpp" />
     <ClCompile Include="src\lvc\DebugMessenger.cpp" />
@@ -167,17 +168,26 @@
     <ClCompile Include="src\lvc\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lvc\Window.cpp" />
-    <ClCompile Include="src\lvc\SwapChain.cpp" />
+    <ClCompile Include="src\lvc\Swapchain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="includes\lvc\GraphicsPipeline.hpp" />
     <ClInclude Include="includes\lvc\Device.hpp" />
     <ClInclude Include="includes\lvc\DebugMessenger.hpp" />
     <ClInclude Include="includes\lvc\Application.hpp" />
     <ClInclude Include="includes\lvc\Window.hpp" />
     <ClInclude Include="includes\lvc\Instance.hpp" />
-    <ClInclude Include="includes\lvc\SwapChain.hpp" />
+    <ClInclude Include="includes\lvc\Swapchain.hpp" />
     <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp" />
     <ClInclude Include="includes\lvc\PhysicalDevice.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\compile.bat" />
+    <None Include="shaders\basic.frag" />
+    <None Include="shaders\basic.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="shaders\compile.bat.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

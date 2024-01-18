@@ -4,7 +4,8 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace lvc {
+namespace lvc
+{
 	struct QueueFamilyIndices;
 }
 
@@ -13,19 +14,21 @@ namespace lvc
 	class Device;
 	class Window;
 
-	struct SwapChainSupportDetails
+	struct SwapchainSupportDetails
 	{
 		VkSurfaceCapabilitiesKHR capabilities;
 		std::vector<VkSurfaceFormatKHR> formats;
 		std::vector<VkPresentModeKHR> present_modes;
 	};
 
-	class SwapChain
+	class Swapchain
 	{
 	public:
-		SwapChain(Device* device, Window* window);
-		SwapChain() = delete;
-		~SwapChain();
+		Swapchain(Device* device, Window* window);
+		Swapchain() = delete;
+		~Swapchain();
+
+		inline VkExtent2D& hExtent2d() { return m_extent_2d; }
 
 	private:
 		VkDevice& m_device;

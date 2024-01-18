@@ -1,4 +1,4 @@
-#include "lvc/SwapChain.hpp"
+#include "lvc/Swapchain.hpp"
 
 #include "lvc/Device.hpp"
 #include "lvc/PhysicalDevice.hpp"
@@ -10,7 +10,7 @@
 
 using namespace lvc;
 
-SwapChain::SwapChain(Device* device, Window* window)
+Swapchain::Swapchain(Device* device, Window* window)
 	: m_device(device->hDevice())
 	, m_physical_device(device->physicalDevice()->physical())
 	, m_window(window->hWindow())
@@ -25,7 +25,7 @@ SwapChain::SwapChain(Device* device, Window* window)
 	createSwapchain();
 }
 
-SwapChain::~SwapChain()
+Swapchain::~Swapchain()
 {
 	for (const VkImageView& image_view : m_image_views)
 		vkDestroyImageView(m_device, image_view, nullptr);
@@ -33,7 +33,7 @@ SwapChain::~SwapChain()
 	std::clog << "Successfully destroyed swapchain\n";
 }
 
-void SwapChain::querySwapchainSupport()
+void Swapchain::querySwapchainSupport()
 {
 	// Extent
 	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physical_device, m_surface, &m_surface_capabilities);
@@ -54,7 +54,7 @@ void SwapChain::querySwapchainSupport()
 		throw::std::runtime_error("err: Device details not supported! SWAPCHAIN cannot be created!");
 }
 
-void SwapChain::setExtent2D()
+void Swapchain::setExtent2D()
 {
 	if (m_surface_capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 	{
@@ -71,7 +71,7 @@ void SwapChain::setExtent2D()
 	m_extent_2d = {width,height};
 }
 
-void SwapChain::setSurfaceFormat()
+void Swapchain::setSurfaceFormat()
 {
 	for (const auto& format : m_surface_formats)
 		if (format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
@@ -83,7 +83,7 @@ void SwapChain::setSurfaceFormat()
 	m_surface_format = m_surface_formats[0];
 }
 
-void SwapChain::setSurfacePresentMode()
+void Swapchain::setSurfacePresentMode()
 {
 	for (const auto& mode : m_present_modes)
 		if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
@@ -94,7 +94,7 @@ void SwapChain::setSurfacePresentMode()
 	m_present_mode = VK_PRESENT_MODE_FIFO_KHR;
 }
 
-void SwapChain::createSwapchain()
+void Swapchain::createSwapchain()
 {
 	uint32_t image_count = m_surface_capabilities.minImageCount + 1;
 	if (m_surface_capabilities.maxImageCount > 0 && image_count < m_surface_capabilities.maxImageCount)
@@ -138,7 +138,7 @@ void SwapChain::createSwapchain()
 	vkGetSwapchainImagesKHR(m_device, m_swapchain, &image_count, m_images.data());
 }
 
-void SwapChain::createImageViews()
+void Swapchain::createImageViews()
 {
 	m_image_views.resize(m_images.size());
 	for (size_t i = 0; i < m_image_views.size(); i++)

@@ -6,7 +6,7 @@ namespace lvc
 	class DebugMessenger;
 	class Window;
 	class Device;
-	class SwapChain;
+	class Swapchain;
 
 	class Application
 	{
@@ -20,7 +20,7 @@ namespace lvc
 		DebugMessenger* m_debug_messenger;
 		Window* m_window;
 		Device* m_device;
-		SwapChain* m_swap_chain;
+		Swapchain* m_swap_chain;
 
 		void mainLoop() const;
 		void destroyInstance() const;
