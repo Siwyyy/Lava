@@ -3,7 +3,7 @@
 #include "lvc/DebugMessenger.hpp"
 #include "lvc/Device.hpp"
 #include "lvc/Instance.hpp"
-#include "lvc/SwapChain.hpp"
+#include "lvc/Swapchain.hpp"
 #include "lvc/Window.hpp"
 
 #include <iostream>
@@ -18,7 +18,7 @@ Application::Application()
 	, m_debug_messenger(new DebugMessenger(m_instance))
 	, m_window(new Window(WIDTH, HEIGHT, "LavaCore - Test", m_instance))
 	, m_device(new Device(m_instance, m_window))
-	, m_swap_chain(new SwapChain(m_device, m_window)) {}
+	, m_swap_chain(new Swapchain(m_device, m_window)) {}
 
 void Application::run() const
 {
