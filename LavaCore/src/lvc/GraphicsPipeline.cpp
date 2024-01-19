@@ -1,10 +1,10 @@
 #include "lvc/GraphicsPipeline.hpp"
 
 #include "lvc/Device.hpp"
+#include "lvc/Swapchain.hpp"
 
 #include <fstream>
-
-#include "lvc/Swapchain.hpp"
+#include <iostream>
 
 using namespace lvc;
 
@@ -117,8 +117,10 @@ GraphicsPipeline::GraphicsPipeline(Device* device, Swapchain* swapchain)
 GraphicsPipeline::~GraphicsPipeline()
 {
 	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
+	std::clog << "Successfully destroyed pipeline layout\n";
 	vkDestroyShaderModule(m_device, m_vert_shader_module, nullptr);
 	vkDestroyShaderModule(m_device, m_frag_shader_module, nullptr);
+	std::clog << "Successfully destroyed shader modules\n";
 }
 
 VkShaderModule GraphicsPipeline::createShaderModule(const std::vector<char>& code) const

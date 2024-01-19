@@ -21,6 +21,7 @@ namespace lvc
 
 		inline PhysicalDevice* physicalDevice() const { return m_physical_device; }
 		inline VkDevice& hDevice() { return m_device; }
+		inline const VkDevice& hDevice() const { return m_device; }
 
 	private:
 		Instance* m_instance;
