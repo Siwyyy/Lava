@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\lvc\RenderPass.cpp" />
     <ClCompile Include="src\lvc\GraphicsPipeline.cpp" />
     <ClCompile Include="src\lvc\PhysicalDevice.cpp" />
     <ClCompile Include="src\lvc\Device.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="includes\lvc\Swapchain.hpp" />
     <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp" />
     <ClInclude Include="includes\lvc\PhysicalDevice.hpp" />
+    <ClInclude Include="includes\lvc\RenderPass.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />

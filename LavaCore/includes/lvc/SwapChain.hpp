@@ -29,6 +29,7 @@ namespace lvc
 		~Swapchain();
 
 		inline VkExtent2D& hExtent2d() { return m_extent_2d; }
+		inline const VkFormat& hFormat() const { return m_surface_format.format; }
 
 	private:
 		VkDevice& m_device;

@@ -65,8 +65,12 @@ void Swapchain::setExtent2D()
 	int width_int, height_int;
 	glfwGetFramebufferSize(m_window, &width_int, &height_int);
 
-	const uint32_t width  = std::clamp(static_cast<uint32_t>(width_int), m_surface_capabilities.minImageExtent.width, m_surface_capabilities.maxImageExtent.width);
-	const uint32_t height = std::clamp(static_cast<uint32_t>(height_int), m_surface_capabilities.minImageExtent.height, m_surface_capabilities.maxImageExtent.height);
+	const uint32_t width = std::clamp(static_cast<uint32_t>(width_int),
+																		m_surface_capabilities.minImageExtent.width,
+																		m_surface_capabilities.maxImageExtent.width);
+	const uint32_t height = std::clamp(static_cast<uint32_t>(height_int),
+																		 m_surface_capabilities.minImageExtent.height,
+																		 m_surface_capabilities.maxImageExtent.height);
 
 	m_extent_2d = {width,height};
 }
