@@ -9,9 +9,11 @@ namespace lvc
 	class RenderPass
 	{
 	public:
-		RenderPass(const Device* device,const Swapchain* swapchain);
+		RenderPass(const Device* device, const Swapchain* swapchain);
 		RenderPass() = delete;
 		~RenderPass();
+
+		inline VkRenderPass& rHandle() { return m_render_pass; }
 
 	private:
 		const VkDevice& m_device;

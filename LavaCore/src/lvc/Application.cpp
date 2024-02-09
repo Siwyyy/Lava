@@ -22,7 +22,7 @@ Application::Application()
 	, m_device(new Device(m_instance, m_window))
 	, m_swap_chain(new Swapchain(m_device, m_window))
 	, m_render_pass(new RenderPass(m_device, m_swap_chain))
-	, m_graphics_pipeline(new GraphicsPipeline(m_device, m_swap_chain)) {}
+	, m_graphics_pipeline(new GraphicsPipeline(m_device, m_swap_chain, m_render_pass)) {}
 
 void Application::run() const
 {
