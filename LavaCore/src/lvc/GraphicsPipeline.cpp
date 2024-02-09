@@ -6,11 +6,14 @@
 #include <fstream>
 #include <iostream>
 
+#include "lvc/RenderPass.hpp"
+
 using namespace lvc;
 
-GraphicsPipeline::GraphicsPipeline(Device* device, Swapchain* swapchain)
+GraphicsPipeline::GraphicsPipeline(Device* device, Swapchain* swapchain, RenderPass* render_pass)
 	: m_device(device->hDevice())
 	, m_swapchain_extent(swapchain->hExtent2d())
+	, m_render_pass(render_pass->rHandle())
 {
 	const auto vert_shader_code = readShaderFile("shaders/basic.vert.spv");
 	const auto frag_shader_code = readShaderFile("shaders/basic.frag.spv");
@@ -30,12 +33,17 @@ GraphicsPipeline::GraphicsPipeline(Device* device, Swapchain* swapchain)
 	frag_shader_stage_create_info.module = m_frag_shader_module;
 	frag_shader_stage_create_info.pName  = "main";
 
+	VkPipelineShaderStageCreateInfo shader_stage_create_info[] = {vert_shader_stage_create_info,
+																																frag_shader_stage_create_info};
+
 	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info;
 	vertex_input_state_create_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertex_input_state_create_info.vertexBindingDescriptionCount   = 0;
 	vertex_input_state_create_info.pVertexBindingDescriptions      = nullptr;
 	vertex_input_state_create_info.vertexAttributeDescriptionCount = 0;
 	vertex_input_state_create_info.pVertexAttributeDescriptions    = nullptr;
+	vertex_input_state_create_info.flags                           = 0;
+	vertex_input_state_create_info.pNext                           = VK_NULL_HANDLE;
 
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_create_info{};
 	input_assembly_create_info.sType                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -112,10 +120,33 @@ GraphicsPipeline::GraphicsPipeline(Device* device, Swapchain* swapchain)
 
 	if (vkCreatePipelineLayout(m_device, &pipeline_layout_create_info, nullptr, &m_pipeline_layout) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to create pipeline layout!\n");
+
+	VkGraphicsPipelineCreateInfo pipeline_create_info{};
+	pipeline_create_info.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+	pipeline_create_info.stageCount          = 2;
+	pipeline_create_info.pStages             = shader_stage_create_info;
+	pipeline_create_info.pVertexInputState   = &vertex_input_state_create_info;
+	pipeline_create_info.pInputAssemblyState = &input_assembly_create_info;
+	pipeline_create_info.pViewportState      = &viewport_state_create_info;
+	pipeline_create_info.pRasterizationState = &rasterization_state_create_info;
+	pipeline_create_info.pMultisampleState   = &multisample_state_create_info;
+	pipeline_create_info.pDepthStencilState  = nullptr;
+	pipeline_create_info.pColorBlendState    = &color_blend_state_create_info;
+	pipeline_create_info.pDynamicState       = &dynamic_state_create_info;
+	pipeline_create_info.layout              = m_pipeline_layout;
+	pipeline_create_info.renderPass          = m_render_pass;
+	pipeline_create_info.subpass             = 0;
+	pipeline_create_info.basePipelineHandle  = VK_NULL_HANDLE;
+	pipeline_create_info.basePipelineIndex   = -1;
+
+	if (vkCreateGraphicsPipelines(m_device,VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &m_pipeline) != VK_SUCCESS)
+		throw std::runtime_error("err: Failed to create graphics pipeline!\n");
 }
 
 GraphicsPipeline::~GraphicsPipeline()
 {
+	vkDestroyPipeline(m_device, m_pipeline, nullptr);
+	std::clog << "Successfully destroyed graphics pipeline\n";
 	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
 	std::clog << "Successfully destroyed pipeline layout\n";
 	vkDestroyShaderModule(m_device, m_vert_shader_module, nullptr);
