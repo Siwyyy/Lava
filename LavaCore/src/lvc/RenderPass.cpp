@@ -7,12 +7,15 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <vector>
 
 using namespace lvc;
 
 RenderPass::RenderPass(const Device* device, const Swapchain* swapchain)
 	: m_device(device->hDevice())
+	, m_swapchain_extent_2d(swapchain->hExtent2d())
 	, m_swapchain_image_format(swapchain->hFormat())
+	, m_image_views(swapchain->hImageViews())
 	, m_render_pass(VK_NULL_HANDLE)
 {
 	VkAttachmentDescription attachment_description;
@@ -65,6 +68,34 @@ RenderPass::RenderPass(const Device* device, const Swapchain* swapchain)
 
 RenderPass::~RenderPass()
 {
+	for (const auto framebuffer : m_framebuffers)
+	{
+		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+	}
+	std::clog << "Successfully destroyed framebuffers\n";
+
 	vkDestroyRenderPass(m_device, m_render_pass, nullptr);
 	std::clog << "Successfully destroyed render pass\n";
+}
+
+void RenderPass::createFrameBuffers()
+{
+	m_framebuffers.resize(m_image_views.size());
+
+	for (size_t i = 0; i < m_image_views.size(); i++)
+	{
+		const VkImageView attachments[] = {m_image_views[i]};
+
+		VkFramebufferCreateInfo framebuffer_create_info{};
+		framebuffer_create_info.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebuffer_create_info.renderPass      = m_render_pass;
+		framebuffer_create_info.attachmentCount = 1;
+		framebuffer_create_info.pAttachments    = attachments;
+		framebuffer_create_info.width           = m_swapchain_extent_2d.width;
+		framebuffer_create_info.height          = m_swapchain_extent_2d.height;
+		framebuffer_create_info.layers          = 1;
+
+		if (vkCreateFramebuffer(m_device, &framebuffer_create_info, nullptr, &m_framebuffers[i]) != VK_SUCCESS)
+			throw std::runtime_error("err. Failed to create framebuffer!\n");
+	}
 }

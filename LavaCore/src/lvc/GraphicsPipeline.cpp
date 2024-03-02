@@ -22,16 +22,22 @@ GraphicsPipeline::GraphicsPipeline(Device* device, Swapchain* swapchain, RenderP
 	m_frag_shader_module = createShaderModule(frag_shader_code);
 
 	VkPipelineShaderStageCreateInfo vert_shader_stage_create_info{};
-	vert_shader_stage_create_info.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	vert_shader_stage_create_info.stage  = VK_SHADER_STAGE_FRAGMENT_BIT;
-	vert_shader_stage_create_info.module = m_frag_shader_module;
-	vert_shader_stage_create_info.pName  = "main";
+	vert_shader_stage_create_info.sType               = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	vert_shader_stage_create_info.pNext               = nullptr;
+	vert_shader_stage_create_info.flags               = 0;
+	vert_shader_stage_create_info.stage               = VK_SHADER_STAGE_VERTEX_BIT;
+	vert_shader_stage_create_info.module              = m_vert_shader_module;
+	vert_shader_stage_create_info.pName               = "main";
+	vert_shader_stage_create_info.pSpecializationInfo = nullptr;
 
 	VkPipelineShaderStageCreateInfo frag_shader_stage_create_info{};
-	frag_shader_stage_create_info.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	frag_shader_stage_create_info.stage  = VK_SHADER_STAGE_FRAGMENT_BIT;
-	frag_shader_stage_create_info.module = m_frag_shader_module;
-	frag_shader_stage_create_info.pName  = "main";
+	frag_shader_stage_create_info.sType               = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	frag_shader_stage_create_info.pNext               = nullptr;
+	frag_shader_stage_create_info.flags               = 0;
+	frag_shader_stage_create_info.stage               = VK_SHADER_STAGE_FRAGMENT_BIT;
+	frag_shader_stage_create_info.module              = m_frag_shader_module;
+	frag_shader_stage_create_info.pName               = "main";
+	frag_shader_stage_create_info.pSpecializationInfo = nullptr;
 
 	VkPipelineShaderStageCreateInfo shader_stage_create_info[] = {vert_shader_stage_create_info,
 																																frag_shader_stage_create_info};
