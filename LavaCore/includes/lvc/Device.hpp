@@ -1,6 +1,5 @@
 #pragma once
 
-#include "QueueFamilyIndices.hpp"
 #include "lvc/Instance.hpp"
 #include "lvc/Window.hpp"
 
