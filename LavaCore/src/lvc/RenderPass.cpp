@@ -44,13 +44,12 @@ RenderPass::RenderPass(const Device* device, const Swapchain* swapchain)
 	subpass_description.preserveAttachmentCount = 0;
 
 	VkSubpassDependency subpass_dependency;
-	subpass_dependency.srcSubpass    = VK_SUBPASS_EXTERNAL;
-	subpass_dependency.dstSubpass    = 0;
-	subpass_dependency.srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	subpass_dependency.dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-	subpass_dependency.srcAccessMask = 0;
-	subpass_dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
-																		 VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	subpass_dependency.srcSubpass      = VK_SUBPASS_EXTERNAL;
+	subpass_dependency.dstSubpass      = 0;
+	subpass_dependency.srcStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	subpass_dependency.dstStageMask    = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	subpass_dependency.srcAccessMask   = 0;
+	subpass_dependency.dstAccessMask   = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	subpass_dependency.dependencyFlags = 0;
 
 	VkRenderPassCreateInfo render_pass_info{};

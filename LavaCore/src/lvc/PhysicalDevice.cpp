@@ -7,7 +7,7 @@
 using namespace lvc;
 
 PhysicalDevice::PhysicalDevice(const VkPhysicalDevice* physical, const Window& window)
-	: m_physical(*physical) // check if "new" can be deleted
+	: m_physical(*physical)
 {
 	VkPhysicalDeviceProperties device_properties;
 	vkGetPhysicalDeviceProperties(m_physical, &device_properties);

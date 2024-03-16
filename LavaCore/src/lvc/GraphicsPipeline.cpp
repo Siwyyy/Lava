@@ -10,10 +10,10 @@
 
 using namespace lvc;
 
-GraphicsPipeline::GraphicsPipeline(Device* device, Swapchain* swapchain, RenderPass* render_pass)
-	: m_device(device->hDevice())
-	, m_swapchain_extent(swapchain->hExtent2d())
-	, m_render_pass(render_pass->rHandle())
+GraphicsPipeline::GraphicsPipeline(Device* t_device, Swapchain* t_swapchain, RenderPass* t_render_pass)
+	: m_device(t_device->hDevice())
+	, m_swapchain_extent(t_swapchain->hExtent2d())
+	, m_render_pass(t_render_pass->hRenderPass())
 {
 	const auto vert_shader_code = readShaderFile("shaders/basic.vert.spv");
 	const auto frag_shader_code = readShaderFile("shaders/basic.frag.spv");
@@ -147,6 +147,8 @@ GraphicsPipeline::GraphicsPipeline(Device* device, Swapchain* swapchain, RenderP
 
 	if (vkCreateGraphicsPipelines(m_device,VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &m_pipeline) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to create graphics pipeline!\n");
+
+	t_render_pass->createFrameBuffers();
 }
 
 GraphicsPipeline::~GraphicsPipeline()

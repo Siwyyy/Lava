@@ -28,6 +28,7 @@ namespace lvc
 		Swapchain() = delete;
 		~Swapchain();
 
+		inline const VkSwapchainKHR& hSwapchain() const { return m_swapchain; }
 		inline VkExtent2D& hExtent2d() { return m_extent_2d; }
 		inline const VkExtent2D& hExtent2d() const { return m_extent_2d; }
 		inline const VkFormat& hFormat() const { return m_surface_format.format; }

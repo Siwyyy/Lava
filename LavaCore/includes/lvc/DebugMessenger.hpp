@@ -23,10 +23,10 @@ namespace lvc
         static void populateDebugUtilsMessengerInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
     private:
-        VkDebugUtilsMessengerEXT m_debug_messenger;
-        Instance* m_instance;
+				Instance* m_instance;
+				VkDebugUtilsMessengerEXT m_debug_messenger;
 
-        VkResult createDebugUtilsMessengerExt(
+				VkResult createDebugUtilsMessengerExt(
             const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
             const VkAllocationCallbacks* p_allocator);
         void destroyDebugUtilsMessengerExt(const VkAllocationCallbacks* p_allocator) const;

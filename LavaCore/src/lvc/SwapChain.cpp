@@ -23,6 +23,7 @@ Swapchain::Swapchain(Device* device, Window* window)
 	setSurfaceFormat();
 	setSurfacePresentMode();
 	createSwapchain();
+	createImageViews();
 }
 
 Swapchain::~Swapchain()

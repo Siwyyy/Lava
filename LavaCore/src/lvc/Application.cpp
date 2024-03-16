@@ -1,5 +1,7 @@
 #include "lvc/Application.hpp"
 
+#include "lvc/CommandBuffer.hpp"
+#include "lvc/CommandPool.hpp"
 #include "lvc/DebugMessenger.hpp"
 #include "lvc/Device.hpp"
 #include "lvc/GraphicsPipeline.hpp"
@@ -22,23 +24,19 @@ Application::Application()
 	, m_device(new Device(m_instance, m_window))
 	, m_swap_chain(new Swapchain(m_device, m_window))
 	, m_render_pass(new RenderPass(m_device, m_swap_chain))
-	, m_graphics_pipeline(new GraphicsPipeline(m_device, m_swap_chain, m_render_pass)) {}
+	, m_graphics_pipeline(new GraphicsPipeline(m_device, m_swap_chain, m_render_pass))
+	, m_command_pool(new CommandPool(m_device))
+	, m_command_buffer(new CommandBuffer(m_command_pool, m_device, m_render_pass, m_swap_chain, m_graphics_pipeline)) {}
 
-void Application::run() const
+Application::~Application()
 {
-	mainLoop();
-	destroyInstance();
-}
+	vkDestroySemaphore(m_device->hDevice(), m_semaphore_image_available, nullptr);
+	vkDestroySemaphore(m_device->hDevice(), m_semaphore_render_finished, nullptr);
+	vkDestroyFence(m_device->hDevice(), m_fence_in_flight, nullptr);
 
-void Application::mainLoop() const
-{
-	while (!glfwWindowShouldClose(m_window->hWindow()))
-		glfwPollEvents();
-}
-
-void Application::destroyInstance() const
-{
 	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
+	delete m_command_pool;
+	delete m_command_buffer;
 	delete m_graphics_pipeline;
 	delete m_render_pass;
 	delete m_swap_chain;
@@ -47,4 +45,83 @@ void Application::destroyInstance() const
 	delete m_debug_messenger;
 	delete m_instance;
 	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
+}
+
+void Application::run()
+{
+	createSyncObjects(m_device->hDevice());
+	mainLoop();
+}
+
+void Application::mainLoop() const
+{
+	while (!glfwWindowShouldClose(m_window->hWindow()))
+	{
+		glfwPollEvents();
+		draw(m_device->hDevice(), m_command_buffer->hCommandBuffer(), m_device->hGraphicsQueue(), m_device->hPresentQueue(), m_swap_chain->hSwapchain());
+	}
+}
+
+void Application::createSyncObjects(const VkDevice& t_device)
+{
+	VkSemaphoreCreateInfo semaphore_create_info;
+	semaphore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+	semaphore_create_info.flags = 0;
+	semaphore_create_info.pNext = nullptr;
+
+	VkFenceCreateInfo fence_create_info;
+	fence_create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+	fence_create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+	fence_create_info.pNext = nullptr;
+
+	if (vkCreateSemaphore(t_device, &semaphore_create_info, nullptr, &m_semaphore_image_available) != VK_SUCCESS ||
+			vkCreateSemaphore(t_device, &semaphore_create_info, nullptr, &m_semaphore_render_finished) != VK_SUCCESS ||
+			vkCreateFence(t_device, &fence_create_info, nullptr, &m_fence_in_flight) != VK_SUCCESS)
+		throw std::runtime_error("err: Failed to create semaphores/fence!\n");
+}
+
+void Application::draw(const VkDevice& t_device,
+											 const VkCommandBuffer& t_command_buffer,
+											 const VkQueue& t_graphics_queue,
+											 const VkQueue& t_present_queue,
+											 const VkSwapchainKHR& t_swapchain) const
+{
+	vkWaitForFences(t_device, 1, &m_fence_in_flight,VK_TRUE,UINT64_MAX);
+	vkResetFences(t_device, 1, &m_fence_in_flight);
+
+	uint32_t image_index;
+	vkAcquireNextImageKHR(m_device->hDevice(), m_swap_chain->hSwapchain(), UINT64_MAX, m_semaphore_image_available, VK_NULL_HANDLE, &image_index);
+
+	vkResetCommandBuffer(m_command_buffer->hCommandBuffer(), 0);
+	m_command_buffer->recordCommandBuffer(image_index);
+
+	const VkSemaphore wait_semaphores[]      = {m_semaphore_image_available};
+	const VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+	const VkSemaphore signal_semaphores[]    = {m_semaphore_render_finished};
+
+	VkSubmitInfo submit_info;
+	submit_info.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submit_info.waitSemaphoreCount   = 1;
+	submit_info.pWaitSemaphores      = wait_semaphores;
+	submit_info.pWaitDstStageMask    = wait_stages;
+	submit_info.commandBufferCount   = 1;
+	submit_info.pCommandBuffers      = &t_command_buffer;
+	submit_info.signalSemaphoreCount = 1;
+	submit_info.pSignalSemaphores    = signal_semaphores;
+
+	if (vkQueueSubmit(t_graphics_queue, 1, &submit_info, m_fence_in_flight) != VK_SUCCESS)
+		throw std::runtime_error("err: Failed to submit draw command buffer!\n");
+
+	const VkSwapchainKHR swapchains[] = {t_swapchain};
+
+	VkPresentInfoKHR present_info;
+	present_info.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	present_info.waitSemaphoreCount = 1;
+	present_info.pWaitSemaphores    = signal_semaphores;
+	present_info.swapchainCount     = 1;
+	present_info.pSwapchains        = swapchains;
+	present_info.pImageIndices      = &image_index;
+	present_info.pResults           = nullptr;
+
+	vkQueuePresentKHR(t_present_queue, &present_info);
 }

@@ -160,6 +160,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="LavaCore.cpp" />
+    <ClCompile Include="src\lvc\CommandBuffer.cpp" />
+    <ClCompile Include="src\lvc\CommandPool.cpp" />
     <ClCompile Include="src\lvc\RenderPass.cpp" />
     <ClCompile Include="src\lvc\GraphicsPipeline.cpp" />
     <ClCompile Include="src\lvc\PhysicalDevice.cpp" />
@@ -172,6 +175,8 @@
     <ClCompile Include="src\lvc\Swapchain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="includes\lvc\CommandBuffer.hpp" />
+    <ClInclude Include="includes\lvc\CommandPool.hpp" />
     <ClInclude Include="includes\lvc\GraphicsPipeline.hpp" />
     <ClInclude Include="includes\lvc\Device.hpp" />
     <ClInclude Include="includes\lvc\DebugMessenger.hpp" />
@@ -182,6 +187,7 @@
     <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp" />
     <ClInclude Include="includes\lvc\PhysicalDevice.hpp" />
     <ClInclude Include="includes\lvc\RenderPass.hpp" />
+    <ClInclude Include="LavaCore.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />

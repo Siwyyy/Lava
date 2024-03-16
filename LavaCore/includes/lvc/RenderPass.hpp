@@ -16,7 +16,9 @@ namespace lvc
 		RenderPass() = delete;
 		~RenderPass();
 
-		inline VkRenderPass& rHandle() { return m_render_pass; }
+		inline VkRenderPass& hRenderPass() { return m_render_pass; }
+		inline const VkRenderPass& hRenderPass() const { return m_render_pass; }
+		inline const std::vector<VkFramebuffer>& hFramebuffers() const { return m_framebuffers; }
 
 		void createFrameBuffers();
 
