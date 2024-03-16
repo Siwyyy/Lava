@@ -10,7 +10,6 @@
 namespace lvc
 {
 	class Window;
-	class DeviceExtensions;
 
 	class PhysicalDevice
 	{

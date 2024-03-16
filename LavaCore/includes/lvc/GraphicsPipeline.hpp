@@ -14,9 +14,11 @@ namespace lvc
 	class GraphicsPipeline
 	{
 	public:
-		explicit GraphicsPipeline(Device* device, Swapchain* swapchain, RenderPass* render_pass);
+		GraphicsPipeline(Device* t_device, Swapchain* t_swapchain, RenderPass* t_render_pass);
 		GraphicsPipeline() = delete;
 		~GraphicsPipeline();
+
+		inline const VkPipeline& hPipeline() const { return m_pipeline; }
 
 	private:
 		VkDevice& m_device;

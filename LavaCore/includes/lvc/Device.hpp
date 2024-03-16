@@ -1,7 +1,6 @@
 #pragma once
 
 #include "lvc/Instance.hpp"
-#include "lvc/Window.hpp"
 
 #include <string>
 #include <vector>
@@ -9,8 +8,8 @@
 
 namespace lvc
 {
-	class DeviceExtensions;
 	class PhysicalDevice;
+	class Window;
 
 	class Device
 	{
@@ -21,6 +20,8 @@ namespace lvc
 		inline PhysicalDevice* physicalDevice() const { return m_physical_device; }
 		inline VkDevice& hDevice() { return m_device; }
 		inline const VkDevice& hDevice() const { return m_device; }
+		inline const VkQueue& hGraphicsQueue() const { return m_graphics_queue; }
+		inline const VkQueue& hPresentQueue() const { return m_present_queue; }
 
 	private:
 		Instance* m_instance;

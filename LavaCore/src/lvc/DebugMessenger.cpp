@@ -7,8 +7,8 @@
 using namespace lvc;
 
 DebugMessenger::DebugMessenger(Instance* instance)
-	: m_debug_messenger(VK_NULL_HANDLE)
-	, m_instance(instance)
+	: m_instance(instance)
+	, m_debug_messenger(VK_NULL_HANDLE)
 {
 	if (!Instance::validationLayersEnabled())
 		return;

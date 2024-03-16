@@ -12,9 +12,9 @@ Window::Window(const int& width,
 							 const int& height,
 							 const char* title,
 							 Instance* instance)
-	: m_window(nullptr)
+	: m_instance(instance)
+	, m_window(nullptr)
 	, m_surface(VK_NULL_HANDLE)
-	, m_instance(instance)
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);

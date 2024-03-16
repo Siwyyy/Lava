@@ -22,8 +22,8 @@ namespace lvc
 		inline const VkSurfaceKHR& hSurface() const { return m_surface; }
 
 	private:
+		Instance* m_instance;
 		GLFWwindow* m_window;
 		VkSurfaceKHR m_surface;
-		Instance* m_instance;
 	};
 }
