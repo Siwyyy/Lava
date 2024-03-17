@@ -160,7 +160,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="LavaCore.cpp" />
     <ClCompile Include="src\lvc\CommandBuffer.cpp" />
     <ClCompile Include="src\lvc\CommandPool.cpp" />
     <ClCompile Include="src\lvc\RenderPass.cpp" />
@@ -187,7 +186,6 @@
     <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp" />
     <ClInclude Include="includes\lvc\PhysicalDevice.hpp" />
     <ClInclude Include="includes\lvc\RenderPass.hpp" />
-    <ClInclude Include="LavaCore.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />
