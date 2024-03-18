@@ -12,7 +12,7 @@
 using namespace lvc;
 
 RenderPass::RenderPass(const Device* device, const Swapchain* swapchain)
-	: m_device(device->hDevice())
+	: m_device(device->hVkDevice())
 	, m_swapchain_extent_2d(swapchain->hExtent2d())
 	, m_swapchain_image_format(swapchain->hFormat())
 	, m_image_views(swapchain->hImageViews())

@@ -51,7 +51,7 @@
     <ClCompile Include="src\lvc\CommandBuffer.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="LavaCore.cpp">
+    <ClCompile Include="src\lvc\PhysicalDeviceManager.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,7 +92,7 @@
     <ClInclude Include="includes\lvc\CommandBuffer.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="LavaCore.hpp">
+    <ClInclude Include="includes\lvc\PhysicalDeviceManager.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

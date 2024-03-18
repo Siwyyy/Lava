@@ -12,17 +12,18 @@ namespace lvc
 	class Window
 	{
 	public:
-		Window(const int& width, const int& height, const char* title, Instance* instance);
+		Window(const int& width, const int& height, const char* title, const VkInstance& instance);
 		Window() = delete;
 		~Window();
 
-		inline GLFWwindow* hWindow() const { return m_window; }
+		inline GLFWwindow* hGlfwWindow() const { return m_window; }
 
-		inline VkSurfaceKHR& hSurface() { return m_surface; }
-		inline const VkSurfaceKHR& hSurface() const { return m_surface; }
+		inline VkSurfaceKHR& hVkSurface() { return m_surface; }
+		inline const VkSurfaceKHR& hVkSurface() const { return m_surface; }
 
 	private:
-		Instance* m_instance;
+		const VkInstance& m_instance;
+
 		GLFWwindow* m_window;
 		VkSurfaceKHR m_surface;
 	};

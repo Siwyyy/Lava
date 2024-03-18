@@ -11,30 +11,28 @@ namespace lvc
 	class PhysicalDevice;
 	class Window;
 
+	struct QueueFamilyIndices;
+
 	class Device
 	{
 	public:
-		Device(Instance* instance, Window* window);
+		Device(const VkPhysicalDevice& t_physical_device,
+					 const QueueFamilyIndices& t_queue_family_indices
+		);
 		~Device();
 
-		inline PhysicalDevice* physicalDevice() const { return m_physical_device; }
-		inline VkDevice& hDevice() { return m_device; }
-		inline const VkDevice& hDevice() const { return m_device; }
+		inline VkDevice& hVkDevice() { return m_device; }
+		inline const VkDevice& hVkDevice() const { return m_device; }
 		inline const VkQueue& hGraphicsQueue() const { return m_graphics_queue; }
 		inline const VkQueue& hPresentQueue() const { return m_present_queue; }
 
 	private:
-		Instance* m_instance;
-		Window* m_window;
+		// Out Refs
+		const VkPhysicalDevice& m_physical_device;
 
-		std::vector<PhysicalDevice*> m_physical_device_vec;
-		PhysicalDevice* m_physical_device;
-
+		// Members
 		VkDevice m_device;
-
 		VkQueue m_graphics_queue;
 		VkQueue m_present_queue;
-
-		void pickPhysicalDevice();
 	};
 }

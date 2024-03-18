@@ -16,7 +16,7 @@ CommandBuffer::CommandBuffer(const CommandPool* t_command_pool,
 														 const Swapchain* t_swapchain,
 														 const GraphicsPipeline* t_graphics_pipeline)
 	: m_command_pool(t_command_pool->hCommandPool())
-	, m_device(t_device->hDevice())
+	, m_device(t_device->hVkDevice())
 	, m_render_pass(t_render_pass->hRenderPass())
 	, m_framebuffers(t_render_pass->hFramebuffers())
 	, m_pipeline(t_graphics_pipeline->hPipeline())

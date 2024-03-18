@@ -11,12 +11,12 @@
 using namespace lvc;
 
 Swapchain::Swapchain(Device* device, Window* window)
-	: m_device(device->hDevice())
-	, m_physical_device(device->physicalDevice()->physical())
-	, m_window(window->hWindow())
-	, m_surface(window->hSurface())
-	, m_graphics_family(device->physicalDevice()->indices()->graphics_family.value())
-	, m_present_family(device->physicalDevice()->indices()->present_family.value())
+	: m_device(device->hVkDevice())
+	, m_physical_device(device->physicalDevice()->hVkPhysicalDevice())
+	, m_window(window->hGlfwWindow())
+	, m_surface(window->hVkSurface())
+	, m_graphics_family(device->physicalDevice()->hIndices()->graphics_family.value())
+	, m_present_family(device->physicalDevice()->hIndices()->present_family.value())
 {
 	querySwapchainSupport();
 	setExtent2D();

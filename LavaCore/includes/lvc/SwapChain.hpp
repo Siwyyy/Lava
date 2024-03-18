@@ -6,11 +6,6 @@
 
 namespace lvc
 {
-	struct QueueFamilyIndices;
-}
-
-namespace lvc
-{
 	class Device;
 	class Window;
 

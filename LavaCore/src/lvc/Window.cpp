@@ -11,7 +11,7 @@ using namespace lvc;
 Window::Window(const int& width,
 							 const int& height,
 							 const char* title,
-							 Instance* instance)
+							 const VkInstance& instance)
 	: m_instance(instance)
 	, m_window(nullptr)
 	, m_surface(VK_NULL_HANDLE)
@@ -21,13 +21,13 @@ Window::Window(const int& width,
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	m_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
 
-	if (glfwCreateWindowSurface(m_instance->handle(), m_window, nullptr, &m_surface) != VK_SUCCESS)
+	if (glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surface) != VK_SUCCESS)
 		throw std::runtime_error("err: Unable to create window surface!\n");
 }
 
 Window::~Window()
 {
-	vkDestroySurfaceKHR(m_instance->handle(), m_surface, nullptr);
+	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 	std::clog << "Successfully destroyed surface\n";
 
 	glfwTerminate();

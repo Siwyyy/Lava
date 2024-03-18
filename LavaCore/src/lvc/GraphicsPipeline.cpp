@@ -11,7 +11,7 @@
 using namespace lvc;
 
 GraphicsPipeline::GraphicsPipeline(Device* t_device, Swapchain* t_swapchain, RenderPass* t_render_pass)
-	: m_device(t_device->hDevice())
+	: m_device(t_device->hVkDevice())
 	, m_swapchain_extent(t_swapchain->hExtent2d())
 	, m_render_pass(t_render_pass->hRenderPass())
 {
