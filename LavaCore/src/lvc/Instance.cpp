@@ -1,6 +1,8 @@
 #include "lvc/Instance.hpp"
 
 #include "lvc/DebugMessenger.hpp"
+#include "lvc/Device.hpp"
+#include "lvc/Window.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
@@ -8,6 +10,9 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
+
+#include "lvc/PhysicalDevice.hpp"
+#include "lvc/PhysicalDeviceManager.hpp"
 
 using namespace lvc;
 
@@ -17,9 +22,15 @@ const bool Instance::validation_layers_enabled = false;
 const bool Instance::validation_layers_enabled = true;
 #endif
 
-Instance::Instance(const char* app_name, const char* engine_name)
-	: m_instance(VK_NULL_HANDLE)
+constexpr int WIDTH  = 800;
+constexpr int HEIGHT = 600;
 
+Instance::Instance(const char* t_app_name, const char* t_engine_name)
+	: m_instance(VK_NULL_HANDLE)
+	, m_debug_messenger(new DebugMessenger(m_instance))
+	, m_window(new Window(WIDTH, HEIGHT, "LavaCore - Test", m_instance))
+	, m_physical_device_manager(new PhysicalDeviceManager(m_instance))
+	, m_device(new Device(m_physical_device_manager->hPhysicalDevice()->hVkPhysicalDevice(), m_physical_device_manager->hPhysicalDevice()->hIndices()))
 {
 	setupExtensions();
 
@@ -29,9 +40,9 @@ Instance::Instance(const char* app_name, const char* engine_name)
 
 	VkApplicationInfo app_info{};
 	app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	app_info.pApplicationName   = app_name;
+	app_info.pApplicationName   = t_app_name;
 	app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-	app_info.pEngineName        = engine_name;
+	app_info.pEngineName        = t_engine_name;
 	app_info.engineVersion      = VK_MAKE_VERSION(1, 0, 0);
 	app_info.apiVersion         = VK_API_VERSION_1_3;
 
@@ -63,9 +74,9 @@ Instance::Instance(const char* app_name, const char* engine_name)
 
 Instance::~Instance()
 {
-	std::clog << "--- --- ---\n";
+	delete m_window;
+	delete m_debug_messenger;
 	vkDestroyInstance(m_instance, nullptr);
-	std::clog << "--- --- ---\n";
 	std::clog << "Successfully destroyed instance\n";
 }
 

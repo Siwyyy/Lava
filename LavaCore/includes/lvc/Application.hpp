@@ -9,9 +9,6 @@ namespace lvc
 namespace lvc
 {
 	class Instance;
-	class DebugMessenger;
-	class Window;
-	class Device;
 	class Swapchain;
 	class RenderPass;
 	class GraphicsPipeline;
@@ -26,15 +23,12 @@ namespace lvc
 		void run();
 
 	private:
-		Instance* m_instance;
-		DebugMessenger* m_debug_messenger;
-		Window* m_window;
-		Device* m_device;
-		Swapchain* m_swap_chain;
-		RenderPass* m_render_pass;
-		GraphicsPipeline* m_graphics_pipeline;
-		CommandPool* m_command_pool;
-		CommandBuffer* m_command_buffer;
+		Instance* const m_instance;
+		Swapchain* const m_swap_chain;
+		RenderPass* const m_render_pass;
+		GraphicsPipeline* const m_graphics_pipeline;
+		CommandPool* const m_command_pool;
+		CommandBuffer* const m_command_buffer;
 
 		VkSemaphore m_semaphore_image_available;
 		VkSemaphore m_semaphore_render_finished;

@@ -14,14 +14,8 @@
 
 using namespace lvc;
 
-constexpr int WIDTH  = 800;
-constexpr int HEIGHT = 600;
-
 Application::Application()
 	: m_instance(new Instance("LavaCore", "No Engine"))
-	, m_debug_messenger(new DebugMessenger(m_instance))
-	, m_window(new Window(WIDTH, HEIGHT, "LavaCore - Test", m_instance))
-	, m_device(new Device(m_instance, m_window))
 	, m_swap_chain(new Swapchain(m_device, m_window))
 	, m_render_pass(new RenderPass(m_device, m_swap_chain))
 	, m_graphics_pipeline(new GraphicsPipeline(m_device, m_swap_chain, m_render_pass))
@@ -34,31 +28,27 @@ Application::~Application()
 	vkDestroySemaphore(m_device->hDevice(), m_semaphore_render_finished, nullptr);
 	vkDestroyFence(m_device->hDevice(), m_fence_in_flight, nullptr);
 
-	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
 	delete m_command_pool;
 	delete m_command_buffer;
 	delete m_graphics_pipeline;
 	delete m_render_pass;
 	delete m_swap_chain;
-	delete m_window;
 	delete m_device;
-	delete m_debug_messenger;
 	delete m_instance;
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
 }
 
 void Application::run()
 {
-	createSyncObjects(m_device->hDevice());
+	//createSyncObjects(m_device->hVkDevice());
 	mainLoop();
 }
 
 void Application::mainLoop() const
 {
-	while (!glfwWindowShouldClose(m_window->hWindow()))
+	while (!glfwWindowShouldClose(m_instance->hWindow().hGlfwWindow()))
 	{
 		glfwPollEvents();
-		draw(m_device->hDevice(), m_command_buffer->hCommandBuffer(), m_device->hGraphicsQueue(), m_device->hPresentQueue(), m_swap_chain->hSwapchain());
+		//draw(m_device->hVkDevice(), m_command_buffer->hCommandBuffer(), m_device->hGraphicsQueue(), m_device->hPresentQueue(), m_swap_chain->hSwapchain());
 	}
 }
 

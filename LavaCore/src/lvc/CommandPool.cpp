@@ -8,8 +8,8 @@
 using namespace lvc;
 
 CommandPool::CommandPool(const Device* t_device)
-	: m_device(t_device->hDevice())
-	, m_indices(t_device->physicalDevice()->indices())
+	: m_device(t_device->hVkDevice())
+	, m_indices(t_device->physicalDevice()->hIndices())
 {
 	VkCommandPoolCreateInfo command_pool_create_info;
 	command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

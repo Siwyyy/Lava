@@ -5,21 +5,32 @@
 
 namespace lvc
 {
+	class PhysicalDeviceManager;
+	class Device;
+	class Window;
+	class DebugMessenger;
+
 	class Instance
 	{
 	public:
-		Instance(const char* app_name, const char* engine_name);
+		Instance(const char* t_app_name, const char* t_engine_name);
 		Instance() = delete;
 		~Instance();
 
-		inline const VkInstance& handle() const { return m_instance; }
+		inline const VkInstance& hVkInstance() const { return m_instance; }
+		inline const Window& hWindow() const { return *m_window; }
 
-		static inline bool validationLayersEnabled() { return validation_layers_enabled; }
+		inline static bool validationLayersEnabled() { return validation_layers_enabled; }
 
 		inline static const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
 
 	private:
 		VkInstance m_instance;
+
+		DebugMessenger* const m_debug_messenger;
+		Window* const m_window;
+		PhysicalDeviceManager* const m_physical_device_manager;
+		Device* const m_device;
 
 		std::vector<const char*> m_available_extensions{};
 		std::vector<const char*> m_required_extensions{};

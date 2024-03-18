@@ -160,6 +160,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\lvc\PhysicalDeviceManager.cpp" />
     <ClCompile Include="src\lvc\CommandBuffer.cpp" />
     <ClCompile Include="src\lvc\CommandPool.cpp" />
     <ClCompile Include="src\lvc\RenderPass.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp" />
     <ClInclude Include="includes\lvc\PhysicalDevice.hpp" />
     <ClInclude Include="includes\lvc\RenderPass.hpp" />
+    <ClInclude Include="includes\lvc\PhysicalDeviceManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />

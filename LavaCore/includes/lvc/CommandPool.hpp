@@ -5,7 +5,7 @@
 namespace lvc
 {
 	class Device;
-	class QueueFamilyIndices;
+	struct QueueFamilyIndices;
 
 	class CommandPool
 	{
