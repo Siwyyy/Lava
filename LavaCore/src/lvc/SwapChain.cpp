@@ -1,8 +1,6 @@
 #include "lvc/Swapchain.hpp"
 
-#include "lvc/Device.hpp"
-#include "lvc/PhysicalDevice.hpp"
-#include "lvc/Window.hpp"
+#include "lvc/QueueFamilyIndices.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -10,13 +8,17 @@
 
 using namespace lvc;
 
-Swapchain::Swapchain(Device* device, Window* window)
-	: m_device(device->hVkDevice())
-	, m_physical_device(device->physicalDevice()->hVkPhysicalDevice())
-	, m_window(window->hGlfwWindow())
-	, m_surface(window->hVkSurface())
-	, m_graphics_family(device->physicalDevice()->hIndices()->graphics_family.value())
-	, m_present_family(device->physicalDevice()->hIndices()->present_family.value())
+Swapchain::Swapchain(const VkDevice& t_device,
+										 const VkPhysicalDevice& t_physical_device,
+										 GLFWwindow& t_window,
+										 const VkSurfaceKHR& t_surface,
+										 const QueueFamilyIndices& t_indices)
+	: m_device(t_device)
+	, m_physical_device(t_physical_device)
+	, m_window(t_window)
+	, m_surface(t_surface)
+	, m_graphics_family(t_indices.graphics.value())
+	, m_present_family(t_indices.present.value())
 {
 	querySwapchainSupport();
 	setExtent2D();
@@ -64,7 +66,7 @@ void Swapchain::setExtent2D()
 	}
 
 	int width_int, height_int;
-	glfwGetFramebufferSize(m_window, &width_int, &height_int);
+	glfwGetFramebufferSize(&m_window, &width_int, &height_int);
 
 	const uint32_t width = std::clamp(static_cast<uint32_t>(width_int),
 																		m_surface_capabilities.minImageExtent.width,

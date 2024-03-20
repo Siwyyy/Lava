@@ -33,7 +33,7 @@
     <ClCompile Include="src\lvc\Swapchain.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\lvc\PhysicalDevice.cpp">
+    <ClCompile Include="src\lvc\Gpu.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\lvc\DebugMessenger.cpp">
@@ -51,7 +51,7 @@
     <ClCompile Include="src\lvc\CommandBuffer.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\lvc\PhysicalDeviceManager.cpp">
+    <ClCompile Include="src\lvc\GpuManager.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,7 +77,7 @@
     <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="includes\lvc\PhysicalDevice.hpp">
+    <ClInclude Include="includes\lvc\Gpu.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="includes\lvc\GraphicsPipeline.hpp">
@@ -92,7 +92,7 @@
     <ClInclude Include="includes\lvc\CommandBuffer.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="includes\lvc\PhysicalDeviceManager.hpp">
+    <ClInclude Include="includes\lvc\GpuManager.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

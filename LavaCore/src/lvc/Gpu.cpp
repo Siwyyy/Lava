@@ -1,4 +1,4 @@
-#include "lvc/PhysicalDevice.hpp"
+#include "lvc/Gpu.hpp"
 
 #include "lvc/Window.hpp"
 
@@ -6,29 +6,29 @@
 
 using namespace lvc;
 
-PhysicalDevice::PhysicalDevice(const VkPhysicalDevice* t_physical_device, const Window& t_window)
-	: m_physical_device(*t_physical_device)
+Gpu::Gpu(const VkPhysicalDevice t_physical_device, const VkSurfaceKHR& t_surface)
+	: m_physical_device(t_physical_device)
 {
 	VkPhysicalDeviceProperties device_properties;
 	vkGetPhysicalDeviceProperties(m_physical_device, &device_properties);
 	m_name.append_range(device_properties.deviceName);
 	queryExtensions();
 	checkExtensionSupport();
-	findQueueFamilies(t_window.hVkSurface());
+	findQueueFamilies(t_surface);
 
-	rateDeviceSuitability(t_window);
+	rateDeviceSuitability();
 }
 
-void PhysicalDevice::logDeviceExtensions() const
+void Gpu::logDeviceExtensions() const
 {
-	std::clog << "Available device extensions:\n";
+	std::clog << "\tAvailable device extensions:\n";
 	for (const auto& extension : m_available_extensions)
 		std::clog << extension << '\n';
 }
 
-void PhysicalDevice::logRequiredExtensions() const
+void Gpu::logRequiredExtensions() const
 {
-	std::clog << "Required device extensions:\n";
+	std::clog << "\tRequired device extensions:\n";
 	for (const auto& required : required_extensions)
 	{
 		bool found = false;
@@ -47,18 +47,20 @@ void PhysicalDevice::logRequiredExtensions() const
 	}
 }
 
-void PhysicalDevice::logInfo() const
+void Gpu::logInfo() const
 {
-	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
 	std::cout << "GPU: " << m_name << '\n';
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
-	// logDeviceExtensions();
-	// std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
-	logRequiredExtensions();
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
 }
 
-void PhysicalDevice::queryExtensions()
+void Gpu::logFullInfo() const
+{
+	std::cout << "GPU: " << m_name << '\n';
+	std::cout << "Score: " << m_score << '\n';
+	logDeviceExtensions();
+	logRequiredExtensions();
+}
+
+void Gpu::queryExtensions()
 {
 	uint32_t extension_count;
 	vkEnumerateDeviceExtensionProperties(m_physical_device, nullptr, &extension_count, nullptr);
@@ -72,7 +74,7 @@ void PhysicalDevice::queryExtensions()
 	}
 }
 
-void PhysicalDevice::checkExtensionSupport()
+void Gpu::checkExtensionSupport()
 {
 	uint32_t found = 0;
 	for (const auto& required : required_extensions)
@@ -85,7 +87,7 @@ void PhysicalDevice::checkExtensionSupport()
 	m_extensions_good = found == required_extensions.size();
 }
 
-void PhysicalDevice::rateDeviceSuitability(const Window& window)
+void Gpu::rateDeviceSuitability()
 {
 	VkPhysicalDeviceProperties device_properties;
 	VkPhysicalDeviceFeatures device_features;
@@ -102,7 +104,7 @@ void PhysicalDevice::rateDeviceSuitability(const Window& window)
 		m_score = 0;
 }
 
-void PhysicalDevice::findQueueFamilies(const VkSurfaceKHR surface)
+void Gpu::findQueueFamilies(const VkSurfaceKHR& t_surface)
 {
 	// Get queue families
 	uint32_t family_count;
@@ -118,13 +120,13 @@ void PhysicalDevice::findQueueFamilies(const VkSurfaceKHR surface)
 
 		//  Check for graphics support
 		if (family.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-			m_indices.graphics_family = i;
+			m_indices.graphics = i;
 
-		// Check for surface presentation support
+		// Check for t_surface presentation support
 		VkBool32 present_support = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(m_physical_device, i, surface, &present_support);
+		vkGetPhysicalDeviceSurfaceSupportKHR(m_physical_device, i, t_surface, &present_support);
 		if (present_support)
-			m_indices.present_family = i;
+			m_indices.present = i;
 
 		found = m_indices.isComplete();
 	}

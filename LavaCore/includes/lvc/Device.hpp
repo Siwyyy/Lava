@@ -1,14 +1,10 @@
 #pragma once
 
-#include "lvc/Instance.hpp"
-
-#include <string>
-#include <vector>
 #include <vulkan/vulkan.h>
 
 namespace lvc
 {
-	class PhysicalDevice;
+	class Gpu;
 	class Window;
 
 	struct QueueFamilyIndices;
@@ -17,8 +13,8 @@ namespace lvc
 	{
 	public:
 		Device(const VkPhysicalDevice& t_physical_device,
-					 const QueueFamilyIndices& t_queue_family_indices
-		);
+					 const QueueFamilyIndices& t_queue_family_indices);
+		Device() = delete;
 		~Device();
 
 		inline VkDevice& hVkDevice() { return m_device; }

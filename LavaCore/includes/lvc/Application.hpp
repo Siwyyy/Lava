@@ -3,16 +3,16 @@
 
 namespace lvc
 {
-	class CommandBuffer;
-}
-
-namespace lvc
-{
 	class Instance;
+	class DebugMessenger;
+	class Window;
+	class GpuManager;
+	class Device;
 	class Swapchain;
 	class RenderPass;
 	class GraphicsPipeline;
 	class CommandPool;
+	class CommandBuffer;
 
 	class Application
 	{
@@ -24,6 +24,10 @@ namespace lvc
 
 	private:
 		Instance* const m_instance;
+		DebugMessenger* const m_debug_messenger;
+		Window* const m_window;
+		GpuManager* const m_gpu_manager;
+		Device* const m_device;
 		Swapchain* const m_swap_chain;
 		RenderPass* const m_render_pass;
 		GraphicsPipeline* const m_graphics_pipeline;

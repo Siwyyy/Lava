@@ -6,20 +6,18 @@
 
 namespace lvc
 {
+	struct QueueFamilyIndices;
 	class Device;
 	class Window;
-
-	struct SwapchainSupportDetails
-	{
-		VkSurfaceCapabilitiesKHR capabilities;
-		std::vector<VkSurfaceFormatKHR> formats;
-		std::vector<VkPresentModeKHR> present_modes;
-	};
 
 	class Swapchain
 	{
 	public:
-		Swapchain(Device* device, Window* window);
+		Swapchain(const VkDevice& t_device,
+							const VkPhysicalDevice& t_physical_device,
+							GLFWwindow& t_window,
+							const VkSurfaceKHR& t_surface,
+							const QueueFamilyIndices& t_indices);
 		Swapchain() = delete;
 		~Swapchain();
 
@@ -30,13 +28,13 @@ namespace lvc
 		inline const std::vector<VkImageView>& hImageViews() const { return m_image_views; }
 
 	private:
-		VkDevice& m_device;
-		VkPhysicalDevice& m_physical_device;
-		GLFWwindow* m_window;
-		VkSurfaceKHR& m_surface;
+		const VkDevice& m_device;
+		const VkPhysicalDevice& m_physical_device;
+		GLFWwindow& m_window;
+		const VkSurfaceKHR& m_surface;
 
-		uint32_t m_graphics_family;
-		uint32_t m_present_family;
+		const uint32_t m_graphics_family;
+		const uint32_t m_present_family;
 
 		VkSurfaceCapabilitiesKHR m_surface_capabilities;
 		std::vector<VkSurfaceFormatKHR> m_surface_formats;

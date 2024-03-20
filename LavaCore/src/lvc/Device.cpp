@@ -1,7 +1,7 @@
 #include "lvc/Device.hpp"
 
+#include "lvc/Gpu.hpp"
 #include "lvc/Instance.hpp"
-#include "lvc/PhysicalDevice.hpp"
 #include "lvc/Window.hpp"
 
 #include <algorithm>
@@ -20,8 +20,8 @@ Device::Device(const VkPhysicalDevice& t_physical_device,
 	, m_present_queue(VK_NULL_HANDLE)
 {
 	// Setup queue families
-	const std::set<uint32_t> unique_queue_families = {t_queue_family_indices.graphics_family.value(),
-																										t_queue_family_indices.present_family.value()};
+	const std::set<uint32_t> unique_queue_families = {t_queue_family_indices.graphics.value(),
+																										t_queue_family_indices.present.value()};
 
 	std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
 	constexpr float priority = 1.0f;
@@ -44,8 +44,8 @@ Device::Device(const VkPhysicalDevice& t_physical_device,
 	create_info.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size());
 	create_info.pQueueCreateInfos       = queue_create_infos.data();
 	create_info.pEnabledFeatures        = nullptr;
-	create_info.enabledExtensionCount   = static_cast<uint32_t>(PhysicalDevice::required_extensions.size());
-	create_info.ppEnabledExtensionNames = PhysicalDevice::required_extensions.data();
+	create_info.enabledExtensionCount   = static_cast<uint32_t>(Gpu::required_extensions.size());
+	create_info.ppEnabledExtensionNames = Gpu::required_extensions.data();
 
 	if (Instance::validationLayersEnabled())
 	{
@@ -59,8 +59,8 @@ Device::Device(const VkPhysicalDevice& t_physical_device,
 		throw std::runtime_error("err: Failed to create logical device!\n");
 
 	// Get handles for graphics and presentation queues
-	vkGetDeviceQueue(m_device, t_queue_family_indices.graphics_family.value(), 0, &m_graphics_queue);
-	vkGetDeviceQueue(m_device, t_queue_family_indices.present_family.value(), 0, &m_present_queue);
+	vkGetDeviceQueue(m_device, t_queue_family_indices.graphics.value(), 0, &m_graphics_queue);
+	vkGetDeviceQueue(m_device, t_queue_family_indices.present.value(), 0, &m_present_queue);
 }
 
 Device::~Device()

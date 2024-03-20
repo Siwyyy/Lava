@@ -4,6 +4,8 @@
 #include "lvc/CommandPool.hpp"
 #include "lvc/DebugMessenger.hpp"
 #include "lvc/Device.hpp"
+#include "lvc/Gpu.hpp"
+#include "lvc/GpuManager.hpp"
 #include "lvc/GraphicsPipeline.hpp"
 #include "lvc/Instance.hpp"
 #include "lvc/RenderPass.hpp"
@@ -14,19 +16,29 @@
 
 using namespace lvc;
 
+constexpr int WIDTH  = 800;
+constexpr int HEIGHT = 600;
+
 Application::Application()
 	: m_instance(new Instance("LavaCore", "No Engine"))
-	, m_swap_chain(new Swapchain(m_device, m_window))
-	, m_render_pass(new RenderPass(m_device, m_swap_chain))
+	, m_debug_messenger(new DebugMessenger(m_instance->hVkInstance()))
+	, m_window(new Window(WIDTH, HEIGHT, "LavaCore - Test", m_instance->hVkInstance()))
+	, m_gpu_manager(new GpuManager(m_instance->hVkInstance(), m_window->hVkSurface()))
+	, m_device(new Device(m_gpu_manager->hGpu()->hVkPhysicalDevice(), m_gpu_manager->hGpu()->hIndices()))
+	, m_swap_chain(new Swapchain(m_device->hVkDevice(), m_gpu_manager->hGpu()->hVkPhysicalDevice(), m_window->hGlfwWindow(), m_window->hVkSurface(), m_gpu_manager->hGpu()->hIndices()))
+	, m_render_pass(new RenderPass(m_device->hVkDevice(), m_swap_chain->hExtent2d(), m_swap_chain->hFormat(), m_swap_chain->hImageViews()))
 	, m_graphics_pipeline(new GraphicsPipeline(m_device, m_swap_chain, m_render_pass))
-	, m_command_pool(new CommandPool(m_device))
-	, m_command_buffer(new CommandBuffer(m_command_pool, m_device, m_render_pass, m_swap_chain, m_graphics_pipeline)) {}
+	, m_command_pool(new CommandPool(m_device->hVkDevice(), m_gpu_manager->hGpu()->hIndices()))
+	, m_command_buffer(new CommandBuffer(m_command_pool, m_device, m_render_pass, m_swap_chain, m_graphics_pipeline))
+	, m_semaphore_image_available(nullptr)
+	, m_semaphore_render_finished(nullptr)
+	, m_fence_in_flight(nullptr) {}
 
 Application::~Application()
 {
-	vkDestroySemaphore(m_device->hDevice(), m_semaphore_image_available, nullptr);
-	vkDestroySemaphore(m_device->hDevice(), m_semaphore_render_finished, nullptr);
-	vkDestroyFence(m_device->hDevice(), m_fence_in_flight, nullptr);
+	vkDestroySemaphore(m_device->hVkDevice(), m_semaphore_image_available, nullptr);
+	vkDestroySemaphore(m_device->hVkDevice(), m_semaphore_render_finished, nullptr);
+	vkDestroyFence(m_device->hVkDevice(), m_fence_in_flight, nullptr);
 
 	delete m_command_pool;
 	delete m_command_buffer;
@@ -34,21 +46,23 @@ Application::~Application()
 	delete m_render_pass;
 	delete m_swap_chain;
 	delete m_device;
+	delete m_window;
+	delete m_debug_messenger;
 	delete m_instance;
 }
 
 void Application::run()
 {
-	//createSyncObjects(m_device->hVkDevice());
+	createSyncObjects(m_device->hVkDevice());
 	mainLoop();
 }
 
 void Application::mainLoop() const
 {
-	while (!glfwWindowShouldClose(m_instance->hWindow().hGlfwWindow()))
+	while (!glfwWindowShouldClose(&m_window->hGlfwWindow()))
 	{
 		glfwPollEvents();
-		//draw(m_device->hVkDevice(), m_command_buffer->hCommandBuffer(), m_device->hGraphicsQueue(), m_device->hPresentQueue(), m_swap_chain->hSwapchain());
+		draw(m_device->hVkDevice(), m_command_buffer->hCommandBuffer(), m_device->hGraphicsQueue(), m_device->hPresentQueue(), m_swap_chain->hSwapchain());
 	}
 }
 
@@ -80,7 +94,7 @@ void Application::draw(const VkDevice& t_device,
 	vkResetFences(t_device, 1, &m_fence_in_flight);
 
 	uint32_t image_index;
-	vkAcquireNextImageKHR(m_device->hDevice(), m_swap_chain->hSwapchain(), UINT64_MAX, m_semaphore_image_available, VK_NULL_HANDLE, &image_index);
+	vkAcquireNextImageKHR(m_device->hVkDevice(), m_swap_chain->hSwapchain(), UINT64_MAX, m_semaphore_image_available, VK_NULL_HANDLE, &image_index);
 
 	vkResetCommandBuffer(m_command_buffer->hCommandBuffer(), 0);
 	m_command_buffer->recordCommandBuffer(image_index);

@@ -12,7 +12,10 @@ namespace lvc
 	class RenderPass
 	{
 	public:
-		RenderPass(const Device* device, const Swapchain* swapchain);
+		RenderPass(const VkDevice& t_device,
+							 const VkExtent2D& t_extent_2d,
+							 const VkFormat& t_format,
+							 const std::vector<VkImageView>& t_image_views);
 		RenderPass() = delete;
 		~RenderPass();
 

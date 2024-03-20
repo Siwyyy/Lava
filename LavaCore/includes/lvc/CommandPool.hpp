@@ -10,14 +10,16 @@ namespace lvc
 	class CommandPool
 	{
 	public:
-		explicit CommandPool(const Device* t_device);
+		CommandPool(const VkDevice& t_device,
+								const QueueFamilyIndices& t_indices);
+		CommandPool() = delete;
 		~CommandPool();
 
 		inline const VkCommandPool& hCommandPool() const { return m_pool; }
 
 	private:
 		const VkDevice& m_device;
-		const QueueFamilyIndices* m_indices;
+		const QueueFamilyIndices& m_indices;
 
 		VkCommandPool m_pool;
 	};

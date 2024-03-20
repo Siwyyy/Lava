@@ -1,19 +1,19 @@
 #include "lvc/CommandPool.hpp"
 
-#include "lvc/PhysicalDevice.hpp"
+#include "lvc/Gpu.hpp"
 
 #include <iostream>
 #include <stdexcept>
 
 using namespace lvc;
 
-CommandPool::CommandPool(const Device* t_device)
-	: m_device(t_device->hVkDevice())
-	, m_indices(t_device->physicalDevice()->hIndices())
+CommandPool::CommandPool(const VkDevice& t_device, const QueueFamilyIndices& t_indices)
+	: m_device(t_device)
+	, m_indices(t_indices)
 {
 	VkCommandPoolCreateInfo command_pool_create_info;
 	command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	command_pool_create_info.queueFamilyIndex = m_indices->graphics_family.value();
+	command_pool_create_info.queueFamilyIndex = m_indices.graphics.value();
 	command_pool_create_info.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 	command_pool_create_info.pNext            = nullptr;
 
