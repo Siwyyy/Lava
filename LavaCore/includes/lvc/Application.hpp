@@ -3,10 +3,12 @@
 
 namespace lvc
 {
+	
 	class Instance;
 	class DebugMessenger;
 	class Window;
 	class GpuManager;
+	class Gpu;
 	class Device;
 	class Swapchain;
 	class RenderPass;
@@ -27,8 +29,9 @@ namespace lvc
 		DebugMessenger* const m_debug_messenger;
 		Window* const m_window;
 		GpuManager* const m_gpu_manager;
+		Gpu* const m_gpu;
 		Device* const m_device;
-		Swapchain* const m_swap_chain;
+		Swapchain* const m_swapchain;
 		RenderPass* const m_render_pass;
 		GraphicsPipeline* const m_graphics_pipeline;
 		CommandPool* const m_command_pool;

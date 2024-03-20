@@ -1,19 +1,21 @@
 #include "lvc/GraphicsPipeline.hpp"
 
-#include "lvc/Device.hpp"
-#include "lvc/Swapchain.hpp"
+#include "lvc/RenderPass.hpp"
+
+#include <vulkan/vulkan.h>
 
 #include <fstream>
 #include <iostream>
 
-#include "lvc/RenderPass.hpp"
-
 using namespace lvc;
 
-GraphicsPipeline::GraphicsPipeline(Device* t_device, Swapchain* t_swapchain, RenderPass* t_render_pass)
-	: m_device(t_device->hVkDevice())
-	, m_swapchain_extent(t_swapchain->hExtent2d())
-	, m_render_pass(t_render_pass->hRenderPass())
+GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
+																	 const VkExtent2D& t_swapchain_extent,
+																	 const VkRenderPass& t_render_pass,
+																	 RenderPass* const t_rpass)
+	: m_device(t_device)
+	, m_swapchain_extent(t_swapchain_extent)
+	, m_render_pass(t_render_pass)
 {
 	const auto vert_shader_code = readShaderFile("shaders/basic.vert.spv");
 	const auto frag_shader_code = readShaderFile("shaders/basic.frag.spv");
@@ -148,7 +150,7 @@ GraphicsPipeline::GraphicsPipeline(Device* t_device, Swapchain* t_swapchain, Ren
 	if (vkCreateGraphicsPipelines(m_device,VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &m_pipeline) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to create graphics pipeline!\n");
 
-	t_render_pass->createFrameBuffers();
+	t_rpass->createFrameBuffers();
 }
 
 GraphicsPipeline::~GraphicsPipeline()

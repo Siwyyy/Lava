@@ -1,26 +1,21 @@
 #include "lvc/CommandBuffer.hpp"
 
-#include "lvc/CommandPool.hpp"
-#include "lvc/Device.hpp"
-#include "lvc/GraphicsPipeline.hpp"
-#include "lvc/RenderPass.hpp"
-#include "lvc/Swapchain.hpp"
-
 #include <stdexcept>
 
 using namespace lvc;
 
-CommandBuffer::CommandBuffer(const CommandPool* t_command_pool,
-														 const Device* t_device,
-														 const RenderPass* t_render_pass,
-														 const Swapchain* t_swapchain,
-														 const GraphicsPipeline* t_graphics_pipeline)
-	: m_command_pool(t_command_pool->hCommandPool())
-	, m_device(t_device->hVkDevice())
-	, m_render_pass(t_render_pass->hRenderPass())
-	, m_framebuffers(t_render_pass->hFramebuffers())
-	, m_pipeline(t_graphics_pipeline->hPipeline())
-	, m_extent_2d(t_swapchain->hExtent2d())
+CommandBuffer::CommandBuffer(const VkCommandPool& t_command_pool,
+														 const VkDevice& t_device,
+														 const VkRenderPass& t_render_pass,
+														 const std::vector<VkFramebuffer>& t_framebuffers,
+														 const VkPipeline& t_pipeline,
+														 const VkExtent2D& t_extent_2d)
+	: m_command_pool(t_command_pool)
+	, m_device(t_device)
+	, m_render_pass(t_render_pass)
+	, m_framebuffers(t_framebuffers)
+	, m_pipeline(t_pipeline)
+	, m_extent_2d(t_extent_2d)
 {
 	VkCommandBufferAllocateInfo command_buffer_allocate_info;
 	command_buffer_allocate_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -54,7 +49,7 @@ void CommandBuffer::recordCommandBuffer(const uint32_t t_image_index) const
 	render_pass_begin_info.clearValueCount   = 1;
 	render_pass_begin_info.pClearValues      = &clear_value;
 	vkCmdBeginRenderPass(m_command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-	
+
 	vkCmdBindPipeline(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
 	VkViewport viewport;
