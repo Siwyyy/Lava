@@ -15,7 +15,7 @@ namespace lvc
 												const VkSurfaceKHR& t_surface);
 		~GpuManager() = default;
 
-		inline const Gpu* hGpu() const { return m_gpu; }
+		inline Gpu* hGpu() const { return m_gpu; }
 
 	private:
 		// Members

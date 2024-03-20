@@ -15,11 +15,12 @@ namespace lvc
 	class CommandBuffer
 	{
 	public:
-		CommandBuffer(const CommandPool* t_command_pool,
-									const Device* t_device,
-									const RenderPass* t_render_pass,
-									const Swapchain* t_swapchain,
-									const GraphicsPipeline* t_graphics_pipeline);
+		CommandBuffer(const VkCommandPool& t_command_pool,
+									const VkDevice& t_device,
+									const VkRenderPass& t_render_pass,
+									const std::vector<VkFramebuffer>& t_framebuffers,
+									const VkPipeline& t_pipeline,
+									const VkExtent2D& t_extent_2d);
 
 		inline VkCommandBuffer& hCommandBuffer() { return m_command_buffer; }
 
