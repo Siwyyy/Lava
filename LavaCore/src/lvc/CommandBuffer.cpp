@@ -54,7 +54,7 @@ void CommandBuffer::recordCommandBuffer(const uint32_t t_image_index) const
 	render_pass_begin_info.clearValueCount   = 1;
 	render_pass_begin_info.pClearValues      = &clear_value;
 	vkCmdBeginRenderPass(m_command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
-
+	
 	vkCmdBindPipeline(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
 	VkViewport viewport;

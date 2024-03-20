@@ -11,11 +11,13 @@ namespace lvc
 {
 	class Window;
 
-	class PhysicalDevice
+	class Gpu
 	{
 	public:
-		PhysicalDevice(const VkPhysicalDevice* t_physical_device, const Window& t_window);
-		~PhysicalDevice() = default;
+		Gpu(VkPhysicalDevice t_physical_device,
+				const VkSurfaceKHR& t_surface);
+		Gpu()  = delete;
+		~Gpu() = default;
 
 		inline const VkPhysicalDevice& hVkPhysicalDevice() const { return m_physical_device; }
 		inline const QueueFamilyIndices& hIndices() const { return m_indices; }
@@ -24,12 +26,14 @@ namespace lvc
 		void logDeviceExtensions() const;
 		void logRequiredExtensions() const;
 		void logInfo() const;
+		void logFullInfo() const;
 
 		inline static const std::vector<const char*> required_extensions = {"VK_KHR_device_group",
 																																				"VK_KHR_swapchain"};
 
 	private:
-		const VkPhysicalDevice& m_physical_device;
+		// Members
+		VkPhysicalDevice m_physical_device;
 
 		std::string m_name;
 		std::vector<const char*> m_available_extensions;
@@ -40,7 +44,7 @@ namespace lvc
 
 		void queryExtensions();
 		void checkExtensionSupport();
-		void rateDeviceSuitability(const Window& window);
-		void findQueueFamilies(VkSurfaceKHR surface);
+		void rateDeviceSuitability();
+		void findQueueFamilies(const VkSurfaceKHR& t_surface);
 	};
 }

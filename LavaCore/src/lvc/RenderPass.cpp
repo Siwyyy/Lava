@@ -1,8 +1,5 @@
 #include "lvc/RenderPass.hpp"
 
-#include "lvc/Device.hpp"
-#include "lvc/Swapchain.hpp"
-
 #include <vulkan/vulkan.h>
 
 #include <iostream>
@@ -11,11 +8,14 @@
 
 using namespace lvc;
 
-RenderPass::RenderPass(const Device* device, const Swapchain* swapchain)
-	: m_device(device->hVkDevice())
-	, m_swapchain_extent_2d(swapchain->hExtent2d())
-	, m_swapchain_image_format(swapchain->hFormat())
-	, m_image_views(swapchain->hImageViews())
+RenderPass::RenderPass(const VkDevice& t_device,
+											 const VkExtent2D& t_extent_2d,
+											 const VkFormat& t_format,
+											 const std::vector<VkImageView>& t_image_views)
+	: m_device(t_device)
+	, m_swapchain_extent_2d(t_extent_2d)
+	, m_swapchain_image_format(t_format)
+	, m_image_views(t_image_views)
 	, m_render_pass(VK_NULL_HANDLE)
 {
 	VkAttachmentDescription attachment_description;
