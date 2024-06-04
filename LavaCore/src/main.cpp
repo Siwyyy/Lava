@@ -1,4 +1,4 @@
-#include "lvc/Application.hpp"
+#include "base/Application.hpp"
 
 #include <iostream>
 
@@ -6,7 +6,7 @@ int main()
 {
 	try
 	{
-		const lvc::Application app;
+		lvc::Application app;
 		app.run();
 	}
 	catch (const std::exception& e)
