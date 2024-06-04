@@ -173,6 +173,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\base\Window.cpp" />
     <ClCompile Include="src\base\Swapchain.cpp" />
+    <ClCompile Include="SyncObjects.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\CommandBuffer.hpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="src\base\Gpu.hpp" />
     <ClInclude Include="src\base\RenderPass.hpp" />
     <ClInclude Include="src\base\GpuManager.hpp" />
+    <ClInclude Include="SyncObjects.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />
