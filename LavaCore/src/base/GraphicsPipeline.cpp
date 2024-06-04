@@ -1,6 +1,6 @@
-#include "lvc/GraphicsPipeline.hpp"
+#include "GraphicsPipeline.hpp"
 
-#include "lvc/RenderPass.hpp"
+#include "RenderPass.hpp"
 
 #include <vulkan/vulkan.h>
 
@@ -12,7 +12,7 @@ using namespace lvc;
 GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 																	 const VkExtent2D& t_swapchain_extent,
 																	 const VkRenderPass& t_render_pass,
-																	 RenderPass* const t_rpass)
+																	 RenderPass& t_rpass)
 	: m_device(t_device)
 	, m_swapchain_extent(t_swapchain_extent)
 	, m_render_pass(t_render_pass)
@@ -150,7 +150,7 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 	if (vkCreateGraphicsPipelines(m_device,VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &m_pipeline) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to create graphics pipeline!\n");
 
-	t_rpass->createFrameBuffers();
+	t_rpass.createFrameBuffers();
 }
 
 GraphicsPipeline::~GraphicsPipeline()

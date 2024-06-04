@@ -1,4 +1,15 @@
 #pragma once
+#include "CommandBuffer.hpp"
+#include "CommandPool.hpp"
+#include "DebugMessenger.hpp"
+#include "Device.hpp"
+#include "Gpu.hpp"
+#include "GpuManager.hpp"
+#include "GraphicsPipeline.hpp"
+#include "Instance.hpp"
+#include "RenderPass.hpp"
+#include "Swapchain.hpp"
+
 #include <vulkan/vulkan_core.h>
 
 namespace lvc
@@ -25,17 +36,17 @@ namespace lvc
 		void run();
 
 	private:
-		Instance* const m_instance;
-		DebugMessenger* const m_debug_messenger;
-		Window* const m_window;
-		GpuManager* const m_gpu_manager;
-		Gpu* const m_gpu;
-		Device* const m_device;
-		Swapchain* const m_swapchain;
-		RenderPass* const m_render_pass;
-		GraphicsPipeline* const m_graphics_pipeline;
-		CommandPool* const m_command_pool;
-		CommandBuffer* const m_command_buffer;
+		Instance m_instance;
+		DebugMessenger m_debug_messenger;
+		Window m_window;
+		GpuManager m_gpu_manager;
+		Gpu m_gpu;
+		Device m_device;
+		Swapchain m_swapchain;
+		RenderPass m_render_pass;
+		GraphicsPipeline m_graphics_pipeline;
+		CommandPool m_command_pool;
+		CommandBuffer m_command_buffer;
 
 		VkSemaphore m_semaphore_image_available;
 		VkSemaphore m_semaphore_render_finished;

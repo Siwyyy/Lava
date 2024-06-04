@@ -1,8 +1,10 @@
 #pragma once
 
-#include <vector>
+#include "Gpu.hpp"
 
 #include <vulkan/vulkan.h>
+
+#include <vector>
 
 namespace lvc
 {
@@ -15,12 +17,12 @@ namespace lvc
 												const VkSurfaceKHR& t_surface);
 		~GpuManager() = default;
 
-		inline Gpu* hGpu() const { return m_gpu; }
+		inline Gpu hGpu() const { return m_gpu; }
 
 	private:
 		// Members
-		std::vector<Gpu*> m_available_gpu;
-		Gpu* m_gpu;
+		std::vector<Gpu> m_available_gpu;
+		Gpu m_gpu;
 
 		void selectGpu();
 		void logAvailableGpu() const;

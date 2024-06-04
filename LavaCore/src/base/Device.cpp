@@ -1,8 +1,8 @@
-#include "lvc/Device.hpp"
+#include "Device.hpp"
 
-#include "lvc/Gpu.hpp"
-#include "lvc/Instance.hpp"
-#include "lvc/Window.hpp"
+#include "Gpu.hpp"
+#include "Instance.hpp"
+#include "Window.hpp"
 
 #include <algorithm>
 #include <iostream>

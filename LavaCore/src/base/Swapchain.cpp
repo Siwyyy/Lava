@@ -1,6 +1,6 @@
-#include "lvc/Swapchain.hpp"
+#include "Swapchain.hpp"
 
-#include "lvc/QueueFamilyIndices.hpp"
+#include "QueueFamilyIndices.hpp"
 
 #include <algorithm>
 #include <iostream>

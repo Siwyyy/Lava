@@ -1,6 +1,6 @@
-#include "lvc/Gpu.hpp"
+#include "Gpu.hpp"
 
-#include "lvc/Window.hpp"
+#include "Window.hpp"
 
 #include <iostream>
 
@@ -28,20 +28,20 @@ void Gpu::logDeviceExtensions() const
 
 void Gpu::logRequiredExtensions() const
 {
-	std::clog << "\tRequired device extensions:\n";
+	std::clog << "Required device extensions:\n";
 	for (const auto& required : required_extensions)
 	{
 		bool found = false;
-		std::clog << required;
 		for (const auto& available : m_available_extensions)
 		{
 			if (!strcmp(required, available))
 			{
-				std::clog << " (Available)\n";
+				std::clog << "\t(Available)\t";
 				found = true;
 				break;
 			}
 		}
+		std::clog << required << '\n';
 		if (!found)
 			std::clog << " (Not available)\n";
 	}
@@ -56,7 +56,7 @@ void Gpu::logFullInfo() const
 {
 	std::cout << "GPU: " << m_name << '\n';
 	std::cout << "Score: " << m_score << '\n';
-	logDeviceExtensions();
+	// logDeviceExtensions();
 	logRequiredExtensions();
 }
 

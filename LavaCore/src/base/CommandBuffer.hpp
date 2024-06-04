@@ -22,7 +22,7 @@ namespace lvc
 									const VkPipeline& t_pipeline,
 									const VkExtent2D& t_extent_2d);
 
-		inline VkCommandBuffer& hCommandBuffer() { return m_command_buffer; }
+		inline const VkCommandBuffer& hCommandBuffer() const { return m_command_buffer; }
 
 		void recordCommandBuffer(uint32_t t_image_index) const;
 

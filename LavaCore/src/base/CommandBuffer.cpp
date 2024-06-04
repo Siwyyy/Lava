@@ -1,4 +1,4 @@
-#include "lvc/CommandBuffer.hpp"
+#include "CommandBuffer.hpp"
 
 #include <stdexcept>
 
@@ -39,15 +39,16 @@ void CommandBuffer::recordCommandBuffer(const uint32_t t_image_index) const
 	if (vkBeginCommandBuffer(m_command_buffer, &command_buffer_begin_info) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to begin command buffer recording");
 
+	const VkClearValue clear_value = {{{0.0f,0.0f,0.0f,0.0f}}};
 	VkRenderPassBeginInfo render_pass_begin_info;
 	render_pass_begin_info.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	render_pass_begin_info.renderPass        = m_render_pass;
 	render_pass_begin_info.framebuffer       = m_framebuffers[t_image_index];
 	render_pass_begin_info.renderArea.offset = {0,0};
 	render_pass_begin_info.renderArea.extent = m_extent_2d;
-	const VkClearValue clear_value           = {{{0.0f,0.0f,0.0f,0.0f}}};
 	render_pass_begin_info.clearValueCount   = 1;
 	render_pass_begin_info.pClearValues      = &clear_value;
+	render_pass_begin_info.pNext             = nullptr;
 	vkCmdBeginRenderPass(m_command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
 
 	vkCmdBindPipeline(m_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);

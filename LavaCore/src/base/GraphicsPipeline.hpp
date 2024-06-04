@@ -17,7 +17,7 @@ namespace lvc
 		GraphicsPipeline(const VkDevice& t_device,
 										 const VkExtent2D& t_swapchain_extent,
 										 const VkRenderPass& t_render_pass,
-										 RenderPass* const t_rpass);
+										 RenderPass& t_rpass);
 		GraphicsPipeline() = delete;
 		~GraphicsPipeline();
 

@@ -16,7 +16,7 @@ namespace lvc
 	public:
 		Gpu(VkPhysicalDevice t_physical_device,
 				const VkSurfaceKHR& t_surface);
-		Gpu()  = delete;
+		Gpu()  = default;
 		~Gpu() = default;
 
 		inline const VkPhysicalDevice& hVkPhysicalDevice() const { return m_physical_device; }
