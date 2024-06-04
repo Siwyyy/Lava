@@ -1,10 +1,10 @@
-#include "lvc/DebugMessenger.hpp"
+#include "DebugMessenger.hpp"
 
-#include "lvc/Application.hpp"
+#include "Application.hpp"
 
 #include <iostream>
 
-#include "lvc/Instance.hpp"
+#include "Instance.hpp"
 
 using namespace lvc;
 

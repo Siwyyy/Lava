@@ -1,6 +1,6 @@
-#include "lvc/GpuManager.hpp"
+#include "GpuManager.hpp"
 
-#include "lvc/Gpu.hpp"
+#include "Gpu.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -8,7 +8,7 @@
 using namespace lvc;
 
 GpuManager::GpuManager(const VkInstance& t_instance, const VkSurfaceKHR& t_surface)
-	: m_gpu(nullptr)
+	: m_gpu()
 {
 	uint32_t device_count = 0;
 	vkEnumeratePhysicalDevices(t_instance, &device_count, nullptr);
@@ -20,7 +20,7 @@ GpuManager::GpuManager(const VkInstance& t_instance, const VkSurfaceKHR& t_surfa
 	vkEnumeratePhysicalDevices(t_instance, &device_count, devices.data());
 
 	for (const auto& device : devices)
-		m_available_gpu.emplace_back(new Gpu(device, t_surface));
+		m_available_gpu.emplace_back(device, t_surface);
 
 	logAvailableGpu();
 	selectGpu();
@@ -29,33 +29,31 @@ GpuManager::GpuManager(const VkInstance& t_instance, const VkSurfaceKHR& t_surfa
 
 void GpuManager::selectGpu()
 {
-	for (Gpu* device : m_available_gpu)
+	if(m_available_gpu.empty())
+		throw std::runtime_error("err: List of available GPU is empty!\n");
+
+	m_gpu = m_available_gpu[0];
+	for (const Gpu& gpu : m_available_gpu)
 	{
-		if (!m_gpu)
-		{
-			if (device->hScore())
-				m_gpu = device;
-			continue;
-		}
-		if (device->hScore() > m_gpu->hScore())
-			m_gpu = device;
+		if (gpu.hScore() > m_gpu.hScore())
+			m_gpu = gpu;
 	}
 
-	if (!m_gpu)
+	if (!m_gpu.hScore())
 		throw std::runtime_error("err: Failed to find suitable GPU!\n");
 }
 
 void GpuManager::logAvailableGpu() const
 {
 	std::cout << "=== === GPU found: === ===\n";
-	for (const auto& device : m_available_gpu)
-		device->logInfo();
+	for (const auto& gpu : m_available_gpu)
+		gpu.logInfo();
 	std::cout << "=== === === == === === ===\n";
 }
 
 void GpuManager::logSelectedGpu() const
 {
 	std::cout << "=== === Selected GPU: === ===\n";
-	m_gpu->logFullInfo();
+	m_gpu.logFullInfo();
 	std::cout << "=== === == === === == === ===\n";
 }

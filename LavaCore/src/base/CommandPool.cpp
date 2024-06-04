@@ -1,6 +1,6 @@
-#include "lvc/CommandPool.hpp"
+#include "CommandPool.hpp"
 
-#include "lvc/Gpu.hpp"
+#include "Gpu.hpp"
 
 #include <iostream>
 #include <stdexcept>

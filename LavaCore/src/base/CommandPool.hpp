@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lvc/Device.hpp"
+#include "Device.hpp"
 
 namespace lvc
 {

@@ -1,6 +1,6 @@
-#include "lvc/Instance.hpp"
+#include "Instance.hpp"
 
-#include "lvc/DebugMessenger.hpp"
+#include "DebugMessenger.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>

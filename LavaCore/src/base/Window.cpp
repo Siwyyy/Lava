@@ -1,6 +1,6 @@
-#include "lvc/Window.hpp"
+#include "Window.hpp"
 
-#include "lvc/Instance.hpp"
+#include "Instance.hpp"
 
 #include <vulkan/vulkan.h>
 

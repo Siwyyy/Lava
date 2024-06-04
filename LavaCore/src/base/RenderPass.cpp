@@ -1,4 +1,4 @@
-#include "lvc/RenderPass.hpp"
+#include "RenderPass.hpp"
 
 #include <vulkan/vulkan.h>
 

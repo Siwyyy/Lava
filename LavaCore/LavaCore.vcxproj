@@ -160,34 +160,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\lvc\GpuManager.cpp" />
-    <ClCompile Include="src\lvc\CommandBuffer.cpp" />
-    <ClCompile Include="src\lvc\CommandPool.cpp" />
-    <ClCompile Include="src\lvc\RenderPass.cpp" />
-    <ClCompile Include="src\lvc\GraphicsPipeline.cpp" />
-    <ClCompile Include="src\lvc\Gpu.cpp" />
-    <ClCompile Include="src\lvc\Device.cpp" />
-    <ClCompile Include="src\lvc\DebugMessenger.cpp" />
-    <ClCompile Include="src\lvc\Instance.cpp" />
-    <ClCompile Include="src\lvc\Application.cpp" />
+    <ClCompile Include="src\base\GpuManager.cpp" />
+    <ClCompile Include="src\base\CommandBuffer.cpp" />
+    <ClCompile Include="src\base\CommandPool.cpp" />
+    <ClCompile Include="src\base\RenderPass.cpp" />
+    <ClCompile Include="src\base\GraphicsPipeline.cpp" />
+    <ClCompile Include="src\base\Gpu.cpp" />
+    <ClCompile Include="src\base\Device.cpp" />
+    <ClCompile Include="src\base\DebugMessenger.cpp" />
+    <ClCompile Include="src\base\Instance.cpp" />
+    <ClCompile Include="src\base\Application.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\lvc\Window.cpp" />
-    <ClCompile Include="src\lvc\Swapchain.cpp" />
+    <ClCompile Include="src\base\Window.cpp" />
+    <ClCompile Include="src\base\Swapchain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="includes\lvc\CommandBuffer.hpp" />
-    <ClInclude Include="includes\lvc\CommandPool.hpp" />
-    <ClInclude Include="includes\lvc\GraphicsPipeline.hpp" />
-    <ClInclude Include="includes\lvc\Device.hpp" />
-    <ClInclude Include="includes\lvc\DebugMessenger.hpp" />
-    <ClInclude Include="includes\lvc\Application.hpp" />
-    <ClInclude Include="includes\lvc\Window.hpp" />
-    <ClInclude Include="includes\lvc\Instance.hpp" />
-    <ClInclude Include="includes\lvc\Swapchain.hpp" />
-    <ClInclude Include="includes\lvc\QueueFamilyIndices.hpp" />
-    <ClInclude Include="includes\lvc\Gpu.hpp" />
-    <ClInclude Include="includes\lvc\RenderPass.hpp" />
-    <ClInclude Include="includes\lvc\GpuManager.hpp" />
+    <ClInclude Include="src\base\CommandBuffer.hpp" />
+    <ClInclude Include="src\base\CommandPool.hpp" />
+    <ClInclude Include="src\base\GraphicsPipeline.hpp" />
+    <ClInclude Include="src\base\Device.hpp" />
+    <ClInclude Include="src\base\DebugMessenger.hpp" />
+    <ClInclude Include="src\base\Application.hpp" />
+    <ClInclude Include="src\base\Window.hpp" />
+    <ClInclude Include="src\base\Instance.hpp" />
+    <ClInclude Include="src\base\Swapchain.hpp" />
+    <ClInclude Include="src\base\QueueFamilyIndices.hpp" />
+    <ClInclude Include="src\base\Gpu.hpp" />
+    <ClInclude Include="src\base\RenderPass.hpp" />
+    <ClInclude Include="src\base\GpuManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />
