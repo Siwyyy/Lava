@@ -67,11 +67,7 @@ RenderPass::RenderPass(const VkDevice& t_device,
 
 RenderPass::~RenderPass()
 {
-	for (const auto framebuffer : m_framebuffers)
-	{
-		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
-	}
-	std::clog << "Successfully destroyed framebuffers\n";
+	cleanupFrameBuffers();
 
 	vkDestroyRenderPass(m_device, m_render_pass, nullptr);
 	std::clog << "Successfully destroyed render pass\n";
@@ -97,4 +93,19 @@ void RenderPass::createFrameBuffers()
 		if (vkCreateFramebuffer(m_device, &framebuffer_create_info, nullptr, &m_framebuffers[i]) != VK_SUCCESS)
 			throw std::runtime_error("err. Failed to create framebuffer!\n");
 	}
+}
+
+void RenderPass::cleanupFrameBuffers() const
+{
+	for (const auto framebuffer : m_framebuffers)
+	{
+		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+	}
+	std::clog << "Successfully destroyed framebuffers\n";
+}
+
+void RenderPass::recreateFrameBuffers()
+{
+	cleanupFrameBuffers();
+	createFrameBuffers();
 }

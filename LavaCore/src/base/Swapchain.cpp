@@ -20,21 +20,11 @@ Swapchain::Swapchain(const VkDevice& t_device,
 	, m_graphics_family(t_indices.graphics.value())
 	, m_present_family(t_indices.present.value())
 {
-	querySwapchainSupport();
-	setExtent2D();
-	setSurfaceFormat();
-	setSurfacePresentMode();
 	createSwapchain();
 	createImageViews();
 }
 
-Swapchain::~Swapchain()
-{
-	for (const VkImageView& image_view : m_image_views)
-		vkDestroyImageView(m_device, image_view, nullptr);
-	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
-	std::clog << "Successfully destroyed swapchain\n";
-}
+Swapchain::~Swapchain() { cleanup(); }
 
 void Swapchain::querySwapchainSupport()
 {
@@ -103,6 +93,11 @@ void Swapchain::setSurfacePresentMode()
 
 void Swapchain::createSwapchain()
 {
+	querySwapchainSupport();
+	setExtent2D();
+	setSurfaceFormat();
+	setSurfacePresentMode();
+
 	uint32_t image_count = m_surface_capabilities.minImageCount + 1;
 	if (m_surface_capabilities.maxImageCount > 0 && image_count < m_surface_capabilities.maxImageCount)
 		image_count = m_surface_capabilities.maxImageCount;
@@ -170,4 +165,20 @@ void Swapchain::createImageViews()
 			throw std::runtime_error("failed to create image views!");
 		}
 	}
+}
+
+void Swapchain::cleanup()
+{
+	for (const VkImageView& image_view : m_image_views)
+		vkDestroyImageView(m_device, image_view, nullptr);
+	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
+	std::clog << "Successfully destroyed swapchain\n";
+}
+
+void Swapchain::recreate()
+{
+	cleanup();
+
+	createSwapchain();
+	createImageViews();
 }

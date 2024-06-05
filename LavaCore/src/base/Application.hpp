@@ -32,6 +32,8 @@ namespace lvc
 
 		void run();
 
+		bool frame_buffer_resized = false;
+
 	private:
 		Instance m_instance;
 		DebugMessenger m_debug_messenger;
@@ -55,5 +57,6 @@ namespace lvc
 							const VkQueue& t_graphics_queue,
 							const VkQueue& t_present_queue,
 							const VkSwapchainKHR& t_swapchain);
+		void recreateSwapchain();
 	};
 }

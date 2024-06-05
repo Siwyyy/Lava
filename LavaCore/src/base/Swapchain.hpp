@@ -27,6 +27,8 @@ namespace lvc
 		inline const VkFormat& hFormat() const { return m_surface_format.format; }
 		inline const std::vector<VkImageView>& hImageViews() const { return m_image_views; }
 
+		void recreate();
+
 	private:
 		const VkDevice& m_device;
 		const VkPhysicalDevice& m_physical_device;
@@ -55,5 +57,6 @@ namespace lvc
 		void setSurfacePresentMode();
 		void createSwapchain();
 		void createImageViews();
+		void cleanup();
 	};
 }
