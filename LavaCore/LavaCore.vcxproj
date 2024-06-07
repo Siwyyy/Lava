@@ -93,7 +93,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)includes;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)includes;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;$(SolutionDir)Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -111,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)includes;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)includes;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;$(SolutionDir)Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -129,7 +129,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)includes;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)includes;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;$(SolutionDir)Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -147,7 +147,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)includes;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)includes;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;$(SolutionDir)Dependencies\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -163,6 +163,7 @@
     <ClCompile Include="src\base\GpuManager.cpp" />
     <ClCompile Include="src\base\CommandBuffer.cpp" />
     <ClCompile Include="src\base\CommandPool.cpp" />
+    <ClCompile Include="src\base\Initializers.cpp" />
     <ClCompile Include="src\base\RenderPass.cpp" />
     <ClCompile Include="src\base\GraphicsPipeline.cpp" />
     <ClCompile Include="src\base\Gpu.cpp" />
@@ -173,7 +174,9 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\base\Window.cpp" />
     <ClCompile Include="src\base\Swapchain.cpp" />
-    <ClCompile Include="SyncObjects.cpp" />
+    <ClCompile Include="src\base\SyncObjects.cpp" />
+    <ClCompile Include="src\base\Vertex.cpp" />
+    <ClCompile Include="src\base\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\CommandBuffer.hpp" />
@@ -182,6 +185,7 @@
     <ClInclude Include="src\base\Device.hpp" />
     <ClInclude Include="src\base\DebugMessenger.hpp" />
     <ClInclude Include="src\base\Application.hpp" />
+    <ClInclude Include="src\base\Initializers.hpp" />
     <ClInclude Include="src\base\Window.hpp" />
     <ClInclude Include="src\base\Instance.hpp" />
     <ClInclude Include="src\base\Swapchain.hpp" />
@@ -189,7 +193,9 @@
     <ClInclude Include="src\base\Gpu.hpp" />
     <ClInclude Include="src\base\RenderPass.hpp" />
     <ClInclude Include="src\base\GpuManager.hpp" />
-    <ClInclude Include="SyncObjects.hpp" />
+    <ClInclude Include="src\base\SyncObjects.hpp" />
+    <ClInclude Include="src\base\Vertex.hpp" />
+    <ClInclude Include="src\base\VertexBuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />

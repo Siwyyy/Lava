@@ -3,6 +3,8 @@
 #include "DebugMessenger.hpp"
 
 #define GLFW_INCLUDE_VULKAN
+#include "Initializers.hpp"
+
 #include <glfw3.h>
 
 #include <algorithm>
@@ -17,7 +19,7 @@ const bool Instance::validation_layers_enabled = false;
 const bool Instance::validation_layers_enabled = true;
 #endif
 
-Instance::Instance(const char* t_app_name, const char* t_engine_name)
+Instance::Instance()
 	: m_instance(VK_NULL_HANDLE)
 {
 	setupExtensions();
@@ -26,37 +28,20 @@ Instance::Instance(const char* t_app_name, const char* t_engine_name)
 	if (validation_layers_enabled && !checkValidationLayerSupport())
 		throw std::runtime_error("err: Validation layers requested, but not available!\n");
 
-	VkApplicationInfo app_info{};
-	app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	app_info.pApplicationName   = t_app_name;
-	app_info.applicationVersion = VK_MAKE_API_VERSION(0, 1, 0, 0);
-	app_info.pEngineName        = t_engine_name;
-	app_info.engineVersion      = VK_MAKE_API_VERSION(0, 1, 0, 0);
-	app_info.apiVersion         = VK_API_VERSION_1_3;
-
-	VkInstanceCreateInfo create_info{};
-	create_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	create_info.pApplicationInfo        = &app_info;
-	create_info.enabledExtensionCount   = static_cast<uint32_t>(m_required_extensions.size());
-	create_info.ppEnabledExtensionNames = m_required_extensions.data();
+	VkInstanceCreateInfo instance_create_info    = inits::instanceInfo();
+	instance_create_info.enabledExtensionCount   = static_cast<uint32_t>(m_required_extensions.size());
+	instance_create_info.ppEnabledExtensionNames = m_required_extensions.data();
 
 	if (validation_layers_enabled)
 	{
-		create_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());
-		create_info.ppEnabledLayerNames = validation_layers.data();
+		instance_create_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());
+		instance_create_info.ppEnabledLayerNames = validation_layers.data();
 
-		VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
-		DebugMessenger::populateDebugUtilsMessengerInfo(debug_create_info);
-		create_info.pNext = &debug_create_info;
-	}
-	else
-	// ReSharper disable once CppUnreachableCode
-	{
-		create_info.enabledLayerCount = 0;
-		create_info.pNext             = nullptr;
+		VkDebugUtilsMessengerCreateInfoEXT debug_create_info = inits::debugCreateInfo();
+		instance_create_info.pNext                           = &debug_create_info;
 	}
 
-	if (vkCreateInstance(&create_info, nullptr, &m_instance) != VK_SUCCESS)
+	if (vkCreateInstance(&instance_create_info, nullptr, &m_instance) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to create instance!\n");
 }
 
@@ -74,11 +59,11 @@ void Instance::setupExtensions()
 	setRequiredExtensions();
 	checkRequiredExtensions();
 
-	std::clog << "\n--- --- --- --- --- --- --- --- --- ---\n";
+	std::clog << "=== === === == === === ===\n";
 	// logAvailableExtensions();
-	// std::clog << "--- --- --- --- --- --- --- --- --- ---\n";
+	// std::clog << "=== === == === === == === ===\n";
 	logRequiredExtensions();
-	std::clog << "--- --- --- --- --- --- --- --- --- ---\n\n";
+	std::clog << "=== === === == === === ===\n";
 }
 
 void Instance::queryExtensions()
@@ -102,7 +87,7 @@ void Instance::setRequiredExtensions()
 
 	std::vector<const char*> extensions = {glfw_extensions,glfw_extensions + glfw_extension_count};
 
-	if (validationLayersEnabled())
+	if (validation_layers_enabled)
 	{
 		extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 	}
@@ -137,18 +122,18 @@ void Instance::logRequiredExtensions() const
 	bool found = false;
 	for (const auto& required : m_required_extensions)
 	{
-		std::clog << required;
 		for (const auto& available : m_available_extensions)
 		{
 			if (!strcmp(required, available))
 			{
-				std::clog << " (Available)\n";
+				std::clog << "\t(Available)\t";
 				found = true;
 				break;
 			}
 		}
 		if (!found)
-			std::clog << " (Not available)\n";
+			std::clog << "\t(Not available)\t";
+		std::clog << required << '\n';
 	}
 }
 

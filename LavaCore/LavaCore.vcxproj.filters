@@ -54,7 +54,16 @@
     <ClCompile Include="src\base\GpuManager.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="SyncObjects.cpp">
+    <ClCompile Include="src\base\SyncObjects.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\Vertex.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\VertexBuffer.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\Initializers.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,7 +107,16 @@
     <ClInclude Include="src\base\GpuManager.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="SyncObjects.hpp">
+    <ClInclude Include="src\base\SyncObjects.hpp">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\Vertex.hpp">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\VertexBuffer.hpp">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\Initializers.hpp">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

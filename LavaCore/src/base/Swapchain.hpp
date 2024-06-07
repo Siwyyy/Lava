@@ -51,7 +51,6 @@ namespace lvc
 
 		VkSwapchainKHR m_swapchain;
 
-		void querySwapchainSupport();
 		void setExtent2D();
 		void setSurfaceFormat();
 		void setSurfacePresentMode();

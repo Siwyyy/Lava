@@ -21,7 +21,8 @@ namespace lvc
 									const std::vector<VkFramebuffer>& t_framebuffers,
 									const VkPipeline& t_pipeline,
 									const VkExtent2D& t_extent_2d,
-									int t_max_frames_in_flight);
+									int t_max_frames_in_flight,
+									const VkBuffer& t_vertex_buffer);
 
 		inline const std::vector<VkCommandBuffer>& hCommandBuffers() const { return m_command_buffers; }
 
@@ -34,6 +35,7 @@ namespace lvc
 		const std::vector<VkFramebuffer>& m_framebuffers;
 		const VkPipeline& m_pipeline;
 		const VkExtent2D& m_extent_2d;
+		const VkBuffer& m_vertex_buffer;
 
 		std::vector<VkCommandBuffer> m_command_buffers;
 	};

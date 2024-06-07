@@ -12,14 +12,13 @@
 #include "Swapchain.hpp"
 #include "Window.hpp"
 
-#include "../../SyncObjects.hpp"
+#include "SyncObjects.hpp"
+#include "VertexBuffer.hpp"
 
 #include <vulkan/vulkan_core.h>
 
 constexpr int WINDOW_WIDTH         = 800;
 constexpr int WINDOW_HEIGHT        = 600;
-constexpr const char* APP_NAME     = "LavaCore";
-constexpr const char* ENGINE_NAME  = "No Engine";
 constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 namespace lvc
@@ -45,6 +44,7 @@ namespace lvc
 		RenderPass m_render_pass;
 		GraphicsPipeline m_graphics_pipeline;
 		CommandPool m_command_pool;
+		VertexBuffer m_vertex_buffer;
 		CommandBuffer m_command_buffer;
 		const SyncObjects m_sync_objects;
 

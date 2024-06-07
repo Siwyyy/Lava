@@ -53,7 +53,7 @@ void GpuManager::logAvailableGpu() const
 
 void GpuManager::logSelectedGpu() const
 {
-	std::cout << "=== === Selected GPU: === ===\n";
+	std::cout << "=== == Selected GPU: == ==\n";
 	m_gpu.logFullInfo();
-	std::cout << "=== === == === === == === ===\n";
+	std::cout << "=== === === == === === ===\n";
 }

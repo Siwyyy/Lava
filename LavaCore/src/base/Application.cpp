@@ -1,25 +1,51 @@
 #include "Application.hpp"
 
+#include "Initializers.hpp"
+
 #include <iostream>
 
 using namespace lvc;
 
 Application::Application()
-	: m_instance(APP_NAME, ENGINE_NAME)
+	: m_instance()
 	, m_debug_messenger(m_instance.hVkInstance())
-	, m_window(WINDOW_WIDTH, WINDOW_HEIGHT, "LavaCore - Test", m_instance.hVkInstance(),this)
-	, m_gpu_manager(m_instance.hVkInstance(), m_window.hVkSurface())
+	, m_window(WINDOW_WIDTH,
+						 WINDOW_HEIGHT,
+						 "LavaCore - Test",
+						 m_instance.hVkInstance(),
+						 this)
+	, m_gpu_manager(m_instance.hVkInstance(),
+									m_window.hVkSurface())
 	, m_gpu(m_gpu_manager.hGpu())
-	, m_device(m_gpu.hVkPhysicalDevice(), m_gpu.hIndices())
-	, m_swapchain(m_device.hVkDevice(), m_gpu.hVkPhysicalDevice(), m_window.hGlfwWindow(), m_window.hVkSurface(), m_gpu.hIndices())
-	, m_render_pass(m_device.hVkDevice(), m_swapchain.hExtent2d(), m_swapchain.hFormat(), m_swapchain.hImageViews())
-	, m_graphics_pipeline(m_device.hVkDevice(), m_swapchain.hExtent2d(), m_render_pass.hRenderPass(), m_render_pass)
-	, m_command_pool(m_device.hVkDevice(), m_gpu.hIndices())
-	, m_command_buffer(m_command_pool.hCommandPool(), m_device.hVkDevice(), m_render_pass.hRenderPass(), m_render_pass.hFramebuffers(), m_graphics_pipeline.hPipeline(), m_swapchain.hExtent2d(), MAX_FRAMES_IN_FLIGHT)
-	, m_sync_objects(m_device.hVkDevice(), MAX_FRAMES_IN_FLIGHT)
-{
-	
-}
+	, m_device(m_gpu.hVkPhysicalDevice(),
+						 m_gpu.hIndices())
+	, m_swapchain(m_device.hVkDevice(),
+								m_gpu.hVkPhysicalDevice(),
+								m_window.hGlfwWindow(),
+								m_window.hVkSurface(),
+								m_gpu.hIndices())
+	, m_render_pass(m_device.hVkDevice(),
+									m_swapchain.hExtent2d(),
+									m_swapchain.hFormat(),
+									m_swapchain.hImageViews())
+	, m_graphics_pipeline(m_device.hVkDevice(),
+												m_swapchain.hExtent2d(),
+												m_render_pass.hRenderPass(),
+												m_render_pass)
+	, m_command_pool(m_device.hVkDevice(),
+									 m_gpu.hIndices())
+	, m_vertex_buffer(m_device.hVkDevice(),
+										m_gpu.hVkPhysicalDevice())
+	, m_command_buffer(m_command_pool.hCommandPool(),
+										 m_device.hVkDevice(),
+										 m_render_pass.hRenderPass(),
+										 m_render_pass.hFramebuffers(),
+										 m_graphics_pipeline.hPipeline(),
+										 m_swapchain.hExtent2d(),
+										 MAX_FRAMES_IN_FLIGHT,
+										 m_vertex_buffer.hVertexBuffer())
+	, m_sync_objects(m_device.hVkDevice(),
+									 MAX_FRAMES_IN_FLIGHT) {}
 
 void Application::run()
 {
@@ -31,7 +57,11 @@ void Application::mainLoop()
 	while (!glfwWindowShouldClose(&m_window.hGlfwWindow()))
 	{
 		glfwPollEvents();
-		draw(m_device.hVkDevice(), m_command_buffer.hCommandBuffers(), m_device.hGraphicsQueue(), m_device.hPresentQueue(), m_swapchain.hSwapchain());
+		draw(m_device.hVkDevice(),
+				 m_command_buffer.hCommandBuffers(),
+				 m_device.hGraphicsQueue(),
+				 m_device.hPresentQueue(),
+				 m_swapchain.hSwapchain());
 	}
 	vkDeviceWaitIdle(m_device.hVkDevice());
 }
@@ -45,7 +75,12 @@ void Application::draw(const VkDevice& t_device,
 	vkWaitForFences(t_device, 1, &m_sync_objects.hFenceInFlight(m_current_frame),VK_TRUE,UINT64_MAX);
 
 	uint32_t image_index;
-	VkResult result = vkAcquireNextImageKHR(m_device.hVkDevice(), m_swapchain.hSwapchain(), UINT64_MAX, m_sync_objects.hSemaphoreImageAvailable(m_current_frame), VK_NULL_HANDLE, &image_index);
+	VkResult result = vkAcquireNextImageKHR(m_device.hVkDevice(),
+																					m_swapchain.hSwapchain(),
+																					UINT64_MAX,
+																					m_sync_objects.hSemaphoreImageAvailable(m_current_frame),
+																					VK_NULL_HANDLE,
+																					&image_index);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{

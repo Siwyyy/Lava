@@ -7,8 +7,6 @@
 
 namespace lvc
 {
-	class Device;
-	class Swapchain;
 	class RenderPass;
 
 	class GraphicsPipeline

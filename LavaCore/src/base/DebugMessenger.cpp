@@ -1,6 +1,7 @@
 #include "DebugMessenger.hpp"
 
 #include "Application.hpp"
+#include "Initializers.hpp"
 
 #include <iostream>
 
@@ -12,11 +13,10 @@ DebugMessenger::DebugMessenger(const VkInstance& instance)
 	: m_instance(instance)
 	, m_debug_messenger(VK_NULL_HANDLE)
 {
-	if (!Instance::validationLayersEnabled())
+	if (!Instance::validation_layers_enabled)
 		return;
 
-	VkDebugUtilsMessengerCreateInfoEXT create_info = {};
-	populateDebugUtilsMessengerInfo(create_info);
+	VkDebugUtilsMessengerCreateInfoEXT create_info = inits::debugCreateInfo();
 
 	if (createDebugUtilsMessengerExt(&create_info, nullptr) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to setup Debug Utils Messenger!\n");
@@ -24,7 +24,7 @@ DebugMessenger::DebugMessenger(const VkInstance& instance)
 
 DebugMessenger::~DebugMessenger() noexcept(false)
 {
-	if (!Instance::validationLayersEnabled())
+	if (!Instance::validation_layers_enabled)
 		return;
 
 	destroyDebugUtilsMessengerExt(nullptr);
@@ -39,21 +39,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessenger::debugCallback(
 	std::cerr << "[validation layer] " << p_callback_data->pMessage << "\n";
 
 	return false;
-}
-
-void DebugMessenger::populateDebugUtilsMessengerInfo(
-	VkDebugUtilsMessengerCreateInfoEXT& create_info)
-{
-	create_info                 = {};
-	create_info.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-																VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-																VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-	create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-														VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-														VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-	create_info.pfnUserCallback = debugCallback;
-	create_info.pUserData       = nullptr;
 }
 
 VkResult DebugMessenger::createDebugUtilsMessengerExt(

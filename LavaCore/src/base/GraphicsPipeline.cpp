@@ -1,8 +1,7 @@
 #include "GraphicsPipeline.hpp"
 
 #include "RenderPass.hpp"
-
-#include <vulkan/vulkan.h>
+#include "Vertex.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -44,12 +43,15 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 	VkPipelineShaderStageCreateInfo shader_stage_create_info[] = {vert_shader_stage_create_info,
 																																frag_shader_stage_create_info};
 
+	auto binding_description = Vertex::getBindingDescription();
+	auto attribute_descriptions = Vertex::getAttributeDescriptions();
+
 	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info;
 	vertex_input_state_create_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertex_input_state_create_info.vertexBindingDescriptionCount   = 0;
-	vertex_input_state_create_info.pVertexBindingDescriptions      = nullptr;
-	vertex_input_state_create_info.vertexAttributeDescriptionCount = 0;
-	vertex_input_state_create_info.pVertexAttributeDescriptions    = nullptr;
+	vertex_input_state_create_info.vertexBindingDescriptionCount   = 1;
+	vertex_input_state_create_info.pVertexBindingDescriptions      = &binding_description;
+	vertex_input_state_create_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size());
+	vertex_input_state_create_info.pVertexAttributeDescriptions    = attribute_descriptions.data();
 	vertex_input_state_create_info.flags                           = 0;
 	vertex_input_state_create_info.pNext                           = VK_NULL_HANDLE;
 

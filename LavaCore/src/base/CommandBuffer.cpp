@@ -10,13 +10,15 @@ CommandBuffer::CommandBuffer(const VkCommandPool& t_command_pool,
 														 const std::vector<VkFramebuffer>& t_framebuffers,
 														 const VkPipeline& t_pipeline,
 														 const VkExtent2D& t_extent_2d,
-														 const int t_max_frames_in_flight)
+														 const int t_max_frames_in_flight,
+														 const VkBuffer& t_vertex_buffer)
 	: m_command_pool(t_command_pool)
 	, m_device(t_device)
 	, m_render_pass(t_render_pass)
 	, m_framebuffers(t_framebuffers)
 	, m_pipeline(t_pipeline)
 	, m_extent_2d(t_extent_2d)
+	, m_vertex_buffer(t_vertex_buffer)
 {
 	m_command_buffers.resize(t_max_frames_in_flight);
 
@@ -69,6 +71,10 @@ void CommandBuffer::recordCommandBuffer(const uint32_t t_command_buffer_index, c
 	scissor.offset = {0,0};
 	scissor.extent = m_extent_2d;
 	vkCmdSetScissor(m_command_buffers[t_command_buffer_index], 0, 1, &scissor);
+
+	const VkBuffer vertex_buffers[] = {m_vertex_buffer};
+	const VkDeviceSize offsets[]    = {0};
+	vkCmdBindVertexBuffers(m_command_buffers[t_command_buffer_index], 0, 1, vertex_buffers, offsets);
 
 	vkCmdDraw(m_command_buffers[t_command_buffer_index], 3, 1, 0, 0);
 

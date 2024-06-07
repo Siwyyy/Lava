@@ -1,6 +1,7 @@
 #include "Device.hpp"
 
 #include "Gpu.hpp"
+#include "Initializers.hpp"
 #include "Instance.hpp"
 #include "Window.hpp"
 
@@ -24,36 +25,23 @@ Device::Device(const VkPhysicalDevice& t_physical_device,
 																										t_queue_family_indices.present.value()};
 
 	std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-	constexpr float priority = 1.0f;
 	for (const uint32_t& queue_family : unique_queue_families)
 	{
-		VkDeviceQueueCreateInfo create_info = {};
-		create_info.sType                   = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		VkDeviceQueueCreateInfo create_info = inits::deviceQueueCreateInfo();
 		create_info.queueFamilyIndex        = queue_family;
-		create_info.queueCount              = 1;
-		create_info.pQueuePriorities        = &priority;
 		queue_create_infos.push_back(create_info);
 	}
 
-	// VkPhysicalDeviceFeatures device_futures = {};
-
 	// Setup logical device
-	VkDeviceCreateInfo create_info = {};
-	create_info.sType              = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-
+	VkDeviceCreateInfo create_info = inits::deviceCreateInfo();
 	create_info.queueCreateInfoCount    = static_cast<uint32_t>(queue_create_infos.size());
 	create_info.pQueueCreateInfos       = queue_create_infos.data();
-	create_info.pEnabledFeatures        = nullptr;
-	create_info.enabledExtensionCount   = static_cast<uint32_t>(Gpu::required_extensions.size());
-	create_info.ppEnabledExtensionNames = Gpu::required_extensions.data();
 
-	if (Instance::validationLayersEnabled())
+	if (Instance::validation_layers_enabled)
 	{
 		create_info.enabledLayerCount   = static_cast<uint32_t>(Instance::validation_layers.size());
 		create_info.ppEnabledLayerNames = Instance::validation_layers.data();
 	}
-	else
-		create_info.enabledLayerCount = 0;
 
 	if (vkCreateDevice(m_physical_device, &create_info, nullptr, &m_device) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to create logical device!\n");

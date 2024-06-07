@@ -16,7 +16,6 @@ namespace lvc
 			VkDebugUtilsMessageTypeFlagsEXT message_type,
 			const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
 			void* p_user_data);
-		static void populateDebugUtilsMessengerInfo(VkDebugUtilsMessengerCreateInfoEXT& create_info);
 
 	private:
 		//OutRefs
