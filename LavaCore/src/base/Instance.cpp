@@ -3,8 +3,6 @@
 #include "DebugMessenger.hpp"
 
 #define GLFW_INCLUDE_VULKAN
-#include "Initializers.hpp"
-
 #include <glfw3.h>
 
 #include <algorithm>
@@ -28,20 +26,40 @@ Instance::Instance()
 	if (validation_layers_enabled && !checkValidationLayerSupport())
 		throw std::runtime_error("err: Validation layers requested, but not available!\n");
 
-	VkInstanceCreateInfo instance_create_info    = inits::instanceInfo();
-	instance_create_info.enabledExtensionCount   = static_cast<uint32_t>(m_required_extensions.size());
-	instance_create_info.ppEnabledExtensionNames = m_required_extensions.data();
+	constexpr const char* app_name    = "LavaCore";
+	constexpr uint32_t app_version    = VK_MAKE_API_VERSION(0, 0, 1, 0);
+	constexpr const char* engine_name = "Wrrrum";
+	constexpr uint32_t engine_version = VK_MAKE_API_VERSION(0, 0, 1, 0);
+
+	VkApplicationInfo app_info;
+	app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	app_info.pNext              = nullptr;
+	app_info.pApplicationName   = app_name;
+	app_info.applicationVersion = app_version;
+	app_info.pEngineName        = engine_name;
+	app_info.engineVersion      = engine_version;
+	app_info.apiVersion         = VK_API_VERSION_1_3;
+
+	VkInstanceCreateInfo instance_info;
+	instance_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	instance_info.pNext                   = nullptr;
+	instance_info.flags                   = NULL;
+	instance_info.pApplicationInfo        = &app_info;
+	instance_info.enabledLayerCount       = 0;
+	instance_info.ppEnabledLayerNames     = nullptr;
+	instance_info.enabledExtensionCount   = static_cast<uint32_t>(m_required_extensions.size());
+	instance_info.ppEnabledExtensionNames = m_required_extensions.data();
 
 	if (validation_layers_enabled)
 	{
-		instance_create_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());
-		instance_create_info.ppEnabledLayerNames = validation_layers.data();
+		instance_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());
+		instance_info.ppEnabledLayerNames = validation_layers.data();
 
-		VkDebugUtilsMessengerCreateInfoEXT debug_create_info = inits::debugCreateInfo();
-		instance_create_info.pNext                           = &debug_create_info;
+		VkDebugUtilsMessengerCreateInfoEXT debug_create_info = DebugMessenger::debugCreateInfo();
+		instance_info.pNext                                  = &debug_create_info;
 	}
 
-	if (vkCreateInstance(&instance_create_info, nullptr, &m_instance) != VK_SUCCESS)
+	if (vkCreateInstance(&instance_info, nullptr, &m_instance) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to create instance!\n");
 }
 

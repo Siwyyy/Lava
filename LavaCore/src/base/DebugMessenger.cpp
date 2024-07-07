@@ -1,7 +1,6 @@
 #include "DebugMessenger.hpp"
 
 #include "Application.hpp"
-#include "Initializers.hpp"
 
 #include <iostream>
 
@@ -16,7 +15,7 @@ DebugMessenger::DebugMessenger(const VkInstance& instance)
 	if (!Instance::validation_layers_enabled)
 		return;
 
-	VkDebugUtilsMessengerCreateInfoEXT create_info = inits::debugCreateInfo();
+	VkDebugUtilsMessengerCreateInfoEXT create_info = debugCreateInfo();
 
 	if (createDebugUtilsMessengerExt(&create_info, nullptr) != VK_SUCCESS)
 		throw std::runtime_error("err: Failed to setup Debug Utils Messenger!\n");
@@ -67,4 +66,21 @@ void DebugMessenger::destroyDebugUtilsMessengerExt(
 	}
 	else
 		throw std::runtime_error("err: Failed to destroy Debug Utils Messenger!\n");
+}
+
+VkDebugUtilsMessengerCreateInfoEXT DebugMessenger::debugCreateInfo()
+{
+	VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
+	debug_create_info.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+	debug_create_info.pNext           = nullptr;
+	debug_create_info.flags           = NULL;
+	debug_create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+																			VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+																			VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	debug_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+																	VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+																	VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	debug_create_info.pfnUserCallback = DebugMessenger::debugCallback;
+	debug_create_info.pUserData       = nullptr;
+	return debug_create_info;
 }

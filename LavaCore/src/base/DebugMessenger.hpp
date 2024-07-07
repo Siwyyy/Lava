@@ -17,6 +17,8 @@ namespace lvc
 			const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
 			void* p_user_data);
 
+		static VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo();
+
 	private:
 		//OutRefs
 		const VkInstance& m_instance;

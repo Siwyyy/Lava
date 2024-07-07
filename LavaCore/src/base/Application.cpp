@@ -1,7 +1,5 @@
 #include "Application.hpp"
 
-#include "Initializers.hpp"
-
 #include <iostream>
 
 using namespace lvc;
