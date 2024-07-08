@@ -5,7 +5,7 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <glfw3.h>
 
-namespace lvc
+namespace lava
 {
 	class Application;
 

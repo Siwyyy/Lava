@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace lvc
+namespace lava
 {
 	class SyncObjects
 	{

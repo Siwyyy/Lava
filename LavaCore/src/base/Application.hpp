@@ -2,6 +2,7 @@
 
 #include "CommandBuffer.hpp"
 #include "CommandPool.hpp"
+#include "Core.hpp"
 #include "DebugMessenger.hpp"
 #include "Device.hpp"
 #include "Gpu.hpp"
@@ -21,13 +22,13 @@ constexpr int WINDOW_WIDTH         = 800;
 constexpr int WINDOW_HEIGHT        = 600;
 constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-namespace lvc
+namespace lava
 {
-	class Application
+	class LAVA_BUILD_DLL Application
 	{
 	public:
-		Application();
-		~Application() noexcept = default;
+		 Application();
+		virtual ~Application() noexcept = default;
 
 		void run();
 
@@ -59,4 +60,6 @@ namespace lvc
 							const VkSwapchainKHR& t_swapchain);
 		void recreateSwapchain();
 	};
+
+	Application* createApplication();
 }

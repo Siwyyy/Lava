@@ -1,6 +1,6 @@
 #include "Vertex.hpp"
 
-using namespace lvc;
+using namespace lava;
 
 VkVertexInputBindingDescription Vertex::getBindingDescription()
 {

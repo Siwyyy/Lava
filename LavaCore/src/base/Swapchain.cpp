@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 Swapchain::Swapchain(const VkDevice& t_device,
 										 const VkPhysicalDevice& t_physical_device,

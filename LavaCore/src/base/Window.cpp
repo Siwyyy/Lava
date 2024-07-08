@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-using namespace lvc;
+using namespace lava;
 
 Window::Window(const int& width,
 							 const int& height,

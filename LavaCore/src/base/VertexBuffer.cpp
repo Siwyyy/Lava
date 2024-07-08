@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 VertexBuffer::VertexBuffer(const VkDevice& t_device,
 													 const VkPhysicalDevice& t_physical_device)

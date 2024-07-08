@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 #ifdef NDEBUG
 const bool Instance::validation_layers_enabled = false;

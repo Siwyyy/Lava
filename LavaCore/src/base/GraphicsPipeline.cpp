@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 
-using namespace lvc;
+using namespace lava;
 
 GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 																	 const VkExtent2D& t_swapchain_extent,
@@ -16,8 +16,8 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 	, m_swapchain_extent(t_swapchain_extent)
 	, m_render_pass(t_render_pass)
 {
-	const auto vert_shader_code = readShaderFile("shaders/basic.vert.spv");
-	const auto frag_shader_code = readShaderFile("shaders/basic.frag.spv");
+	const auto vert_shader_code = readShaderFile("C:/dev/repos/Siwyyy/Lava/LavaCore/shaders/basic.vert.spv");
+	const auto frag_shader_code = readShaderFile("C:/dev/repos/Siwyyy/Lava/LavaCore/shaders/basic.frag.spv");
 
 	m_vert_shader_module = createShaderModule(vert_shader_code);
 	m_frag_shader_module = createShaderModule(frag_shader_code);

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 GpuManager::GpuManager(const VkInstance& t_instance, const VkSurfaceKHR& t_surface)
 	: m_gpu()

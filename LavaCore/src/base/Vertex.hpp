@@ -6,7 +6,7 @@
 #include <array>
 #include <vector>
 
-namespace lvc
+namespace lava
 {
 	struct Vertex
 	{

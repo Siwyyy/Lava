@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 SyncObjects::SyncObjects(const VkDevice& t_device, const uint32_t t_max_frames_in_flight)
 	: m_device(t_device)

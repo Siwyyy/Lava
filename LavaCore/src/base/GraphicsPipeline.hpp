@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-namespace lvc
+namespace lava
 {
 	class RenderPass;
 

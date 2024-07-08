@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <vector>
 
-using namespace lvc;
+using namespace lava;
 
 RenderPass::RenderPass(const VkDevice& t_device,
 											 const VkExtent2D& t_extent_2d,

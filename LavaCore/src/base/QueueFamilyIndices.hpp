@@ -2,7 +2,7 @@
 
 #include <optional>
 
-namespace lvc
+namespace lava
 {
 	struct QueueFamilyIndices
 	{

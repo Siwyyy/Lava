@@ -10,7 +10,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-using namespace lvc;
+using namespace lava;
 
 Device::Device(const VkPhysicalDevice& t_physical_device,
 							 const QueueFamilyIndices& t_queue_family_indices)

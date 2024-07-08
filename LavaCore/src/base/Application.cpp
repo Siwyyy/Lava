@@ -2,11 +2,10 @@
 
 #include <iostream>
 
-using namespace lvc;
+using namespace lava;
 
 Application::Application()
-	: m_instance()
-	, m_debug_messenger(m_instance.hVkInstance())
+	: m_debug_messenger(m_instance.hVkInstance())
 	, m_window(WINDOW_WIDTH,
 						 WINDOW_HEIGHT,
 						 "LavaCore - Test",

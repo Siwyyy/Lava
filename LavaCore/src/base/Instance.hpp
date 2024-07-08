@@ -3,7 +3,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace lvc
+namespace lava
 {
 	class DebugMessenger;
 	class Window;

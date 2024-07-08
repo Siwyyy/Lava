@@ -2,7 +2,7 @@
 
 #include "Device.hpp"
 
-namespace lvc
+namespace lava
 {
 	class Device;
 	struct QueueFamilyIndices;

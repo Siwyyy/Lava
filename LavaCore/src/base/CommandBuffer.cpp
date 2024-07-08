@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 CommandBuffer::CommandBuffer(const VkCommandPool& t_command_pool,
 														 const VkDevice& t_device,

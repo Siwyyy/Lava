@@ -6,7 +6,7 @@
 
 #include "Instance.hpp"
 
-using namespace lvc;
+using namespace lava;
 
 DebugMessenger::DebugMessenger(const VkInstance& instance)
 	: m_instance(instance)
