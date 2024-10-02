@@ -364,4 +364,4 @@ FodyWeavers.xsd
 
 
 /LavaCore/shaders/compile.bat.txt
-/bin-int/
+bin-int/
