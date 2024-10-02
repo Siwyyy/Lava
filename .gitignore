@@ -361,4 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+
 /LavaCore/shaders/compile.bat.txt
+/bin-int/
