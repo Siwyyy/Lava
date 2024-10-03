@@ -1,13 +1,12 @@
 #include "GraphicsPipeline.hpp"
 
 #include "RenderPass.hpp"
-
-#include <vulkan/vulkan.h>
+#include "Vertex.hpp"
 
 #include <fstream>
 #include <iostream>
 
-using namespace lvc;
+using namespace lava;
 
 GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 																	 const VkExtent2D& t_swapchain_extent,
@@ -17,8 +16,8 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 	, m_swapchain_extent(t_swapchain_extent)
 	, m_render_pass(t_render_pass)
 {
-	const auto vert_shader_code = readShaderFile("shaders/basic.vert.spv");
-	const auto frag_shader_code = readShaderFile("shaders/basic.frag.spv");
+	const auto vert_shader_code = readShaderFile("C:/dev/repos/Siwyyy/Lava/LavaCore/shaders/basic.vert.spv");
+	const auto frag_shader_code = readShaderFile("C:/dev/repos/Siwyyy/Lava/LavaCore/shaders/basic.frag.spv");
 
 	m_vert_shader_module = createShaderModule(vert_shader_code);
 	m_frag_shader_module = createShaderModule(frag_shader_code);
@@ -44,12 +43,15 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 	VkPipelineShaderStageCreateInfo shader_stage_create_info[] = {vert_shader_stage_create_info,
 																																frag_shader_stage_create_info};
 
+	auto binding_description = Vertex::getBindingDescription();
+	auto attribute_descriptions = Vertex::getAttributeDescriptions();
+
 	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info;
 	vertex_input_state_create_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertex_input_state_create_info.vertexBindingDescriptionCount   = 0;
-	vertex_input_state_create_info.pVertexBindingDescriptions      = nullptr;
-	vertex_input_state_create_info.vertexAttributeDescriptionCount = 0;
-	vertex_input_state_create_info.pVertexAttributeDescriptions    = nullptr;
+	vertex_input_state_create_info.vertexBindingDescriptionCount   = 1;
+	vertex_input_state_create_info.pVertexBindingDescriptions      = &binding_description;
+	vertex_input_state_create_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size());
+	vertex_input_state_create_info.pVertexAttributeDescriptions    = attribute_descriptions.data();
 	vertex_input_state_create_info.flags                           = 0;
 	vertex_input_state_create_info.pNext                           = VK_NULL_HANDLE;
 

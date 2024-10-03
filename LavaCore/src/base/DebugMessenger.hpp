@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace lvc
+namespace lava
 {
 	class DebugMessenger
 	{
@@ -16,7 +16,8 @@ namespace lvc
 			VkDebugUtilsMessageTypeFlagsEXT message_type,
 			const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
 			void* p_user_data);
-		static void populateDebugUtilsMessengerInfo(VkDebugUtilsMessengerCreateInfoEXT& create_info);
+
+		static VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo();
 
 	private:
 		//OutRefs

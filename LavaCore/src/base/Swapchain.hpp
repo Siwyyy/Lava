@@ -4,7 +4,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 
-namespace lvc
+namespace lava
 {
 	struct QueueFamilyIndices;
 	class Device;
@@ -26,6 +26,8 @@ namespace lvc
 		inline const VkExtent2D& hExtent2d() const { return m_extent_2d; }
 		inline const VkFormat& hFormat() const { return m_surface_format.format; }
 		inline const std::vector<VkImageView>& hImageViews() const { return m_image_views; }
+
+		void recreate();
 
 	private:
 		const VkDevice& m_device;
@@ -49,11 +51,11 @@ namespace lvc
 
 		VkSwapchainKHR m_swapchain;
 
-		void querySwapchainSupport();
 		void setExtent2D();
 		void setSurfaceFormat();
 		void setSurfacePresentMode();
 		void createSwapchain();
 		void createImageViews();
+		void cleanup();
 	};
 }

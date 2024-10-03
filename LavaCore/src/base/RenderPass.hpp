@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace lvc
+namespace lava
 {
 	class Device;
 	class Swapchain;
@@ -24,6 +24,8 @@ namespace lvc
 		inline const std::vector<VkFramebuffer>& hFramebuffers() const { return m_framebuffers; }
 
 		void createFrameBuffers();
+		void cleanupFrameBuffers() const;
+		void recreateFrameBuffers();
 
 	private:
 		const VkDevice& m_device;

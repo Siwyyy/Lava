@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-using namespace lvc;
+using namespace lava;
 
 Gpu::Gpu(const VkPhysicalDevice t_physical_device, const VkSurfaceKHR& t_surface)
 	: m_physical_device(t_physical_device)

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 GpuManager::GpuManager(const VkInstance& t_instance, const VkSurfaceKHR& t_surface)
 	: m_gpu()
@@ -53,7 +53,7 @@ void GpuManager::logAvailableGpu() const
 
 void GpuManager::logSelectedGpu() const
 {
-	std::cout << "=== === Selected GPU: === ===\n";
+	std::cout << "=== == Selected GPU: == ==\n";
 	m_gpu.logFullInfo();
-	std::cout << "=== === == === === == === ===\n";
+	std::cout << "=== === === == === === ===\n";
 }

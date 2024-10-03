@@ -5,7 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 CommandPool::CommandPool(const VkDevice& t_device, const QueueFamilyIndices& t_indices)
 	: m_device(t_device)

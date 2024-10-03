@@ -5,10 +5,8 @@
 #include <string>
 #include <vector>
 
-namespace lvc
+namespace lava
 {
-	class Device;
-	class Swapchain;
 	class RenderPass;
 
 	class GraphicsPipeline

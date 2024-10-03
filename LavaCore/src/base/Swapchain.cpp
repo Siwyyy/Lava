@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace lvc;
+using namespace lava;
 
 Swapchain::Swapchain(const VkDevice& t_device,
 										 const VkPhysicalDevice& t_physical_device,
@@ -20,42 +20,11 @@ Swapchain::Swapchain(const VkDevice& t_device,
 	, m_graphics_family(t_indices.graphics.value())
 	, m_present_family(t_indices.present.value())
 {
-	querySwapchainSupport();
-	setExtent2D();
-	setSurfaceFormat();
-	setSurfacePresentMode();
 	createSwapchain();
 	createImageViews();
 }
 
-Swapchain::~Swapchain()
-{
-	for (const VkImageView& image_view : m_image_views)
-		vkDestroyImageView(m_device, image_view, nullptr);
-	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
-	std::clog << "Successfully destroyed swapchain\n";
-}
-
-void Swapchain::querySwapchainSupport()
-{
-	// Extent
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physical_device, m_surface, &m_surface_capabilities);
-
-	// Surface format
-	uint32_t format_count;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, m_surface, &format_count, nullptr);
-	m_surface_formats.resize(format_count);
-	vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, m_surface, &format_count, m_surface_formats.data());
-
-	// Surface present mode
-	uint32_t mode_count;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, m_surface, &mode_count, nullptr);
-	m_present_modes.resize(mode_count);
-	vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, m_surface, &mode_count, m_present_modes.data());
-
-	if (m_surface_formats.empty() || m_present_modes.empty())
-		throw::std::runtime_error("err: Device details not supported! SWAPCHAIN cannot be created!");
-}
+Swapchain::~Swapchain() { cleanup(); }
 
 void Swapchain::setExtent2D()
 {
@@ -103,6 +72,27 @@ void Swapchain::setSurfacePresentMode()
 
 void Swapchain::createSwapchain()
 {
+	// Extent
+	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physical_device, m_surface, &m_surface_capabilities);
+
+	// Surface format
+	uint32_t format_count;
+	vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, m_surface, &format_count, nullptr);
+	m_surface_formats.resize(format_count);
+	vkGetPhysicalDeviceSurfaceFormatsKHR(m_physical_device, m_surface, &format_count, m_surface_formats.data());
+
+	// Surface present mode
+	uint32_t mode_count;
+	vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, m_surface, &mode_count, nullptr);
+	m_present_modes.resize(mode_count);
+	vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, m_surface, &mode_count, m_present_modes.data());
+
+	if (m_surface_formats.empty() || m_present_modes.empty())
+		throw::std::runtime_error("err: Device details not supported! SWAPCHAIN cannot be created!");
+	setExtent2D();
+	setSurfaceFormat();
+	setSurfacePresentMode();
+
 	uint32_t image_count = m_surface_capabilities.minImageCount + 1;
 	if (m_surface_capabilities.maxImageCount > 0 && image_count < m_surface_capabilities.maxImageCount)
 		image_count = m_surface_capabilities.maxImageCount;
@@ -170,4 +160,20 @@ void Swapchain::createImageViews()
 			throw std::runtime_error("failed to create image views!");
 		}
 	}
+}
+
+void Swapchain::cleanup()
+{
+	for (const VkImageView& image_view : m_image_views)
+		vkDestroyImageView(m_device, image_view, nullptr);
+	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
+	std::clog << "Successfully destroyed swapchain\n";
+}
+
+void Swapchain::recreate()
+{
+	cleanup();
+
+	createSwapchain();
+	createImageViews();
 }
