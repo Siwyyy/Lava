@@ -57,7 +57,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;$(SolutionDir)Dependencies\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -78,7 +78,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)Dependencies\Vulkan\Include;$(SolutionDir)Dependencies\GLFW\Include;$(SolutionDir)Dependencies\glm</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>

@@ -24,13 +24,13 @@ constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
 namespace lava
 {
-	class LAVA_BUILD_DLL Application
+	class Application
 	{
 	public:
-		 Application();
-		virtual ~Application() noexcept = default;
+		LAVA_BUILD_DLL Application();
+		LAVA_BUILD_DLL virtual ~Application() noexcept = default;
 
-		void run();
+		LAVA_BUILD_DLL void run();
 
 		bool frame_buffer_resized = false;
 
