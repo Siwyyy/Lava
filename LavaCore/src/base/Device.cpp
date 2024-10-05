@@ -2,10 +2,10 @@
 
 #include "Gpu.hpp"
 #include "Instance.hpp"
+#include "Log.hpp"
 #include "Window.hpp"
 
 #include <algorithm>
-#include <iostream>
 #include <set>
 #include <vector>
 #include <vulkan/vulkan.h>
@@ -57,7 +57,7 @@ Device::Device(const VkPhysicalDevice& t_physical_device,
 	}
 
 	if (vkCreateDevice(m_physical_device, &device_info, nullptr, &m_device) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to create logical device!\n");
+		LAVA_CORE_ERROR("Failed to create logical device!");
 
 	// Get handles for graphics and presentation queues
 	vkGetDeviceQueue(m_device, t_queue_family_indices.graphics.value(), 0, &m_graphics_queue);
@@ -67,5 +67,4 @@ Device::Device(const VkPhysicalDevice& t_physical_device,
 Device::~Device()
 {
 	vkDestroyDevice(m_device, nullptr);
-	std::clog << "Successfully destroyed device\n";
 }

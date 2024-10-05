@@ -23,8 +23,6 @@ namespace lava
 		inline const QueueFamilyIndices& hIndices() const { return m_indices; }
 		inline const uint32_t& hScore() const { return m_score; }
 
-		void logDeviceExtensions() const;
-		void logRequiredExtensions() const;
 		void logInfo() const;
 		void logFullInfo() const;
 

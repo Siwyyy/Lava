@@ -2,10 +2,11 @@
 
 #include "Application.hpp"
 #include "Instance.hpp"
+#include "Log.hpp"
 
 #include <vulkan/vulkan.h>
 
-#include <iostream>
+
 
 using namespace lava;
 
@@ -25,17 +26,14 @@ Window::Window(const int& width,
 	glfwSetWindowUserPointer(m_window,app);
 
 	if (glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surface) != VK_SUCCESS)
-		throw std::runtime_error("err: Unable to create window surface!\n");
+		LAVA_CORE_ERROR("Unable to create window surface!");
 }
 
 Window::~Window()
 {
 	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
-	std::clog << "Successfully destroyed surface\n";
-
 	glfwTerminate();
 	glfwDestroyWindow(m_window);
-	std::clog << "Successfully destroyed window\n";
 }
 
 void Window::frameBufferResizeCallback(GLFWwindow* t_window, [[maybe_unused]] int t_width, [[maybe_unused]] int t_height)

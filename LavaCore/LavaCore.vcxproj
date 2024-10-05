@@ -67,6 +67,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)LavaCore\vendor\Vulkan\Lib;$(SolutionDir)LavaCore\vendor\GLFW\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(SolutionDir)bin\$(Configuration)-$(Platform)\LavaCore\LavaCore.dll" "$(SolutionDir)bin\$(Configuration)-$(Platform)\Sandbox" /y /r</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -89,6 +92,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\base\Log.cpp" />
     <ClCompile Include="src\base\GpuManager.cpp" />
     <ClCompile Include="src\base\CommandBuffer.cpp" />
     <ClCompile Include="src\base\CommandPool.cpp" />
@@ -106,6 +110,7 @@
     <ClCompile Include="src\base\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\base\Log.hpp" />
     <ClInclude Include="src\base\CommandBuffer.hpp" />
     <ClInclude Include="src\base\CommandPool.hpp" />
     <ClInclude Include="src\base\Core.hpp" />

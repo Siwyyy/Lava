@@ -1,9 +1,7 @@
 #include "GpuManager.hpp"
 
 #include "Gpu.hpp"
-
-#include <iostream>
-#include <stdexcept>
+#include "Log.hpp"
 
 using namespace lava;
 
@@ -14,7 +12,7 @@ GpuManager::GpuManager(const VkInstance& t_instance, const VkSurfaceKHR& t_surfa
 	vkEnumeratePhysicalDevices(t_instance, &device_count, nullptr);
 
 	if (device_count == 0)
-		throw std::runtime_error("err: Failed to find GPUs with Vulkan support!\n");
+		LAVA_CORE_ERROR("Failed to find GPUs with Vulkan support!");
 
 	std::vector<VkPhysicalDevice> devices(device_count);
 	vkEnumeratePhysicalDevices(t_instance, &device_count, devices.data());
@@ -29,8 +27,8 @@ GpuManager::GpuManager(const VkInstance& t_instance, const VkSurfaceKHR& t_surfa
 
 void GpuManager::selectGpu()
 {
-	if(m_available_gpu.empty())
-		throw std::runtime_error("err: List of available GPU is empty!\n");
+	if (m_available_gpu.empty())
+		LAVA_CORE_ERROR("List of available GPU is empty!");
 
 	m_gpu = m_available_gpu[0];
 	for (const Gpu& gpu : m_available_gpu)
@@ -40,20 +38,16 @@ void GpuManager::selectGpu()
 	}
 
 	if (!m_gpu.hScore())
-		throw std::runtime_error("err: Failed to find suitable GPU!\n");
+		LAVA_CORE_ERROR("Failed to find suitable GPU!");
 }
 
 void GpuManager::logAvailableGpu() const
 {
-	std::cout << "=== === GPU found: === ===\n";
 	for (const auto& gpu : m_available_gpu)
-		gpu.logInfo();
-	std::cout << "=== === === == === === ===\n";
+		gpu.logFullInfo();
 }
 
 void GpuManager::logSelectedGpu() const
 {
-	std::cout << "=== == Selected GPU: == ==\n";
-	m_gpu.logFullInfo();
-	std::cout << "=== === === == === === ===\n";
+	m_gpu.logInfo();
 }

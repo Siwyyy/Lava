@@ -1,7 +1,7 @@
 #include "VertexBuffer.hpp"
-#include "Vertex.hpp"
 
-#include <stdexcept>
+#include "Log.hpp"
+#include "Vertex.hpp"
 
 using namespace lava;
 
@@ -21,7 +21,7 @@ VertexBuffer::VertexBuffer(const VkDevice& t_device,
 	buffer_create_info.pQueueFamilyIndices   = nullptr;
 
 	if (vkCreateBuffer(m_device, &buffer_create_info, nullptr, &m_vertex_buffer) != VK_SUCCESS)
-		throw std::runtime_error("err: failed to create vertex buffer!\n");
+		LAVA_CORE_ERROR("failed to create vertex buffer!");
 
 	VkMemoryRequirements memory_requirements;
 	vkGetBufferMemoryRequirements(m_device, m_vertex_buffer, &memory_requirements);
@@ -35,7 +35,7 @@ VertexBuffer::VertexBuffer(const VkDevice& t_device,
 																								 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
 	if (vkAllocateMemory(m_device, &allocate_info, nullptr, &m_vertex_buffer_memory) != VK_SUCCESS)
-		throw std::runtime_error("err: failed to allocate vertex buffer memory!\n");
+		LAVA_CORE_ERROR("failed to allocate vertex buffer memory!");
 
 	vkBindBufferMemory(m_device, m_vertex_buffer, m_vertex_buffer_memory, 0);
 
@@ -59,5 +59,6 @@ uint32_t VertexBuffer::findMemoryType(const uint32_t t_type_filter, const VkMemo
 		if ((t_type_filter & (1 << i)) &&
 				(properties.memoryTypes[i].propertyFlags & t_property_flags) == t_property_flags)
 			return i;
-	throw std::runtime_error("err: failed to find memory type!\n");
+	LAVA_CORE_ERROR("failed to find memory type!");
+	return -1;
 };

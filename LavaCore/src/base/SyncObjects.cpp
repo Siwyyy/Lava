@@ -1,6 +1,6 @@
 #include "SyncObjects.hpp"
 
-#include <stdexcept>
+#include "Log.hpp"
 
 using namespace lava;
 
@@ -27,7 +27,7 @@ SyncObjects::SyncObjects(const VkDevice& t_device, const uint32_t t_max_frames_i
 		if (vkCreateSemaphore(t_device, &semaphore_create_info, nullptr, &m_semaphore_image_available[i]) != VK_SUCCESS ||
 				vkCreateSemaphore(t_device, &semaphore_create_info, nullptr, &m_semaphore_render_finished[i]) != VK_SUCCESS ||
 				vkCreateFence(t_device, &fence_create_info, nullptr, &m_fence_in_flight[i]) != VK_SUCCESS)
-			throw std::runtime_error("err: Failed to create semaphores/fence!\n");
+			LAVA_CORE_ERROR("Failed to create semaphores/fence!");
 	}
 }
 

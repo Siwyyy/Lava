@@ -1,13 +1,12 @@
 #include "Instance.hpp"
 
 #include "DebugMessenger.hpp"
+#include "Log.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
 
 #include <algorithm>
-#include <iostream>
-#include <stdexcept>
 
 using namespace lava;
 
@@ -24,7 +23,7 @@ Instance::Instance()
 
 	// ReSharper disable once CppRedundantBooleanExpressionArgument
 	if (validation_layers_enabled && !checkValidationLayerSupport())
-		throw std::runtime_error("err: Validation layers requested, but not available!\n");
+		LAVA_CORE_ERROR("Validation layers requested, but not available!");
 
 	constexpr const char* app_name    = "LavaCore";
 	constexpr uint32_t app_version    = VK_MAKE_API_VERSION(0, 0, 1, 0);
@@ -60,13 +59,12 @@ Instance::Instance()
 	}
 
 	if (vkCreateInstance(&instance_info, nullptr, &m_instance) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to create instance!\n");
+		LAVA_CORE_ERROR("Failed to create instance!");
 }
 
 Instance::~Instance()
 {
 	vkDestroyInstance(m_instance, nullptr);
-	std::clog << "Successfully destroyed instance\n";
 }
 
 void Instance::setupExtensions()
@@ -76,12 +74,7 @@ void Instance::setupExtensions()
 	queryExtensions();
 	setRequiredExtensions();
 	checkRequiredExtensions();
-
-	std::clog << "=== === === == === === ===\n";
-	// logAvailableExtensions();
-	// std::clog << "=== === == === === == === ===\n";
 	logRequiredExtensions();
-	std::clog << "=== === === == === === ===\n";
 }
 
 void Instance::queryExtensions()
@@ -127,16 +120,9 @@ void Instance::checkRequiredExtensions()
 	m_extensions_good = found == m_required_extensions.size();
 }
 
-void Instance::logAvailableExtensions() const
-{
-	std::clog << "Available instance extensions:\n";
-	for (const auto& extension : m_available_extensions)
-		std::cout << extension << '\n';
-}
-
 void Instance::logRequiredExtensions() const
 {
-	std::clog << "Required instance extensions:\n";
+	LAVA_CORE_INFO("Checking instance extensions...");
 	bool found = false;
 	for (const auto& required : m_required_extensions)
 	{
@@ -144,15 +130,16 @@ void Instance::logRequiredExtensions() const
 		{
 			if (!strcmp(required, available))
 			{
-				std::clog << "\t(Available)\t";
+				LAVA_CORE_DEBUG("(Available) {0}", required);
 				found = true;
 				break;
 			}
 		}
 		if (!found)
-			std::clog << "\t(Not available)\t";
-		std::clog << required << '\n';
+			LAVA_CORE_ERROR("(Missing) {0}", required);
 	}
+	if(m_extensions_good)
+		LAVA_CORE_INFO("All extensions good");
 }
 
 bool Instance::checkValidationLayerSupport()
