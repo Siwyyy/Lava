@@ -1,9 +1,7 @@
 #include "CommandPool.hpp"
 
 #include "Gpu.hpp"
-
-#include <iostream>
-#include <stdexcept>
+#include "Log.hpp"
 
 using namespace lava;
 
@@ -18,11 +16,10 @@ CommandPool::CommandPool(const VkDevice& t_device, const QueueFamilyIndices& t_i
 	command_pool_create_info.pNext            = nullptr;
 
 	if (vkCreateCommandPool(m_device, &command_pool_create_info, nullptr, &m_pool) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to create command pool!\n");
+		LAVA_CORE_ERROR("Failed to create command pool!");
 }
 
 CommandPool::~CommandPool()
 {
 	vkDestroyCommandPool(m_device, m_pool, nullptr);
-	std::clog << "Successfully destroyed command pool\n";
 }

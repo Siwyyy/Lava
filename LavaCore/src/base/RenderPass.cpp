@@ -1,9 +1,9 @@
 #include "RenderPass.hpp"
 
+#include "Log.hpp"
+
 #include <vulkan/vulkan.h>
 
-#include <iostream>
-#include <stdexcept>
 #include <vector>
 
 using namespace lava;
@@ -62,15 +62,13 @@ RenderPass::RenderPass(const VkDevice& t_device,
 	render_pass_info.pDependencies   = &subpass_dependency;
 
 	if (vkCreateRenderPass(m_device, &render_pass_info, nullptr, &m_render_pass) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to create render pass!\n");
+		LAVA_CORE_ERROR("Failed to create render pass!");
 }
 
 RenderPass::~RenderPass()
 {
 	cleanupFrameBuffers();
-
 	vkDestroyRenderPass(m_device, m_render_pass, nullptr);
-	std::clog << "Successfully destroyed render pass\n";
 }
 
 void RenderPass::createFrameBuffers()
@@ -91,7 +89,7 @@ void RenderPass::createFrameBuffers()
 		framebuffer_create_info.layers          = 1;
 
 		if (vkCreateFramebuffer(m_device, &framebuffer_create_info, nullptr, &m_framebuffers[i]) != VK_SUCCESS)
-			throw std::runtime_error("err. Failed to create framebuffer!\n");
+			LAVA_CORE_ERROR("Failed to create framebuffer!");
 	}
 }
 
@@ -101,7 +99,6 @@ void RenderPass::cleanupFrameBuffers() const
 	{
 		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 	}
-	std::clog << "Successfully destroyed framebuffers\n";
 }
 
 void RenderPass::recreateFrameBuffers()

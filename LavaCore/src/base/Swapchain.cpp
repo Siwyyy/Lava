@@ -1,10 +1,9 @@
 #include "Swapchain.hpp"
 
+#include "Log.hpp"
 #include "QueueFamilyIndices.hpp"
 
 #include <algorithm>
-#include <iostream>
-#include <stdexcept>
 
 using namespace lava;
 
@@ -88,7 +87,7 @@ void Swapchain::createSwapchain()
 	vkGetPhysicalDeviceSurfacePresentModesKHR(m_physical_device, m_surface, &mode_count, m_present_modes.data());
 
 	if (m_surface_formats.empty() || m_present_modes.empty())
-		throw::std::runtime_error("err: Device details not supported! SWAPCHAIN cannot be created!");
+		LAVA_CORE_ERROR("Device details not supported! SWAPCHAIN cannot be created!");
 	setExtent2D();
 	setSurfaceFormat();
 	setSurfacePresentMode();
@@ -128,7 +127,7 @@ void Swapchain::createSwapchain()
 	create_info.oldSwapchain   = VK_NULL_HANDLE;
 
 	if (vkCreateSwapchainKHR(m_device, &create_info, nullptr, &m_swapchain) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to create swapchain!\n");
+		LAVA_CORE_ERROR("Failed to create swapchain!");
 
 	vkGetSwapchainImagesKHR(m_device, m_swapchain, &image_count, nullptr);
 	m_images.resize(image_count);
@@ -157,17 +156,16 @@ void Swapchain::createImageViews()
 
 		if (vkCreateImageView(m_device, &create_info, nullptr, &m_image_views[i]) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to create image views!");
+			LAVA_CORE_ERROR("failed to create image views!");
 		}
 	}
 }
 
-void Swapchain::cleanup()
+void Swapchain::cleanup() const
 {
 	for (const VkImageView& image_view : m_image_views)
 		vkDestroyImageView(m_device, image_view, nullptr);
 	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
-	std::clog << "Successfully destroyed swapchain\n";
 }
 
 void Swapchain::recreate()

@@ -1,10 +1,8 @@
 #include "DebugMessenger.hpp"
 
 #include "Application.hpp"
-
-#include <iostream>
-
 #include "Instance.hpp"
+#include "Log.hpp"
 
 using namespace lava;
 
@@ -18,7 +16,7 @@ DebugMessenger::DebugMessenger(const VkInstance& instance)
 	VkDebugUtilsMessengerCreateInfoEXT create_info = debugCreateInfo();
 
 	if (createDebugUtilsMessengerExt(&create_info, nullptr) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to setup Debug Utils Messenger!\n");
+		LAVA_CORE_ERROR("Failed to setup Debug Utils Messenger!");
 }
 
 DebugMessenger::~DebugMessenger() noexcept(false)
@@ -35,7 +33,14 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugMessenger::debugCallback(
 	const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
 	void* p_user_data)
 {
-	std::cerr << "[validation layer] " << p_callback_data->pMessage << "\n";
+	if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT)
+		LAVA_CORE_DEBUG("<validation layers> {0}", p_callback_data->pMessage);
+	if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+		LAVA_CORE_INFO("<validation layers> {0}", p_callback_data->pMessage);
+	if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+		LAVA_CORE_WARN("<validation layers> {0}", p_callback_data->pMessage);
+	if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+		LAVA_CORE_ERROR("<validation layers> {0}", p_callback_data->pMessage);
 
 	return false;
 }
@@ -58,14 +63,10 @@ void DebugMessenger::destroyDebugUtilsMessengerExt(
 	const auto destroy_func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
 		vkGetInstanceProcAddr(m_instance, "vkDestroyDebugUtilsMessengerEXT"));
 
-	std::clog << "";
 	if (destroy_func != nullptr)
-	{
 		destroy_func(m_instance, m_debug_messenger, p_allocator);
-		std::clog << "Successfully destroyed Debug Utils Messenger\n";
-	}
 	else
-		throw std::runtime_error("err: Failed to destroy Debug Utils Messenger!\n");
+		LAVA_CORE_ERROR("Failed to destroy Debug Utils Messenger!");
 }
 
 VkDebugUtilsMessengerCreateInfoEXT DebugMessenger::debugCreateInfo()
@@ -74,9 +75,10 @@ VkDebugUtilsMessengerCreateInfoEXT DebugMessenger::debugCreateInfo()
 	debug_create_info.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	debug_create_info.pNext           = nullptr;
 	debug_create_info.flags           = NULL;
-	debug_create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-																			VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-																			VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	debug_create_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	debug_create_info.messageSeverity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+	//debug_create_info.messageSeverity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
+	//debug_create_info.messageSeverity |= VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT;
 	debug_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
 																	VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
 																	VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;

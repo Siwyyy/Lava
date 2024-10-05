@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 
 #ifdef LAVA_PLATFORM_WINDOWS
 
@@ -9,13 +8,16 @@ int main(int argc, char** argv)
 {
 	try
 	{
-		auto app = lava::createApplication();
+		lava::Log::init();
+		LAVA_CORE_INFO("Logger initialized!");
+
+		const auto app = lava::createApplication();
 		app->run();
 		delete app;
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << e.what() << '\n';
+		LAVA_CORE_ERROR(e.what());
 		return EXIT_FAILURE;
 	}
 

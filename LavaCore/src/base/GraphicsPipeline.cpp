@@ -1,10 +1,10 @@
 #include "GraphicsPipeline.hpp"
 
+#include "Log.hpp"
 #include "RenderPass.hpp"
 #include "Vertex.hpp"
 
 #include <fstream>
-#include <iostream>
 
 using namespace lava;
 
@@ -43,7 +43,7 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 	VkPipelineShaderStageCreateInfo shader_stage_create_info[] = {vert_shader_stage_create_info,
 																																frag_shader_stage_create_info};
 
-	auto binding_description = Vertex::getBindingDescription();
+	auto binding_description    = Vertex::getBindingDescription();
 	auto attribute_descriptions = Vertex::getAttributeDescriptions();
 
 	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info;
@@ -129,7 +129,7 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 	pipeline_layout_create_info.pPushConstantRanges    = nullptr;
 
 	if (vkCreatePipelineLayout(m_device, &pipeline_layout_create_info, nullptr, &m_pipeline_layout) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to create pipeline layout!\n");
+		LAVA_CORE_ERROR("Failed to create pipeline layout!");
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info{};
 	pipeline_create_info.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -150,7 +150,7 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 	pipeline_create_info.basePipelineIndex   = -1;
 
 	if (vkCreateGraphicsPipelines(m_device,VK_NULL_HANDLE, 1, &pipeline_create_info, nullptr, &m_pipeline) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to create graphics pipeline!\n");
+		LAVA_CORE_ERROR("Failed to create graphics pipeline!");
 
 	t_rpass.createFrameBuffers();
 }
@@ -158,12 +158,9 @@ GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 GraphicsPipeline::~GraphicsPipeline()
 {
 	vkDestroyPipeline(m_device, m_pipeline, nullptr);
-	std::clog << "Successfully destroyed graphics pipeline\n";
 	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
-	std::clog << "Successfully destroyed pipeline layout\n";
 	vkDestroyShaderModule(m_device, m_vert_shader_module, nullptr);
 	vkDestroyShaderModule(m_device, m_frag_shader_module, nullptr);
-	std::clog << "Successfully destroyed shader modules\n";
 }
 
 VkShaderModule GraphicsPipeline::createShaderModule(const std::vector<char>& code) const
@@ -175,7 +172,7 @@ VkShaderModule GraphicsPipeline::createShaderModule(const std::vector<char>& cod
 
 	VkShaderModule shader_module;
 	if (vkCreateShaderModule(m_device, &create_info, nullptr, &shader_module) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to create shader module!\n");
+		LAVA_CORE_ERROR("Failed to create shader module!");
 
 	return shader_module;
 }
@@ -185,7 +182,7 @@ std::vector<char> GraphicsPipeline::readShaderFile(const std::string& filename)
 	std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
-		throw std::runtime_error("err: Failed to open shader file!\n");
+		LAVA_CORE_ERROR("Failed to open shader file!");
 
 	const std::streamsize file_size = file.tellg();
 	std::vector<char> buffer(file_size);

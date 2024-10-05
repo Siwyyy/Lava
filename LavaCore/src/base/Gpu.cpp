@@ -1,8 +1,7 @@
 #include "Gpu.hpp"
 
+#include "Log.hpp"
 #include "Window.hpp"
-
-#include <iostream>
 
 using namespace lava;
 
@@ -19,16 +18,16 @@ Gpu::Gpu(const VkPhysicalDevice t_physical_device, const VkSurfaceKHR& t_surface
 	rateDeviceSuitability();
 }
 
-void Gpu::logDeviceExtensions() const
+void Gpu::logInfo() const
 {
-	std::clog << "\tAvailable device extensions:\n";
-	for (const auto& extension : m_available_extensions)
-		std::clog << extension << '\n';
+	LAVA_CORE_INFO("SELECTED GPU: {0}", m_name);
 }
 
-void Gpu::logRequiredExtensions() const
+void Gpu::logFullInfo() const
 {
-	std::clog << "Required device extensions:\n";
+	LAVA_CORE_DEBUG("GPU: {0}", m_name);
+	LAVA_CORE_DEBUG("Score: {0}", m_score);
+	LAVA_CORE_DEBUG("Device extensions:");
 	for (const auto& required : required_extensions)
 	{
 		bool found = false;
@@ -36,28 +35,14 @@ void Gpu::logRequiredExtensions() const
 		{
 			if (!strcmp(required, available))
 			{
-				std::clog << "\t(Available)\t";
+				LAVA_CORE_DEBUG("(Available) {0}", required);
 				found = true;
 				break;
 			}
 		}
-		std::clog << required << '\n';
 		if (!found)
-			std::clog << " (Not available)\n";
+			LAVA_CORE_ERROR("(Missing) {0}", required);
 	}
-}
-
-void Gpu::logInfo() const
-{
-	std::cout << "GPU: " << m_name << '\n';
-}
-
-void Gpu::logFullInfo() const
-{
-	std::cout << "GPU: " << m_name << '\n';
-	std::cout << "Score: " << m_score << '\n';
-	// logDeviceExtensions();
-	logRequiredExtensions();
 }
 
 void Gpu::queryExtensions()

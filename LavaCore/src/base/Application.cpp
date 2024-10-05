@@ -1,6 +1,6 @@
 #include "Application.hpp"
 
-#include <iostream>
+#include "Log.hpp"
 
 using namespace lava;
 
@@ -86,7 +86,7 @@ void Application::draw(const VkDevice& t_device,
 	}
 	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
-		throw std::runtime_error("err: Failed to acquire swapchain image!\n");
+		LAVA_CORE_ERROR("Failed to acquire swapchain image!");
 	}
 
 	vkResetFences(t_device, 1, &m_sync_objects.hFenceInFlight(m_current_frame));
@@ -109,7 +109,7 @@ void Application::draw(const VkDevice& t_device,
 	submit_info.pNext                = nullptr;
 
 	if (vkQueueSubmit(t_graphics_queue, 1, &submit_info, m_sync_objects.hFenceInFlight(m_current_frame)) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to submit draw command buffer!\n");
+		LAVA_CORE_ERROR("Failed to submit draw command buffer!");
 
 	const VkSwapchainKHR swapchains[] = {t_swapchain};
 
@@ -132,7 +132,7 @@ void Application::draw(const VkDevice& t_device,
 	}
 	else if (result != VK_SUCCESS)
 	{
-		throw std::runtime_error("err: Failed to acquire swapchain image!\n");
+		LAVA_CORE_ERROR("Failed to acquire swapchain image!");
 	}
 
 	m_current_frame = (m_current_frame + 1) % MAX_FRAMES_IN_FLIGHT;

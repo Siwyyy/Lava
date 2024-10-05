@@ -1,6 +1,7 @@
 #include "CommandBuffer.hpp"
 
-#include <stdexcept>
+#include "Log.hpp"
+
 
 using namespace lava;
 
@@ -30,7 +31,7 @@ CommandBuffer::CommandBuffer(const VkCommandPool& t_command_pool,
 	command_buffer_allocate_info.pNext              = nullptr;
 
 	if (vkAllocateCommandBuffers(m_device, &command_buffer_allocate_info, m_command_buffers.data()) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to allocate command buffer!\n");
+		LAVA_CORE_ERROR("Failed to allocate command buffer!");
 }
 
 void CommandBuffer::recordCommandBuffer(const uint32_t t_command_buffer_index, const uint32_t t_image_index) const
@@ -42,7 +43,7 @@ void CommandBuffer::recordCommandBuffer(const uint32_t t_command_buffer_index, c
 	command_buffer_begin_info.pNext            = nullptr;
 
 	if (vkBeginCommandBuffer(m_command_buffers[t_command_buffer_index], &command_buffer_begin_info) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to begin command buffer recording");
+		LAVA_CORE_ERROR("Failed to begin command buffer recording!");
 
 	const VkClearValue clear_value = {{{0.0f,0.0f,0.0f,0.0f}}};
 	VkRenderPassBeginInfo render_pass_begin_info;
@@ -81,5 +82,5 @@ void CommandBuffer::recordCommandBuffer(const uint32_t t_command_buffer_index, c
 	vkCmdEndRenderPass(m_command_buffers[t_command_buffer_index]);
 
 	if (vkEndCommandBuffer(m_command_buffers[t_command_buffer_index]) != VK_SUCCESS)
-		throw std::runtime_error("err: Failed to record command buffer!\n");
+		LAVA_CORE_ERROR("Failed to record command buffer!");
 }

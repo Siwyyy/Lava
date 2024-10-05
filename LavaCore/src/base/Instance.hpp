@@ -34,7 +34,6 @@ namespace lava
 		void queryExtensions();
 		void setRequiredExtensions();
 		void checkRequiredExtensions();
-		void logAvailableExtensions() const;
 		void logRequiredExtensions() const;
 
 		static bool checkValidationLayerSupport();

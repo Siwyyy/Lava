@@ -56,6 +56,6 @@ namespace lava
 		void setSurfacePresentMode();
 		void createSwapchain();
 		void createImageViews();
-		void cleanup();
+		void cleanup() const;
 	};
 }
