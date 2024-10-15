@@ -26,25 +26,11 @@ Instance::Instance()
 	if (validation_layers_enabled && !checkValidationLayerSupport())
 		LAVA_CORE_ERROR("Validation layers requested, but not available!");
 
-	constexpr const char* app_name    = "LavaCore";
-	constexpr uint32_t app_version    = VK_MAKE_API_VERSION(0, 0, 1, 0);
-	constexpr const char* engine_name = "Wrrrum";
-	constexpr uint32_t engine_version = VK_MAKE_API_VERSION(0, 0, 1, 0);
-
-	VkApplicationInfo app_info;
-	app_info.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	app_info.pNext              = nullptr;
-	app_info.pApplicationName   = app_name;
-	app_info.applicationVersion = app_version;
-	app_info.pEngineName        = engine_name;
-	app_info.engineVersion      = engine_version;
-	app_info.apiVersion         = VK_API_VERSION_1_3;
-
 	VkInstanceCreateInfo instance_info;
 	instance_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instance_info.pNext                   = nullptr;
 	instance_info.flags                   = NULL;
-	instance_info.pApplicationInfo        = NULL;
+	instance_info.pApplicationInfo        = nullptr;
 	instance_info.enabledLayerCount       = 0;
 	instance_info.ppEnabledLayerNames     = nullptr;
 	instance_info.enabledExtensionCount   = static_cast<uint32_t>(m_required_extensions.size());
