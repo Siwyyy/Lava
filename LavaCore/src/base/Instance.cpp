@@ -44,7 +44,7 @@ Instance::Instance()
 	instance_info.sType                   = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instance_info.pNext                   = nullptr;
 	instance_info.flags                   = NULL;
-	instance_info.pApplicationInfo        = &app_info;
+	instance_info.pApplicationInfo        = NULL;
 	instance_info.enabledLayerCount       = 0;
 	instance_info.ppEnabledLayerNames     = nullptr;
 	instance_info.enabledExtensionCount   = static_cast<uint32_t>(m_required_extensions.size());
