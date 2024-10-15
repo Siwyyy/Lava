@@ -61,7 +61,6 @@ void Instance::setupExtensions()
 	queryExtensions();
 	setRequiredExtensions();
 	checkRequiredExtensions();
-	logRequiredExtensions();
 }
 
 void Instance::queryExtensions()
@@ -95,37 +94,24 @@ void Instance::setRequiredExtensions()
 
 void Instance::checkRequiredExtensions()
 {
-	uint32_t found = 0;
-	for (const auto& required : m_required_extensions)
-		for (const auto& available : m_available_extensions)
-			if (!strcmp(required, available))
-			{
-				found++;
-				break;
-			}
-
-	m_extensions_good = found == m_required_extensions.size();
-}
-
-void Instance::logRequiredExtensions() const
-{
 	LAVA_CORE_INFO("Checking instance extensions...");
-	bool found = false;
+	uint32_t available_extension_count = 0;
 	for (const auto& required : m_required_extensions)
 	{
+		bool found = false;
 		for (const auto& available : m_available_extensions)
-		{
 			if (!strcmp(required, available))
 			{
-				LAVA_CORE_DEBUG("(Available) {0}", required);
 				found = true;
+				available_extension_count++;
+				LAVA_CORE_DEBUG("(Available) {0}", required);
 				break;
 			}
-		}
 		if (!found)
 			LAVA_CORE_ERROR("(Missing) {0}", required);
 	}
-	if(m_extensions_good)
+	m_extensions_good = available_extension_count == m_required_extensions.size();
+	if (m_extensions_good)
 		LAVA_CORE_INFO("All extensions good");
 }
 
