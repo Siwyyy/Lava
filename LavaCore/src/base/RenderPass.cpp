@@ -1,12 +1,13 @@
-#include "RenderPass.hpp"
+#include "Lavapch.h"
+#include "RenderPass.h"
 
-#include "Log.hpp"
+#include "Log.h"
 
 #include <vulkan/vulkan.h>
 
 #include <vector>
 
-using namespace lava;
+using namespace Lava;
 
 RenderPass::RenderPass(const VkDevice& t_device,
 											 const VkExtent2D& t_extent_2d,

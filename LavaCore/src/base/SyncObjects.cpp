@@ -1,8 +1,9 @@
-#include "SyncObjects.hpp"
+#include "Lavapch.h"
+#include "SyncObjects.h"
 
-#include "Log.hpp"
+#include "Log.h"
 
-using namespace lava;
+using namespace Lava;
 
 SyncObjects::SyncObjects(const VkDevice& t_device, const uint32_t t_max_frames_in_flight)
 	: m_device(t_device)

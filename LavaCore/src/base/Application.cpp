@@ -1,8 +1,11 @@
-#include "Application.hpp"
+#include "Lavapch.h"
+#include "Application.h"
 
-#include "Log.hpp"
+#include "Log.h"
 
-using namespace lava;
+#include "Events/MouseEvent.h"
+
+using namespace Lava;
 
 Application::Application()
 	: m_debug_messenger(m_instance.hVkInstance())
@@ -46,6 +49,8 @@ Application::Application()
 
 void Application::run()
 {
+	MouseMovedEvent e(1.243f, 32.512f);
+	LAVA_CORE_INFO(e);
 	mainLoop();
 }
 

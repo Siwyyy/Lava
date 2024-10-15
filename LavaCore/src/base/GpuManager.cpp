@@ -1,9 +1,10 @@
-#include "GpuManager.hpp"
+#include "Lavapch.h"
+#include "GpuManager.h"
 
-#include "Gpu.hpp"
-#include "Log.hpp"
+#include "Gpu.h"
+#include "Log.h"
 
-using namespace lava;
+using namespace Lava;
 
 GpuManager::GpuManager(const VkInstance& t_instance, const VkSurfaceKHR& t_surface)
 	: m_gpu()

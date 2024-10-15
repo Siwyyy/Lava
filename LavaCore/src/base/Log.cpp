@@ -1,8 +1,9 @@
-#include "Log.hpp"
+#include "Lavapch.h"
+#include "Log.h"
 
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-namespace lava
+namespace Lava
 {
 	std::shared_ptr<spdlog::logger> Log::s_core_logger;
 	std::shared_ptr<spdlog::logger> Log::s_client_logger;

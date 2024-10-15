@@ -1,9 +1,10 @@
-#include "CommandPool.hpp"
+#include "Lavapch.h"
+#include "CommandPool.h"
 
-#include "Gpu.hpp"
-#include "Log.hpp"
+#include "Gpu.h"
+#include "Log.h"
 
-using namespace lava;
+using namespace Lava;
 
 CommandPool::CommandPool(const VkDevice& t_device, const QueueFamilyIndices& t_indices)
 	: m_device(t_device)

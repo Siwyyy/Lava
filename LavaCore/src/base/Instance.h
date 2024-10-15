@@ -1,9 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <vulkan/vulkan.h>
 
-namespace lava
+namespace Lava
 {
 	class DebugMessenger;
 	class Window;

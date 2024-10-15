@@ -3,10 +3,7 @@
 #include <glm.hpp>
 #include <vulkan/vulkan_core.h>
 
-#include <array>
-#include <vector>
-
-namespace lava
+namespace Lava
 {
 	struct Vertex
 	{

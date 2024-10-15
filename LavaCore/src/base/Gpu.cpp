@@ -1,9 +1,10 @@
-#include "Gpu.hpp"
+#include "Lavapch.h"
+#include "Gpu.h"
 
-#include "Log.hpp"
-#include "Window.hpp"
+#include "Log.h"
+#include "Window.h"
 
-using namespace lava;
+using namespace Lava;
 
 Gpu::Gpu(const VkPhysicalDevice t_physical_device, const VkSurfaceKHR& t_surface)
 	: m_physical_device(t_physical_device)

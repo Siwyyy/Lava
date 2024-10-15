@@ -1,16 +1,17 @@
-#include "Device.hpp"
+#include "Lavapch.h"
+#include "Device.h"
 
-#include "Gpu.hpp"
-#include "Instance.hpp"
-#include "Log.hpp"
-#include "Window.hpp"
+#include "Gpu.h"
+#include "Instance.h"
+#include "Log.h"
+#include "Window.h"
 
 #include <algorithm>
 #include <set>
 #include <vector>
 #include <vulkan/vulkan.h>
 
-using namespace lava;
+using namespace Lava;
 
 Device::Device(const VkPhysicalDevice& t_physical_device,
 							 const QueueFamilyIndices& t_queue_family_indices)

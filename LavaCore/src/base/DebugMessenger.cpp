@@ -1,10 +1,11 @@
-#include "DebugMessenger.hpp"
+#include "Lavapch.h"
+#include "DebugMessenger.h"
 
-#include "Application.hpp"
-#include "Instance.hpp"
-#include "Log.hpp"
+#include "Application.h"
+#include "Instance.h"
+#include "Log.h"
 
-using namespace lava;
+using namespace Lava;
 
 DebugMessenger::DebugMessenger(const VkInstance& instance)
 	: m_instance(instance)

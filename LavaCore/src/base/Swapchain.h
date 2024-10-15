@@ -1,10 +1,9 @@
 #pragma once
 
 #include <glfw3.h>
-#include <vector>
 #include <vulkan/vulkan.h>
 
-namespace lava
+namespace Lava
 {
 	struct QueueFamilyIndices;
 	class Device;

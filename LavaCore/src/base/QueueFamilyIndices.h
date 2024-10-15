@@ -1,8 +1,6 @@
 #pragma once
 
-#include <optional>
-
-namespace lava
+namespace Lava
 {
 	struct QueueFamilyIndices
 	{

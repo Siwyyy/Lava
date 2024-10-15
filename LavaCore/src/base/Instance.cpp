@@ -1,14 +1,15 @@
-#include "Instance.hpp"
+#include "Lavapch.h"
+#include "Instance.h"
 
-#include "DebugMessenger.hpp"
-#include "Log.hpp"
+#include "DebugMessenger.h"
+#include "Log.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <glfw3.h>
 
 #include <algorithm>
 
-using namespace lava;
+using namespace Lava;
 
 #ifdef NDEBUG
 const bool Instance::validation_layers_enabled = false;

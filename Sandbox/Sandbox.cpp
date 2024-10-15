@@ -1,13 +1,13 @@
-#include "Lava.hpp"
+#include "Lava.h"
 
-class Sandbox final : public lava::Application
+class Sandbox final : public Lava::Application
 {
 public:
 	Sandbox() {}
 	~Sandbox() {}
 };
 
-lava::Application* lava::createApplication()
+Lava::Application* Lava::createApplication()
 {
 	return new Sandbox;
 }

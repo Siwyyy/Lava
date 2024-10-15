@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Lavapch.h"
+
 #include <vulkan/vulkan.h>
 
-#include <vector>
-
-namespace lava
+namespace Lava
 {
 	class CommandPool;
 	class GraphicsPipeline;

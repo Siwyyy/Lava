@@ -2,9 +2,7 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include <vector>
-
-namespace lava
+namespace Lava
 {
 	class Device;
 	class Swapchain;

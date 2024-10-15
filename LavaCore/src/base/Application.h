@@ -1,20 +1,20 @@
 #pragma once
 
-#include "CommandBuffer.hpp"
-#include "CommandPool.hpp"
-#include "Core.hpp"
-#include "DebugMessenger.hpp"
-#include "Device.hpp"
-#include "Gpu.hpp"
-#include "GpuManager.hpp"
-#include "GraphicsPipeline.hpp"
-#include "Instance.hpp"
-#include "RenderPass.hpp"
-#include "Swapchain.hpp"
-#include "Window.hpp"
+#include "CommandBuffer.h"
+#include "CommandPool.h"
+#include "Core.h"
+#include "DebugMessenger.h"
+#include "Device.h"
+#include "Gpu.h"
+#include "GpuManager.h"
+#include "GraphicsPipeline.h"
+#include "Instance.h"
+#include "RenderPass.h"
+#include "Swapchain.h"
+#include "Window.h"
 
-#include "SyncObjects.hpp"
-#include "VertexBuffer.hpp"
+#include "SyncObjects.h"
+#include "VertexBuffer.h"
 
 #include <vulkan/vulkan_core.h>
 
@@ -22,15 +22,15 @@ constexpr int WINDOW_WIDTH         = 800;
 constexpr int WINDOW_HEIGHT        = 600;
 constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-namespace lava
+namespace Lava
 {
 	class Application
 	{
 	public:
-		LAVA_BUILD_DLL Application();
-		LAVA_BUILD_DLL virtual ~Application() noexcept = default;
+		LAVA_API Application();
+		LAVA_API virtual ~Application() noexcept = default;
 
-		LAVA_BUILD_DLL void run();
+		LAVA_API void run();
 
 		bool frame_buffer_resized = false;
 

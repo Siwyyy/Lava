@@ -1,12 +1,13 @@
-#include "GraphicsPipeline.hpp"
+#include "Lavapch.h"
+#include "GraphicsPipeline.h"
 
-#include "Log.hpp"
-#include "RenderPass.hpp"
-#include "Vertex.hpp"
+#include "Log.h"
+#include "RenderPass.h"
+#include "Vertex.h"
 
 #include <fstream>
 
-using namespace lava;
+using namespace Lava;
 
 GraphicsPipeline::GraphicsPipeline(const VkDevice& t_device,
 																	 const VkExtent2D& t_swapchain_extent,

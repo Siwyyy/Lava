@@ -1,14 +1,15 @@
-#include "Window.hpp"
+#include "Lavapch.h"
+#include "Window.h"
 
-#include "Application.hpp"
-#include "Instance.hpp"
-#include "Log.hpp"
+#include "Application.h"
+#include "Instance.h"
+#include "Log.h"
 
 #include <vulkan/vulkan.h>
 
 
 
-using namespace lava;
+using namespace Lava;
 
 Window::Window(const int& width,
 							 const int& height,

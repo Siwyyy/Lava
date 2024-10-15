@@ -63,66 +63,84 @@
     <ClCompile Include="src\base\Log.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
+    <ClCompile Include="src\Lavapch.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\base\Application.hpp">
+    <ClInclude Include="src\base\Application.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\Window.hpp">
+    <ClInclude Include="src\base\Window.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\Instance.hpp">
+    <ClInclude Include="src\base\Instance.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\Device.hpp">
+    <ClInclude Include="src\base\Device.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\Swapchain.hpp">
+    <ClInclude Include="src\base\Swapchain.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\DebugMessenger.hpp">
+    <ClInclude Include="src\base\DebugMessenger.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\QueueFamilyIndices.hpp">
+    <ClInclude Include="src\base\QueueFamilyIndices.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\Gpu.hpp">
+    <ClInclude Include="src\base\Gpu.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\GraphicsPipeline.hpp">
+    <ClInclude Include="src\base\GraphicsPipeline.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\RenderPass.hpp">
+    <ClInclude Include="src\base\RenderPass.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\CommandPool.hpp">
+    <ClInclude Include="src\base\CommandPool.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\CommandBuffer.hpp">
+    <ClInclude Include="src\base\CommandBuffer.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\GpuManager.hpp">
+    <ClInclude Include="src\base\GpuManager.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\SyncObjects.hpp">
+    <ClInclude Include="src\base\SyncObjects.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\Vertex.hpp">
+    <ClInclude Include="src\base\Vertex.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\VertexBuffer.hpp">
+    <ClInclude Include="src\base\VertexBuffer.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Lava.hpp">
+    <ClInclude Include="src\Lava.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\Core.hpp">
+    <ClInclude Include="src\Core.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\EntryPoint.hpp">
+    <ClInclude Include="src\EntryPoint.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\Log.hpp">
+    <ClInclude Include="src\base\Log.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\Event.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\KeyEvent.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\MouseEvent.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\ApplicationEvent.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lavapch.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

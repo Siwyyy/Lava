@@ -1,13 +1,10 @@
 #pragma once
 
-#include "QueueFamilyIndices.hpp"
+#include "QueueFamilyIndices.h"
 
 #include <vulkan/vulkan.h>
 
-#include <string>
-#include <vector>
-
-namespace lava
+namespace Lava
 {
 	class Window;
 

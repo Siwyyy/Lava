@@ -1,9 +1,10 @@
-#include "VertexBuffer.hpp"
+#include "Lavapch.h"
+#include "VertexBuffer.h"
 
-#include "Log.hpp"
-#include "Vertex.hpp"
+#include "Log.h"
+#include "Vertex.h"
 
-using namespace lava;
+using namespace Lava;
 
 VertexBuffer::VertexBuffer(const VkDevice& t_device,
 													 const VkPhysicalDevice& t_physical_device)

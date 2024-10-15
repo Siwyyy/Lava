@@ -1,11 +1,12 @@
-#include "Swapchain.hpp"
+#include "Lavapch.h"
+#include "Swapchain.h"
 
-#include "Log.hpp"
-#include "QueueFamilyIndices.hpp"
+#include "Log.h"
+#include "QueueFamilyIndices.h"
 
 #include <algorithm>
 
-using namespace lava;
+using namespace Lava;
 
 Swapchain::Swapchain(const VkDevice& t_device,
 										 const VkPhysicalDevice& t_physical_device,

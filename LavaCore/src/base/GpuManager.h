@@ -1,12 +1,10 @@
 #pragma once
 
-#include "Gpu.hpp"
+#include "Gpu.h"
 
 #include <vulkan/vulkan.h>
 
-#include <vector>
-
-namespace lava
+namespace Lava
 {
 	class Gpu;
 

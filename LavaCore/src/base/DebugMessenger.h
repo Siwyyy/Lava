@@ -2,7 +2,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace lava
+namespace Lava
 {
 	class DebugMessenger
 	{

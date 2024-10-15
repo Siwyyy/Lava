@@ -1,9 +1,10 @@
-#include "CommandBuffer.hpp"
+#include "Lavapch.h"
+#include "CommandBuffer.h"
 
-#include "Log.hpp"
+#include "Log.h"
 
 
-using namespace lava;
+using namespace Lava;
 
 CommandBuffer::CommandBuffer(const VkCommandPool& t_command_pool,
 														 const VkDevice& t_device,

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Device.hpp"
+#include "Device.h"
 
-namespace lava
+namespace Lava
 {
 	class Device;
 	struct QueueFamilyIndices;
