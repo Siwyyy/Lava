@@ -66,6 +66,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Lavapch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,6 +91,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Lavapch.h</PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -101,53 +103,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\base\Log.cpp" />
-    <ClCompile Include="src\base\GpuManager.cpp" />
-    <ClCompile Include="src\base\CommandBuffer.cpp" />
-    <ClCompile Include="src\base\CommandPool.cpp" />
-    <ClCompile Include="src\base\RenderPass.cpp" />
-    <ClCompile Include="src\base\GraphicsPipeline.cpp" />
-    <ClCompile Include="src\base\Gpu.cpp" />
-    <ClCompile Include="src\base\Device.cpp" />
-    <ClCompile Include="src\base\DebugMessenger.cpp" />
-    <ClCompile Include="src\base\Instance.cpp" />
-    <ClCompile Include="src\base\Application.cpp" />
-    <ClCompile Include="src\base\Window.cpp" />
-    <ClCompile Include="src\base\Swapchain.cpp" />
-    <ClCompile Include="src\base\SyncObjects.cpp" />
-    <ClCompile Include="src\base\Vertex.cpp" />
-    <ClCompile Include="src\base\VertexBuffer.cpp" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Graphics\Vulkan\Vertex.cpp" />
+    <ClCompile Include="src\Log\Log.cpp" />
     <ClCompile Include="src\Lavapch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Graphics\Vulkan\VulkanWindow.cpp" />
+    <ClCompile Include="src\Graphics\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\base\Log.h" />
-    <ClInclude Include="src\base\CommandBuffer.h" />
-    <ClInclude Include="src\base\CommandPool.h" />
+    <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\Graphics\Vulkan\Vertex.h" />
+    <ClInclude Include="src\Log\Log.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\EntryPoint.h" />
-    <ClInclude Include="src\base\GraphicsPipeline.h" />
-    <ClInclude Include="src\base\Device.h" />
-    <ClInclude Include="src\base\DebugMessenger.h" />
-    <ClInclude Include="src\base\Application.h" />
-    <ClInclude Include="src\base\Window.h" />
-    <ClInclude Include="src\base\Instance.h" />
-    <ClInclude Include="src\base\Swapchain.h" />
-    <ClInclude Include="src\base\QueueFamilyIndices.h" />
-    <ClInclude Include="src\base\Gpu.h" />
-    <ClInclude Include="src\base\RenderPass.h" />
-    <ClInclude Include="src\base\GpuManager.h" />
-    <ClInclude Include="src\base\SyncObjects.h" />
-    <ClInclude Include="src\base\Vertex.h" />
-    <ClInclude Include="src\base\VertexBuffer.h" />
     <ClInclude Include="src\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Events\KeyEvent.h" />
     <ClInclude Include="src\Events\MouseEvent.h" />
     <ClInclude Include="src\Lava.h" />
     <ClInclude Include="src\Lavapch.h" />
+    <ClInclude Include="src\Graphics\Vulkan\VulkanWindow.h" />
+    <ClInclude Include="src\Graphics\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\compile.bat" />

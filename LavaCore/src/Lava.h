@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/Application.h"
-#include "base/Log.h"
+#include "Application.h"
+#include "Log/Log.h"
 
 #include "EntryPoint.h"

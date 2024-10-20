@@ -3,8 +3,8 @@
 class Sandbox final : public Lava::Application
 {
 public:
-	Sandbox() {}
-	~Sandbox() {}
+	Sandbox()  = default;
+	~Sandbox() = default;
 };
 
 Lava::Application* Lava::createApplication()

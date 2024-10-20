@@ -1,4 +1,5 @@
 #pragma once
+#include "Lavapch.h"
 
 #include "Core.h"
 
@@ -30,25 +31,51 @@ namespace Lava
 
 	class LAVA_API Event
 	{
+		friend class EventDispatcher;
+
 	public:
 		virtual EventType getEventType() const = 0;
 		virtual const char* getName() const = 0;
 		virtual int getCategoryFlags() const = 0;
 		virtual std::string toString() const { return getName(); }
 
-		inline bool isInCategory(EventCategory category) const
+		inline bool isInCategory(EventCategory category_) const
 		{
-			return getCategoryFlags() & category;
+			return getCategoryFlags() & category_;
 		}
 
 	protected:
 		bool m_handled = false;
 	};
 
-	
-
-	inline std::string format_as(const Event& e)
+	class LAVA_API EventDispatcher
 	{
-		return e.toString();
+		template <typename T>
+		using EventFunction = std::function<bool(T&)>;
+
+	public:
+		EventDispatcher() = delete;
+		EventDispatcher(Event& event_): m_event(event_) {}
+		~EventDispatcher() = default;
+
+		template <typename T>
+		bool dispatch(EventFunction<T> function_)
+		{
+			if (m_event.getEventType() == T::getStaticType())
+			{
+				m_event.m_handled = function_(*(T*)&m_event);
+				return true;
+			}
+			return false;
+		}
+
+	private:
+		Event& m_event;
+	};
+
+	// SPDLog need this to know how to convert
+	inline std::string format_as(const Event& event_)
+	{
+		return event_.toString();
 	}
 }

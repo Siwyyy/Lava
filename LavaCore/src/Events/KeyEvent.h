@@ -23,29 +23,31 @@ namespace Lava
 	class LAVA_API KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(int keycode, int repeat_count)
+		KeyPressedEvent(int keycode, bool repeats_)
 			: KeyEvent(keycode)
-			, m_repeat_count(repeat_count) {}
+			, m_repeats(repeats_) {}
 
-		inline int getRepeatCount() const { return m_repeat_count; }
+		inline int getRepeatCount() const { return m_repeats; }
 
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "KeyPressedEvent: " << m_keycode << " (" << m_repeat_count << " repeats)";
+			ss << "KeyPressedEvent: " << m_keycode << (m_repeats ? "(repeats)" : "");
 			return ss.str();
 		}
+
+		
 
 		EVENT_CLASS_TYPE(KeyPressed)
 
 	private:
-		int m_repeat_count;
+		bool m_repeats;
 	};
 
 	class LAVA_API KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(int keycode, int repeat_count)
+		KeyReleasedEvent(int keycode)
 			: KeyEvent(keycode) {}
 
 		std::string toString() const override

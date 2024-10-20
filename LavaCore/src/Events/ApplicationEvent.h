@@ -9,17 +9,17 @@ namespace Lava
 	class LAVA_API WindowResizeEvent : public Event
 	{
 	public:
-		WindowResizeEvent(float x, float y)
-			: m_width(x)
-			, m_height(y) {}
+		WindowResizeEvent(uint32_t width_, uint32_t height_)
+			: m_width(width_)
+			, m_height(height_) {}
 
-		inline float getWidth() const { return m_width; }
-		inline float getHeight() const { return m_height; }
+		inline uint32_t getWidth() const { return m_width; }
+		inline uint32_t getHeight() const { return m_height; }
 
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "WindowResizeEvent: " << m_width << ", " << m_height;
+			ss << "WindowResizeEvent (" << m_width << "x" << m_height << ")";
 			return ss.str();
 		}
 
@@ -27,13 +27,20 @@ namespace Lava
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 
 	private:
-		float m_width, m_height;
+		uint32_t m_width, m_height;
 	};
 
 	class LAVA_API WindowCloseEvent : public Event
 	{
 	public:
 		WindowCloseEvent() = default;
+
+		std::string toString() const override
+		{
+			std::stringstream ss;
+			ss << "WindowCloseEvent";
+			return ss.str();
+		}
 
 		EVENT_CLASS_TYPE(WindowClose)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
