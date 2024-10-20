@@ -1,6 +1,7 @@
-#include "Vertex.hpp"
+#include "Lavapch.h"
+#include "Vertex.h"
 
-using namespace lava;
+using namespace Lava;
 
 VkVertexInputBindingDescription Vertex::getBindingDescription()
 {

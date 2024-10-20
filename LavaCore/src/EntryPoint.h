@@ -2,16 +2,16 @@
 
 #ifdef LAVA_PLATFORM_WINDOWS
 
-extern lava::Application* lava::createApplication();
+extern Lava::Application* Lava::createApplication();
 
 int main(int argc, char** argv)
 {
 	try
 	{
-		lava::Log::init();
+		Lava::Log::init();
 		LAVA_CORE_INFO("Logger initialized!");
 
-		const auto app = lava::createApplication();
+		const auto app = Lava::createApplication();
 		app->run();
 		delete app;
 	}
