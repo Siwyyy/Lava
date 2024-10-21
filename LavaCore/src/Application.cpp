@@ -1,6 +1,8 @@
 #include "Lavapch.h"
 #include "Application.h"
 
+#include "Events/MouseEvent.h"
+
 #include "Log/Log.h"
 
 namespace Lava
@@ -30,6 +32,7 @@ namespace Lava
 	{
 		EventDispatcher dispatcher(event_);
 		dispatcher.dispatch<WindowCloseEvent>([this](auto&& e_) { return onWindowClose(e_); });
+		dispatcher.dispatch<MouseMovedEvent>([this](auto&& e_) { return onMouseMoved(e_); });
 
 		LAVA_CORE_TRACE("Received event: {0}", event_);
 	}
@@ -37,6 +40,12 @@ namespace Lava
 	bool Application::onWindowClose(WindowCloseEvent& event_)
 	{
 		m_running = false;
+		return true;
+	}
+
+	bool Application::onMouseMoved(MouseMovedEvent& event_)
+	{
+		m_window->onMouseMoved(event_.getX());
 		return true;
 	}
 }

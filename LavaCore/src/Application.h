@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Events/ApplicationEvent.h"
+#include "Events/MouseEvent.h"
+
 #include "Graphics/Window.h"
 
 namespace Lava
@@ -16,7 +18,7 @@ namespace Lava
 
 	private:
 		bool onWindowClose(WindowCloseEvent& event_);
-		bool onWindowResize(WindowResizeEvent& event_);
+		bool onMouseMoved(MouseMovedEvent& event_);
 
 		std
 		::unique_ptr<Window> m_window;

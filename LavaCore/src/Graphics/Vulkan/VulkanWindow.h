@@ -21,6 +21,8 @@ namespace Lava
 		void shutdown();
 
 		void onUpdate() override;
+		void onMouseMoved(uint32_t angle_) override;
+
 		void draw();
 
 		inline uint32_t getWidth() const override { return m_data.width; }
@@ -82,14 +84,19 @@ namespace Lava
 		// VkPipeline
 		VkPipeline m_pipeline;
 		VkPipelineLayout m_pipeline_layout;
+		VkDescriptorSetLayout m_descriptor_set_layout;
+		VkDescriptorPool m_descriptor_pool;
+		std::vector<VkDescriptorSet> m_descriptor_sets;
 		VkShaderModule m_vert_shader_module;
 		VkShaderModule m_frag_shader_module;
-
-		// VertexBuffer
+		// BUFFERS
 		VkBuffer m_vertex_buffer;
 		VkDeviceMemory m_vertex_buffer_memory;
 		VkBuffer m_index_buffer;
 		VkDeviceMemory m_index_buffer_memory;
+		std::vector<VkBuffer> m_uniform_buffers;
+		std::vector<VkDeviceMemory> m_uniform_buffers_memory;
+		std::vector<void*> m_uniform_buffers_mapped;
 
 		// VkCommandPool
 		VkCommandPool m_command_pool;
@@ -102,6 +109,8 @@ namespace Lava
 		uint32_t m_current_frame  = 0;
 		bool frame_buffer_resized = false;
 
+		uint32_t m_angle;
+
 	private: // Initial creation functions //
 		void createGlfwWindow();
 		void createVulkanInstance();
@@ -109,6 +118,7 @@ namespace Lava
 		void createVulkanDevice();
 		void createVulkanSwapchain();
 		void createVulkanRenderPass();
+		void createVulkanDescriptorSetLayout();
 		void createVulkanGraphicsPipeline();
 		void createVulkanFrameBuffers();
 		void createVulkanCommandPool();
@@ -134,6 +144,10 @@ namespace Lava
 													VkDeviceSize size_);
 		void createVulkanVertexBuffer();
 		void createVulkanIndexBuffer();
+		void createVulkanUniformBuffers();
+		void updateUniformBuffer(uint32_t current_frame_);
+		void createVulkanDescriptorPool();
+		void createVulkanDescriptorSets();
 
 	private:
 		std::vector<const char*> m_available_instance_ext = {};
