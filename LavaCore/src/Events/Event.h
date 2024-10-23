@@ -39,10 +39,8 @@ namespace Lava
 		virtual int getCategoryFlags() const = 0;
 		virtual std::string toString() const { return getName(); }
 
-		inline bool isInCategory(EventCategory category_) const
-		{
-			return getCategoryFlags() & category_;
-		}
+		inline bool handled() const { return m_handled; }
+		inline bool isInCategory(EventCategory category_) const { return getCategoryFlags() & category_; }
 
 	protected:
 		bool m_handled = false;

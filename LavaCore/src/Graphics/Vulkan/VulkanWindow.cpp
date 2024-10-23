@@ -1240,13 +1240,13 @@ void VulkanWindow::createVulkanUniformBuffers()
 
 void VulkanWindow::updateUniformBuffer(uint32_t current_frame_)
 {
-	static auto start_time = std::chrono::high_resolution_clock::now();
+	//static auto start_time = std::chrono::high_resolution_clock::now();
 
-	auto current_time = std::chrono::high_resolution_clock::now();
-	float time        = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+	//auto current_time = std::chrono::high_resolution_clock::now();
+	//float time        = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
 
 	UniformBufferObject ubo;
-	ubo.model = glm::rotate(glm::mat4(1.0f), m_angle * glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.model = glm::rotate(glm::mat4(1.0f), (float)m_angle * glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.view  = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.proj  = glm::perspective(glm::radians(45.0f), (float)m_extent_2d.width / (float)m_extent_2d.height, 0.1f, 10.0f);
 

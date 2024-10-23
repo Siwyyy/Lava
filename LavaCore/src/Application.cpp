@@ -25,6 +25,11 @@ namespace Lava
 		while (m_running)
 		{
 			m_window->onUpdate();
+
+			for (Layer* layer : m_layer_stack)
+			{
+				layer->onUpdate();
+			}
 		}
 	}
 
@@ -35,6 +40,23 @@ namespace Lava
 		dispatcher.dispatch<MouseMovedEvent>([this](auto&& e_) { return onMouseMoved(e_); });
 
 		LAVA_CORE_TRACE("Received event: {0}", event_);
+
+		for (auto it = m_layer_stack.end(); it != m_layer_stack.begin();)
+		{
+			(*--it)->onEvent(event_);
+			if (event_.handled())
+				break;
+		}
+	}
+
+	void Application::pushLayer(Layer* layer_)
+	{
+		m_layer_stack.pushLayer(layer_);
+	}
+
+	void Application::pushOverlay(Layer* overlay_)
+	{
+		m_layer_stack.pushOverlay(overlay_);
 	}
 
 	bool Application::onWindowClose(WindowCloseEvent& event_)

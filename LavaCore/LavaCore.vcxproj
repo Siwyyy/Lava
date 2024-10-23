@@ -58,7 +58,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS;LAVA_BUILD_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\glm;$(SolutionDir)LavaCore\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\glm;$(SolutionDir)LavaCore\vendor\spdlog\include;$(SolutionDir)LavaCore\vendor\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableParallelCodeGeneration>
       </EnableParallelCodeGeneration>
@@ -86,12 +86,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS;LAVA_API</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\glm;$(SolutionDir)LavaCore\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\glm;$(SolutionDir)LavaCore\vendor\spdlog\include;$(SolutionDir)LavaCore\vendor\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Lavapch.h</PrecompiledHeaderFile>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,6 +104,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\LayerStack.cpp" />
     <ClCompile Include="src\Log\Log.cpp" />
     <ClCompile Include="src\Lavapch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -113,8 +114,11 @@
     <ClCompile Include="src\Graphics\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Input.h" />
+    <ClInclude Include="src\Layer.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Graphics\Vulkan\Vertex.h" />
+    <ClInclude Include="src\LayerStack.h" />
     <ClInclude Include="src\Log\Log.h" />
     <ClInclude Include="src\Core.h" />
     <ClInclude Include="src\EntryPoint.h" />
