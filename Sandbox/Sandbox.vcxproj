@@ -57,9 +57,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)LavaCore\vendor\spdlog\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)LavaCore\vendor\spdlog\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -80,17 +81,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)LavaCore\vendor\spdlog\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\src;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\glm;$(SolutionDir)LavaCore\vendor\spdlog\include;$(SolutionDir)LavaCore\vendor\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>LavaCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)-$(Platform)\LavaCore</AdditionalLibraryDirectories>
+      <AdditionalDependencies>LavaCore.lib;glfw3.lib;vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Configuration)-$(Platform)\LavaCore;$(SolutionDir)LavaCore\vendor\Vulkan\Lib;$(SolutionDir)LavaCore\vendor\GLFW\Lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -2,15 +2,17 @@
 
 #include "Core.h"
 
+#include <cstdint>
+
 namespace Lava
 {
 	class LAVA_API Input
 	{
 	public:
 		Input()  = default;
-		~Input() = default;
+		virtual ~Input() = default;
 
-		bool isKeyPressed(uint32_t keycode_);
+		virtual bool isKeyPressed(uint32_t keycode_) = 0;
 
 	private:
 	};

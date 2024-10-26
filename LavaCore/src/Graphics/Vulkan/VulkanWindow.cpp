@@ -131,7 +131,7 @@ void VulkanWindow::onUpdate()
 	vkDeviceWaitIdle(m_device);
 }
 
-void VulkanWindow::onMouseMoved(uint32_t angle_) { m_angle = angle_; }
+void VulkanWindow::onMouseMoved(float angle_) { m_angle = angle_; }
 
 void VulkanWindow::draw()
 {
@@ -1246,7 +1246,7 @@ void VulkanWindow::updateUniformBuffer(uint32_t current_frame_)
 	//float time        = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
 
 	UniformBufferObject ubo;
-	ubo.model = glm::rotate(glm::mat4(1.0f), (float)m_angle * glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.model = glm::rotate(glm::mat4(1.0f), (float)m_angle * glm::radians(0.5f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.view  = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.proj  = glm::perspective(glm::radians(45.0f), (float)m_extent_2d.width / (float)m_extent_2d.height, 0.1f, 10.0f);
 

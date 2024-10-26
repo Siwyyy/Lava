@@ -21,7 +21,7 @@ namespace Lava
 		void shutdown();
 
 		void onUpdate() override;
-		void onMouseMoved(uint32_t angle_) override;
+		void onMouseMoved(float angle_) override;
 
 		void draw();
 
@@ -34,7 +34,7 @@ namespace Lava
 		struct WindowData
 		{
 			std::string title;
-			uint32_t width, height;
+			uint32_t width = 1080, height = 720;
 			uint32_t max_frames_in_flight = 2;
 
 			EventCallbackFn EventCallback;
@@ -109,7 +109,7 @@ namespace Lava
 		uint32_t m_current_frame  = 0;
 		bool frame_buffer_resized = false;
 
-		uint32_t m_angle;
+		float m_angle;
 
 	private: // Initial creation functions //
 		void createGlfwWindow();
