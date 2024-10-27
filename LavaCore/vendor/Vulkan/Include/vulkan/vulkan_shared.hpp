@@ -1,4 +1,4 @@
-// Copyright 2015-2023 The Khronos Group Inc.
+// Copyright 2015-2024 The Khronos Group Inc.
 //
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 //
@@ -8,8 +8,11 @@
 #ifndef VULKAN_SHARED_HPP
 #define VULKAN_SHARED_HPP
 
-#include <atomic>  // std::atomic_size_t
 #include <vulkan/vulkan.hpp>
+
+#if !( defined( VULKAN_HPP_ENABLE_STD_MODULE ) && defined( VULKAN_HPP_STD_MODULE ) )
+#  include <atomic>  // std::atomic_size_t
+#endif
 
 namespace VULKAN_HPP_NAMESPACE
 {
@@ -52,6 +55,28 @@ namespace VULKAN_HPP_NAMESPACE
   {
   };
 
+  template <typename HandleType, typename = void>
+  struct HasPoolType : std::false_type
+  {
+  };
+
+  template <typename HandleType>
+  struct HasPoolType<HandleType, decltype( (void)typename SharedHandleTraits<HandleType>::deleter::PoolTypeExport() )> : std::true_type
+  {
+  };
+
+  template <typename HandleType, typename Enable = void>
+  struct GetPoolType
+  {
+    using type = NoDestructor;
+  };
+
+  template <typename HandleType>
+  struct GetPoolType<HandleType, typename std::enable_if<HasPoolType<HandleType>::value>::type>
+  {
+    using type = typename SharedHandleTraits<HandleType>::deleter::PoolTypeExport;
+  };
+
   //=====================================================================================================================
 
   template <typename HandleType>
@@ -88,7 +113,8 @@ namespace VULKAN_HPP_NAMESPACE
     ReferenceCounter( Args &&... control_args ) : m_header( std::forward<Args>( control_args )... )
     {
     }
-    ReferenceCounter( const ReferenceCounter & ) = delete;
+
+    ReferenceCounter( const ReferenceCounter & )             = delete;
     ReferenceCounter & operator=( const ReferenceCounter & ) = delete;
 
   public:
@@ -181,6 +207,13 @@ namespace VULKAN_HPP_NAMESPACE
       return bool( m_handle );
     }
 
+#  if defined( VULKAN_HPP_SMART_HANDLE_IMPLICIT_CAST )
+    operator HandleType() const VULKAN_HPP_NOEXCEPT
+    {
+      return m_handle;
+    }
+#  endif
+
     const HandleType * operator->() const VULKAN_HPP_NOEXCEPT
     {
       return &m_handle;
@@ -249,9 +282,20 @@ namespace VULKAN_HPP_NAMESPACE
   public:
     SharedHandle() = default;
 
-    template <typename T = HandleType, typename = typename std::enable_if<HasDestructor<T>::value>::type>
+    template <typename T = HandleType, typename = typename std::enable_if<HasDestructor<T>::value && !HasPoolType<T>::value>::type>
     explicit SharedHandle( HandleType handle, SharedHandle<DestructorTypeOf<HandleType>> parent, DeleterType deleter = DeleterType() ) VULKAN_HPP_NOEXCEPT
       : BaseType( handle, std::move( parent ), std::move( deleter ) )
+    {
+    }
+
+    template <typename Dispatcher = VULKAN_HPP_DEFAULT_DISPATCHER_TYPE,
+              typename T          = HandleType,
+              typename            = typename std::enable_if<HasDestructor<T>::value && HasPoolType<T>::value>::type>
+    explicit SharedHandle( HandleType                                           handle,
+                           SharedHandle<DestructorTypeOf<HandleType>>           parent,
+                           SharedHandle<typename GetPoolType<HandleType>::type> pool,
+                           const Dispatcher & dispatch                          VULKAN_HPP_DEFAULT_DISPATCHER_ASSIGNMENT ) VULKAN_HPP_NOEXCEPT
+      : BaseType( handle, std::move( parent ), DeleterType{ std::move( pool ), dispatch } )
     {
     }
 
@@ -382,6 +426,8 @@ namespace VULKAN_HPP_NAMESPACE
   public:
     using DestructorType = typename SharedHandleTraits<HandleType>::DestructorType;
 
+    using PoolTypeExport = PoolType;
+
     template <class Dispatcher>
     using ReturnType = decltype( std::declval<DestructorType>().free( PoolType(), 0u, nullptr, Dispatcher() ) );
 
@@ -401,7 +447,7 @@ namespace VULKAN_HPP_NAMESPACE
   public:
     void destroy( DestructorType parent, HandleType handle ) const VULKAN_HPP_NOEXCEPT
     {
-      VULKAN_HPP_ASSERT( m_destroy && m_dispatch );
+      VULKAN_HPP_ASSERT( m_destroy && m_dispatch && m_pool );
       ( parent.*m_destroy )( m_pool.get(), 1u, &handle, *m_dispatch );
     }
 
@@ -427,7 +473,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = NoDestructor;
     using deleter        = ObjectDestroyShared<Instance>;
   };
+
   using SharedInstance = SharedHandle<Instance>;
+
   template <>
   class SharedHandleTraits<Device>
   {
@@ -435,7 +483,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = NoDestructor;
     using deleter        = ObjectDestroyShared<Device>;
   };
+
   using SharedDevice = SharedHandle<Device>;
+
   template <>
   class SharedHandleTraits<DeviceMemory>
   {
@@ -443,7 +493,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectFreeShared<DeviceMemory>;
   };
+
   using SharedDeviceMemory = SharedHandle<DeviceMemory>;
+
   template <>
   class SharedHandleTraits<Fence>
   {
@@ -451,7 +503,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<Fence>;
   };
+
   using SharedFence = SharedHandle<Fence>;
+
   template <>
   class SharedHandleTraits<Semaphore>
   {
@@ -459,7 +513,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<Semaphore>;
   };
+
   using SharedSemaphore = SharedHandle<Semaphore>;
+
   template <>
   class SharedHandleTraits<Event>
   {
@@ -467,7 +523,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<Event>;
   };
+
   using SharedEvent = SharedHandle<Event>;
+
   template <>
   class SharedHandleTraits<QueryPool>
   {
@@ -475,7 +533,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<QueryPool>;
   };
+
   using SharedQueryPool = SharedHandle<QueryPool>;
+
   template <>
   class SharedHandleTraits<Buffer>
   {
@@ -483,7 +543,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<Buffer>;
   };
+
   using SharedBuffer = SharedHandle<Buffer>;
+
   template <>
   class SharedHandleTraits<BufferView>
   {
@@ -491,7 +553,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<BufferView>;
   };
+
   using SharedBufferView = SharedHandle<BufferView>;
+
   template <>
   class SharedHandleTraits<Image>
   {
@@ -499,7 +563,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<Image>;
   };
+
   using SharedImage = SharedHandle<Image>;
+
   template <>
   class SharedHandleTraits<ImageView>
   {
@@ -507,7 +573,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<ImageView>;
   };
+
   using SharedImageView = SharedHandle<ImageView>;
+
   template <>
   class SharedHandleTraits<ShaderModule>
   {
@@ -515,7 +583,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<ShaderModule>;
   };
+
   using SharedShaderModule = SharedHandle<ShaderModule>;
+
   template <>
   class SharedHandleTraits<PipelineCache>
   {
@@ -523,7 +593,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<PipelineCache>;
   };
+
   using SharedPipelineCache = SharedHandle<PipelineCache>;
+
   template <>
   class SharedHandleTraits<Pipeline>
   {
@@ -531,7 +603,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<Pipeline>;
   };
+
   using SharedPipeline = SharedHandle<Pipeline>;
+
   template <>
   class SharedHandleTraits<PipelineLayout>
   {
@@ -539,7 +613,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<PipelineLayout>;
   };
+
   using SharedPipelineLayout = SharedHandle<PipelineLayout>;
+
   template <>
   class SharedHandleTraits<Sampler>
   {
@@ -547,7 +623,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<Sampler>;
   };
+
   using SharedSampler = SharedHandle<Sampler>;
+
   template <>
   class SharedHandleTraits<DescriptorPool>
   {
@@ -555,7 +633,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<DescriptorPool>;
   };
+
   using SharedDescriptorPool = SharedHandle<DescriptorPool>;
+
   template <>
   class SharedHandleTraits<DescriptorSet>
   {
@@ -563,7 +643,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = PoolFreeShared<DescriptorSet, DescriptorPool>;
   };
+
   using SharedDescriptorSet = SharedHandle<DescriptorSet>;
+
   template <>
   class SharedHandleTraits<DescriptorSetLayout>
   {
@@ -571,7 +653,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<DescriptorSetLayout>;
   };
+
   using SharedDescriptorSetLayout = SharedHandle<DescriptorSetLayout>;
+
   template <>
   class SharedHandleTraits<Framebuffer>
   {
@@ -579,7 +663,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<Framebuffer>;
   };
+
   using SharedFramebuffer = SharedHandle<Framebuffer>;
+
   template <>
   class SharedHandleTraits<RenderPass>
   {
@@ -587,7 +673,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<RenderPass>;
   };
+
   using SharedRenderPass = SharedHandle<RenderPass>;
+
   template <>
   class SharedHandleTraits<CommandPool>
   {
@@ -595,7 +683,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<CommandPool>;
   };
+
   using SharedCommandPool = SharedHandle<CommandPool>;
+
   template <>
   class SharedHandleTraits<CommandBuffer>
   {
@@ -603,6 +693,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = PoolFreeShared<CommandBuffer, CommandPool>;
   };
+
   using SharedCommandBuffer = SharedHandle<CommandBuffer>;
 
   //=== VK_VERSION_1_1 ===
@@ -613,8 +704,10 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<SamplerYcbcrConversion>;
   };
+
   using SharedSamplerYcbcrConversion    = SharedHandle<SamplerYcbcrConversion>;
   using SharedSamplerYcbcrConversionKHR = SharedHandle<SamplerYcbcrConversion>;
+
   template <>
   class SharedHandleTraits<DescriptorUpdateTemplate>
   {
@@ -622,8 +715,10 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<DescriptorUpdateTemplate>;
   };
+
   using SharedDescriptorUpdateTemplate    = SharedHandle<DescriptorUpdateTemplate>;
   using SharedDescriptorUpdateTemplateKHR = SharedHandle<DescriptorUpdateTemplate>;
+
   //=== VK_VERSION_1_3 ===
   template <>
   class SharedHandleTraits<PrivateDataSlot>
@@ -632,8 +727,10 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<PrivateDataSlot>;
   };
+
   using SharedPrivateDataSlot    = SharedHandle<PrivateDataSlot>;
   using SharedPrivateDataSlotEXT = SharedHandle<PrivateDataSlot>;
+
   //=== VK_KHR_surface ===
   template <>
   class SharedHandleTraits<SurfaceKHR>
@@ -642,6 +739,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Instance;
     using deleter        = ObjectDestroyShared<SurfaceKHR>;
   };
+
   using SharedSurfaceKHR = SharedHandle<SurfaceKHR>;
 
   //=== VK_KHR_swapchain ===
@@ -652,7 +750,19 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<SwapchainKHR>;
   };
+
   using SharedSwapchainKHR = SharedHandle<SwapchainKHR>;
+
+  //=== VK_KHR_display ===
+  template <>
+  class SharedHandleTraits<DisplayKHR>
+  {
+  public:
+    using DestructorType = PhysicalDevice;
+    using deleter        = ObjectDestroyShared<DisplayKHR>;
+  };
+
+  using SharedDisplayKHR = SharedHandle<DisplayKHR>;
 
   //=== VK_EXT_debug_report ===
   template <>
@@ -662,6 +772,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Instance;
     using deleter        = ObjectDestroyShared<DebugReportCallbackEXT>;
   };
+
   using SharedDebugReportCallbackEXT = SharedHandle<DebugReportCallbackEXT>;
 
   //=== VK_KHR_video_queue ===
@@ -672,7 +783,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<VideoSessionKHR>;
   };
+
   using SharedVideoSessionKHR = SharedHandle<VideoSessionKHR>;
+
   template <>
   class SharedHandleTraits<VideoSessionParametersKHR>
   {
@@ -680,6 +793,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<VideoSessionParametersKHR>;
   };
+
   using SharedVideoSessionParametersKHR = SharedHandle<VideoSessionParametersKHR>;
 
   //=== VK_NVX_binary_import ===
@@ -690,7 +804,9 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<CuModuleNVX>;
   };
+
   using SharedCuModuleNVX = SharedHandle<CuModuleNVX>;
+
   template <>
   class SharedHandleTraits<CuFunctionNVX>
   {
@@ -698,6 +814,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<CuFunctionNVX>;
   };
+
   using SharedCuFunctionNVX = SharedHandle<CuFunctionNVX>;
 
   //=== VK_EXT_debug_utils ===
@@ -708,6 +825,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Instance;
     using deleter        = ObjectDestroyShared<DebugUtilsMessengerEXT>;
   };
+
   using SharedDebugUtilsMessengerEXT = SharedHandle<DebugUtilsMessengerEXT>;
 
   //=== VK_KHR_acceleration_structure ===
@@ -718,6 +836,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<AccelerationStructureKHR>;
   };
+
   using SharedAccelerationStructureKHR = SharedHandle<AccelerationStructureKHR>;
 
   //=== VK_EXT_validation_cache ===
@@ -728,6 +847,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<ValidationCacheEXT>;
   };
+
   using SharedValidationCacheEXT = SharedHandle<ValidationCacheEXT>;
 
   //=== VK_NV_ray_tracing ===
@@ -738,7 +858,19 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<AccelerationStructureNV>;
   };
+
   using SharedAccelerationStructureNV = SharedHandle<AccelerationStructureNV>;
+
+  //=== VK_INTEL_performance_query ===
+  template <>
+  class SharedHandleTraits<PerformanceConfigurationINTEL>
+  {
+  public:
+    using DestructorType = Device;
+    using deleter        = ObjectDestroyShared<PerformanceConfigurationINTEL>;
+  };
+
+  using SharedPerformanceConfigurationINTEL = SharedHandle<PerformanceConfigurationINTEL>;
 
   //=== VK_KHR_deferred_host_operations ===
   template <>
@@ -748,6 +880,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<DeferredOperationKHR>;
   };
+
   using SharedDeferredOperationKHR = SharedHandle<DeferredOperationKHR>;
 
   //=== VK_NV_device_generated_commands ===
@@ -758,7 +891,31 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<IndirectCommandsLayoutNV>;
   };
+
   using SharedIndirectCommandsLayoutNV = SharedHandle<IndirectCommandsLayoutNV>;
+
+#  if defined( VK_ENABLE_BETA_EXTENSIONS )
+  //=== VK_NV_cuda_kernel_launch ===
+  template <>
+  class SharedHandleTraits<CudaModuleNV>
+  {
+  public:
+    using DestructorType = Device;
+    using deleter        = ObjectDestroyShared<CudaModuleNV>;
+  };
+
+  using SharedCudaModuleNV = SharedHandle<CudaModuleNV>;
+
+  template <>
+  class SharedHandleTraits<CudaFunctionNV>
+  {
+  public:
+    using DestructorType = Device;
+    using deleter        = ObjectDestroyShared<CudaFunctionNV>;
+  };
+
+  using SharedCudaFunctionNV = SharedHandle<CudaFunctionNV>;
+#  endif /*VK_ENABLE_BETA_EXTENSIONS*/
 
 #  if defined( VK_USE_PLATFORM_FUCHSIA )
   //=== VK_FUCHSIA_buffer_collection ===
@@ -769,6 +926,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<BufferCollectionFUCHSIA>;
   };
+
   using SharedBufferCollectionFUCHSIA = SharedHandle<BufferCollectionFUCHSIA>;
 #  endif /*VK_USE_PLATFORM_FUCHSIA*/
 
@@ -780,6 +938,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<MicromapEXT>;
   };
+
   using SharedMicromapEXT = SharedHandle<MicromapEXT>;
 
   //=== VK_NV_optical_flow ===
@@ -790,6 +949,7 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<OpticalFlowSessionNV>;
   };
+
   using SharedOpticalFlowSessionNV = SharedHandle<OpticalFlowSessionNV>;
 
   //=== VK_EXT_shader_object ===
@@ -800,7 +960,40 @@ namespace VULKAN_HPP_NAMESPACE
     using DestructorType = Device;
     using deleter        = ObjectDestroyShared<ShaderEXT>;
   };
+
   using SharedShaderEXT = SharedHandle<ShaderEXT>;
+
+  //=== VK_KHR_pipeline_binary ===
+  template <>
+  class SharedHandleTraits<PipelineBinaryKHR>
+  {
+  public:
+    using DestructorType = Device;
+    using deleter        = ObjectDestroyShared<PipelineBinaryKHR>;
+  };
+
+  using SharedPipelineBinaryKHR = SharedHandle<PipelineBinaryKHR>;
+
+  //=== VK_EXT_device_generated_commands ===
+  template <>
+  class SharedHandleTraits<IndirectCommandsLayoutEXT>
+  {
+  public:
+    using DestructorType = Device;
+    using deleter        = ObjectDestroyShared<IndirectCommandsLayoutEXT>;
+  };
+
+  using SharedIndirectCommandsLayoutEXT = SharedHandle<IndirectCommandsLayoutEXT>;
+
+  template <>
+  class SharedHandleTraits<IndirectExecutionSetEXT>
+  {
+  public:
+    using DestructorType = Device;
+    using deleter        = ObjectDestroyShared<IndirectExecutionSetEXT>;
+  };
+
+  using SharedIndirectExecutionSetEXT = SharedHandle<IndirectExecutionSetEXT>;
 
   enum class SwapchainOwns
   {
@@ -920,11 +1113,13 @@ namespace VULKAN_HPP_NAMESPACE
 
   public:
     SharedHandle() = default;
+
     explicit SharedHandle( PhysicalDevice handle, SharedInstance parent ) noexcept
       : SharedHandleBaseNoDestroy<PhysicalDevice, SharedInstance>( handle, std::move( parent ) )
     {
     }
   };
+
   using SharedPhysicalDevice = SharedHandle<PhysicalDevice>;
 
   template <>
@@ -934,25 +1129,13 @@ namespace VULKAN_HPP_NAMESPACE
 
   public:
     SharedHandle() = default;
+
     explicit SharedHandle( Queue handle, SharedDevice parent ) noexcept : SharedHandleBaseNoDestroy<Queue, SharedDevice>( handle, std::move( parent ) ) {}
   };
+
   using SharedQueue = SharedHandle<Queue>;
 
   //=== VK_KHR_display ===
-
-  template <>
-  class SharedHandle<DisplayKHR> : public SharedHandleBaseNoDestroy<DisplayKHR, SharedPhysicalDevice>
-  {
-    friend SharedHandleBase<DisplayKHR, SharedPhysicalDevice>;
-
-  public:
-    SharedHandle() = default;
-    explicit SharedHandle( DisplayKHR handle, SharedPhysicalDevice parent ) noexcept
-      : SharedHandleBaseNoDestroy<DisplayKHR, SharedPhysicalDevice>( handle, std::move( parent ) )
-    {
-    }
-  };
-  using SharedDisplayKHR = SharedHandle<DisplayKHR>;
 
   template <>
   class SharedHandle<DisplayModeKHR> : public SharedHandleBaseNoDestroy<DisplayModeKHR, SharedDisplayKHR>
@@ -961,28 +1144,14 @@ namespace VULKAN_HPP_NAMESPACE
 
   public:
     SharedHandle() = default;
+
     explicit SharedHandle( DisplayModeKHR handle, SharedDisplayKHR parent ) noexcept
       : SharedHandleBaseNoDestroy<DisplayModeKHR, SharedDisplayKHR>( handle, std::move( parent ) )
     {
     }
   };
+
   using SharedDisplayModeKHR = SharedHandle<DisplayModeKHR>;
-
-  //=== VK_INTEL_performance_query ===
-
-  template <>
-  class SharedHandle<PerformanceConfigurationINTEL> : public SharedHandleBaseNoDestroy<PerformanceConfigurationINTEL, SharedDevice>
-  {
-    friend SharedHandleBase<PerformanceConfigurationINTEL, SharedDevice>;
-
-  public:
-    SharedHandle() = default;
-    explicit SharedHandle( PerformanceConfigurationINTEL handle, SharedDevice parent ) noexcept
-      : SharedHandleBaseNoDestroy<PerformanceConfigurationINTEL, SharedDevice>( handle, std::move( parent ) )
-    {
-    }
-  };
-  using SharedPerformanceConfigurationINTEL = SharedHandle<PerformanceConfigurationINTEL>;
 #endif  // !VULKAN_HPP_NO_SMART_HANDLE
 }  // namespace VULKAN_HPP_NAMESPACE
 #endif  // VULKAN_SHARED_HPP

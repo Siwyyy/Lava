@@ -17,10 +17,10 @@
 
 using namespace Lava;
 
-#ifdef NDEBUG
-const bool VulkanWindow::validation_layers_enabled = false;
-#else
+#ifdef LAVA_DEBUG
 const bool VulkanWindow::validation_layers_enabled = true;
+#else
+const bool VulkanWindow::validation_layers_enabled = false;
 #endif
 
 namespace
@@ -349,6 +349,8 @@ void VulkanWindow::createVulkanInstance()
 		LAVA_CORE_ERROR("Validation layers requested, but not available!");
 		LAVA_DEBUGBREAK
 	}
+	else
+		LAVA_CORE_INFO("Validation layers disabled");
 
 	// Create VkInstance ////////////////////////////////////
 	VkInstanceCreateInfo instance_create_info;
