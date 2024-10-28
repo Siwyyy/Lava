@@ -3,6 +3,8 @@
 
 #include "Events/MouseEvent.h"
 
+#include "Input/Input.h"
+
 #include "Log/Log.h"
 
 namespace Lava
@@ -24,12 +26,10 @@ namespace Lava
 	{
 		while (m_running)
 		{
-			m_window->onUpdate();
-
 			for (Layer* layer : m_layer_stack)
-			{
 				layer->onUpdate();
-			}
+
+			m_window->onUpdate();
 		}
 	}
 
@@ -38,8 +38,6 @@ namespace Lava
 		EventDispatcher dispatcher(event_);
 		dispatcher.dispatch<WindowCloseEvent>([this](auto&& e_) { return onWindowClose(e_); });
 		dispatcher.dispatch<MouseMovedEvent>([this](auto&& e_) { return onMouseMoved(e_); });
-
-		LAVA_CORE_TRACE("Received event: {0}", event_);
 
 		for (auto it = m_layer_stack.end(); it != m_layer_stack.begin();)
 		{
@@ -65,7 +63,7 @@ namespace Lava
 		return true;
 	}
 
-	bool Application::onMouseMoved(MouseMovedEvent& event_)
+	bool Application::onMouseMoved(const MouseMovedEvent& event_) const
 	{
 		m_window->onMouseMoved(event_.getX());
 		return true;

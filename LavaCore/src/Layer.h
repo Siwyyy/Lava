@@ -6,8 +6,8 @@ namespace Lava
 	class Layer
 	{
 	public:
-		Layer();
-		virtual ~Layer();
+		Layer()          = default;
+		virtual ~Layer() = default;
 
 		virtual void onAttach() = 0;
 		virtual void onDetach() = 0;

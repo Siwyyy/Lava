@@ -30,11 +30,13 @@ namespace Lava
 
 		inline void setEventCallback(const EventCallbackFn& callback_) override { m_data.EventCallback = callback_; }
 
+		inline void* getNativeWindow() const override { return m_window; }
+
 	private:
 		struct WindowData
 		{
 			std::string title;
-			uint32_t width = 1080, height = 720;
+			uint32_t width                = 1080, height = 720;
 			uint32_t max_frames_in_flight = 2;
 
 			EventCallbackFn EventCallback;
@@ -50,7 +52,7 @@ namespace Lava
 
 		struct SwapchainSupportDetails
 		{
-			VkSurfaceCapabilitiesKHR surface_capabilities;
+			VkSurfaceCapabilitiesKHR surface_capabilities{};
 			std::vector<VkSurfaceFormatKHR> surface_formats;
 			std::vector<VkPresentModeKHR> present_modes;
 		};
@@ -145,7 +147,7 @@ namespace Lava
 		void createVulkanVertexBuffer();
 		void createVulkanIndexBuffer();
 		void createVulkanUniformBuffers();
-		void updateUniformBuffer(uint32_t current_frame_);
+		void updateVulkanUniformBuffer(uint32_t current_frame_);
 		void createVulkanDescriptorPool();
 		void createVulkanDescriptorSets();
 

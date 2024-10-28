@@ -17,6 +17,7 @@ int main(int argc, char** argv)
 	}
 	catch (const std::exception& e)
 	{
+		(void)e;
 		LAVA_CORE_ERROR(e.what());
 		return EXIT_FAILURE;
 	}

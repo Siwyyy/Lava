@@ -163,7 +163,7 @@ void VulkanWindow::draw()
 	const VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 	const VkSemaphore signal_semaphores[]    = {m_semaphore_render_finished[m_current_frame]};
 
-	updateUniformBuffer(m_current_frame);
+	updateVulkanUniformBuffer(m_current_frame);
 
 	VkSubmitInfo submit_info;
 	submit_info.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -947,10 +947,9 @@ void VulkanWindow::createVulkanSyncObjects()
 }
 
 // //////////////////////// //
-
 // Multiple usage functions //
-
 // //////////////////////// //
+
 void VulkanWindow::destroyVulkanSwapchain()
 {
 	for (const VkImageView& image_view : m_image_views)
@@ -1240,7 +1239,7 @@ void VulkanWindow::createVulkanUniformBuffers()
 	}
 }
 
-void VulkanWindow::updateUniformBuffer(uint32_t current_frame_)
+void VulkanWindow::updateVulkanUniformBuffer(uint32_t current_frame_)
 {
 	//static auto start_time = std::chrono::high_resolution_clock::now();
 

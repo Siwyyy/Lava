@@ -6,7 +6,7 @@
 
 namespace Lava
 {
-	class LAVA_API KeyEvent : public Event
+	class KeyEvent : public Event
 	{
 	public:
 		inline int getKeyCode() const { return m_keycode; }
@@ -20,7 +20,7 @@ namespace Lava
 		int m_keycode;
 	};
 
-	class LAVA_API KeyPressedEvent : public KeyEvent
+	class KeyPressedEvent : public KeyEvent
 	{
 	public:
 		KeyPressedEvent(int keycode, bool repeats_)
@@ -44,7 +44,7 @@ namespace Lava
 		bool m_repeats;
 	};
 
-	class LAVA_API KeyReleasedEvent : public KeyEvent
+	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
 		KeyReleasedEvent(int keycode)

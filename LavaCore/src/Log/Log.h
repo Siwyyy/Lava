@@ -7,7 +7,7 @@
 
 namespace Lava
 {
-	class LAVA_API Log
+	class Log
 	{
 	public:
 		Log() = delete;

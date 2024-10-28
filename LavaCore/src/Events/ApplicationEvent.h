@@ -6,7 +6,7 @@
 
 namespace Lava
 {
-	class LAVA_API WindowResizeEvent : public Event
+	class WindowResizeEvent : public Event
 	{
 	public:
 		WindowResizeEvent(uint32_t width_, uint32_t height_)
@@ -30,7 +30,7 @@ namespace Lava
 		uint32_t m_width, m_height;
 	};
 
-	class LAVA_API WindowCloseEvent : public Event
+	class WindowCloseEvent : public Event
 	{
 	public:
 		WindowCloseEvent() = default;

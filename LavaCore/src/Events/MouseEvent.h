@@ -6,7 +6,7 @@
 
 namespace Lava
 {
-	class LAVA_API MouseMovedEvent : public Event
+	class MouseMovedEvent : public Event
 	{
 	public:
 		MouseMovedEvent(float x_, float y_)
@@ -30,15 +30,17 @@ namespace Lava
 		float m_mouse_x, m_mouse_y;
 	};
 
-	class LAVA_API MouseButtonPressedEvent : public Event
+	class MouseButtonPressedEvent : public Event
 	{
 	public:
-		MouseButtonPressedEvent(uint32_t button_): m_button(button_) {}
+		MouseButtonPressedEvent(uint32_t button_): m_button_code(button_) {}
+
+		uint32_t getButtonCode() const { return m_button_code; }
 
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonPressedEvent: " << m_button;
+			ss << "MouseButtonPressedEvent: " << m_button_code;
 			return ss.str();
 		}
 
@@ -46,18 +48,18 @@ namespace Lava
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	private:
-		uint32_t m_button;
+		uint32_t m_button_code;
 	};
 
-	class LAVA_API MouseButtonReleasedEvent : public Event
+	class MouseButtonReleasedEvent : public Event
 	{
 	public :
-		MouseButtonReleasedEvent(uint32_t button_): m_button(button_) {}
+		MouseButtonReleasedEvent(uint32_t button_): m_button_code(button_) {}
 
 		std::string toString() const override
 		{
 			std::stringstream ss;
-			ss << "MouseButtonReleasedEvent: " << m_button;
+			ss << "MouseButtonReleasedEvent: " << m_button_code;
 			return ss.str();
 		}
 
@@ -65,6 +67,6 @@ namespace Lava
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 
 	private:
-		uint32_t m_button;
+		uint32_t m_button_code;
 	};
 }

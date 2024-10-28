@@ -7,11 +7,14 @@
 
 namespace Lava
 {
-	class LAVA_API Application
+	class Application
 	{
 	public:
 		Application();
 		virtual ~Application();
+
+		static Application& getInstance() { return *s_instance; }
+		inline Window& getWindow() const { return *m_window; }
 
 		void run();
 		void onEvent(Event& event_);
@@ -21,7 +24,7 @@ namespace Lava
 
 	private:
 		bool onWindowClose(WindowCloseEvent& event_);
-		bool onMouseMoved(MouseMovedEvent& event_);
+		bool onMouseMoved(const MouseMovedEvent& event_) const;
 
 		std::unique_ptr<Window> m_window;
 		bool m_running = true;
