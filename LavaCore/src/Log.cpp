@@ -1,5 +1,5 @@
-#include "Lavapch.h"
-#include "Log.h"
+#include "Lava/Lavapch.h"
+#include "Lava/Log.h"
 
 #include "spdlog/sinks/stdout_color_sinks.h"
 

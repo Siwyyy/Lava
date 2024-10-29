@@ -1,7 +1,7 @@
-﻿#include "Lavapch.h"
-#include "GLFWInput.h"
+﻿#include "Lava/Lavapch.h"
+#include "Lava/Input/GLFW/GLFWInput.h"
 
-#include "Application.h"
+#include "Lava/Application.h"
 
 #include <glfw3.h>
 

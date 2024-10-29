@@ -1,11 +1,9 @@
-#include "Lavapch.h"
-#include "Application.h"
+#include "Lava/Lavapch.h"
+#include "Lava/Application.h"
 
-#include "Events/MouseEvent.h"
+#include "Lava/Events/MouseEvent.h"
 
-#include "Input/Input.h"
-
-#include "Log/Log.h"
+#include "Lava/Log.h"
 
 namespace Lava
 {

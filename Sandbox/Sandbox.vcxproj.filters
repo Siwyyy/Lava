@@ -19,4 +19,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\basic.frag" />
+    <None Include="Resources\Shaders\basic.vert" />
+    <None Include="Resources\Shaders\compile.bat">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="Resources\shaders\basic.frag.spv" />
+    <CopyFileToFolders Include="Resources\shaders\basic.vert.spv" />
+  </ItemGroup>
 </Project>

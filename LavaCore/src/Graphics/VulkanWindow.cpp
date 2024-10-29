@@ -1,19 +1,22 @@
-#include "Lavapch.h"
-#include "VulkanWindow.h"
+#include "Lava/Lavapch.h"
+#include "Lava/Graphics/Vulkan/VulkanWindow.h"
 
-#include "Log/Log.h"
+#include "Lava/Log.h"
 
-#include "Events/ApplicationEvent.h"
-#include "Events/KeyEvent.h"
-#include "Events/MouseEvent.h"
+#include "Lava/Events/ApplicationEvent.h"
+#include "Lava/Events/KeyEvent.h"
+#include "Lava/Events/MouseEvent.h"
 
-#include "Vertex.h"
+#include "Lava/Graphics/Vulkan/Vertex.h"
 
 #define GLM_FORCE_RADIANS
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 
 #include <chrono>
+#include <filesystem>
+
+#include "Lava/ResourcePaths.h"
 
 using namespace Lava;
 
@@ -749,8 +752,8 @@ void VulkanWindow::createVulkanDescriptorSetLayout()
 
 void VulkanWindow::createVulkanGraphicsPipeline()
 {
-	auto vert_shader_code = readShaderFile("C:/dev/repos/Siwyyy/Lava/LavaCore/shaders/basic.vert.spv");
-	auto frag_shader_code = readShaderFile("C:/dev/repos/Siwyyy/Lava/LavaCore/shaders/basic.frag.spv");
+	auto vert_shader_code = readShaderFile("basic.vert.spv");
+	auto frag_shader_code = readShaderFile("basic.frag.spv");
 
 	m_vert_shader_module = createShaderModule(vert_shader_code);
 	m_frag_shader_module = createShaderModule(frag_shader_code);
@@ -1391,7 +1394,8 @@ void VulkanWindow::destroyVulkanDebug() const
 
 std::vector<char> VulkanWindow::readShaderFile(const std::string& filename_)
 {
-	std::ifstream file(filename_, std::ios::ate | std::ios::binary);
+	std::filesystem::path shaders_dir = ResourceDir::SHADERS;
+	std::ifstream file(shaders_dir /= filename_, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
 		LAVA_CORE_ERROR("Failed to open shader file!");

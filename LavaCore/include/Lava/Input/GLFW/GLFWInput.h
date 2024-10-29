@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Input/Input.h"
+#include "Lava/Input/Input.h"
 
 namespace Lava
 {

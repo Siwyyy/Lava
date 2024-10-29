@@ -1,9 +1,7 @@
 #include "Lava.h"
 
-#include "Events/KeyEvent.h"
-
-#include "Input/Input.h"
-#include "Input/MouseButtonCodes.h"
+#include "Lava/Input/Input.h"
+#include "Lava/Input/MouseButtonCodes.h"
 
 class ExampleLayer final : public Lava::Layer
 {
