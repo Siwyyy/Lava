@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LayerStack.h"
+#include "Resources.h"
 
 #include "Events/ApplicationEvent.h"
 #include "Events/MouseEvent.h"
@@ -12,17 +13,22 @@ namespace Lava
 	class Application
 	{
 	public:
-		Application();
-		virtual ~Application();
+		Application()          = default;
+		virtual ~Application() = default;
 
 		static Application& getInstance() { return *s_instance; }
 		inline Window& getWindow() const { return *m_window; }
 
+		void init();
 		void run();
+
 		void onEvent(Event& event_);
 
 		void pushLayer(Layer* layer_);
 		void pushOverlay(Layer* overlay_);
+
+	private:
+		virtual void initResources() = 0;
 
 	private:
 		bool onWindowClose(WindowCloseEvent& event_);

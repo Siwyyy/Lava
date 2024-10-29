@@ -1,5 +1,6 @@
 #include "Lava.h"
 
+#include "Lava/Resources.h"
 #include "Lava/Input/Input.h"
 #include "Lava/Input/MouseButtonCodes.h"
 
@@ -40,6 +41,12 @@ public:
 	}
 
 	~Sandbox() override = default;
+
+private:
+	void initResources() override
+	{
+		Lava::Resources::setDir(Lava::ResourceDir::Shaders, "./Resources/Shaders");
+	}
 };
 
 Lava::Application* Lava::createApplication()

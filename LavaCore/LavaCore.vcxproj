@@ -198,7 +198,7 @@
     <ClInclude Include="include\Lava\Lavapch.h" />
     <ClInclude Include="include\Lava\Graphics\Vulkan\VulkanWindow.h" />
     <ClInclude Include="include\Lava\Graphics\Window.h" />
-    <ClInclude Include="include\Lava\ResourcePaths.h" />
+    <ClInclude Include="include\Lava\Resources.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

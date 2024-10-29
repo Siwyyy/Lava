@@ -7,18 +7,19 @@
 
 namespace Lava
 {
-	Application* Application::s_instance = nullptr;
+	Application* Application::s_instance           = nullptr;
+	std::filesystem::path Resources::m_shaders_dir = "Shaders/Dir/Not/Set";
 
-	Application::Application()
+	void Application::init()
 	{
 		LAVA_ASSERT(!s_instance, "Application instance already running")
 		s_instance = this;
 
+		initResources();
+
 		m_window = std::unique_ptr<Window>(Window::create({"Lava Engine - Test",720,480}));
 		m_window->setEventCallback([this](auto&& e_) { onEvent(e_); });
 	}
-
-	Application::~Application() = default;
 
 	void Application::run()
 	{

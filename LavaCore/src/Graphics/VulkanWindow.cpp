@@ -2,21 +2,15 @@
 #include "Lava/Graphics/Vulkan/VulkanWindow.h"
 
 #include "Lava/Log.h"
-
+#include "Lava/Resources.h"
 #include "Lava/Events/ApplicationEvent.h"
 #include "Lava/Events/KeyEvent.h"
 #include "Lava/Events/MouseEvent.h"
-
 #include "Lava/Graphics/Vulkan/Vertex.h"
 
 #define GLM_FORCE_RADIANS
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
-
-#include <chrono>
-#include <filesystem>
-
-#include "Lava/ResourcePaths.h"
 
 using namespace Lava;
 
@@ -1394,8 +1388,8 @@ void VulkanWindow::destroyVulkanDebug() const
 
 std::vector<char> VulkanWindow::readShaderFile(const std::string& filename_)
 {
-	std::filesystem::path shaders_dir = ResourceDir::SHADERS;
-	std::ifstream file(shaders_dir /= filename_, std::ios::ate | std::ios::binary);
+	std::filesystem::path shaders_path = Resources::getDir(ResourceDir::Shaders);
+	std::ifstream file(shaders_path /= filename_, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
 		LAVA_CORE_ERROR("Failed to open shader file!");

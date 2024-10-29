@@ -12,6 +12,7 @@ int main(int argc, char** argv)
 		LAVA_CORE_INFO("Logger initialized!");
 
 		const auto app = Lava::createApplication();
+		app->init();
 		app->run();
 		delete app;
 	}
