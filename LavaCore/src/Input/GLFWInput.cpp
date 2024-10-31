@@ -3,8 +3,6 @@
 
 #include "Lava/Application.h"
 
-#include <glfw3.h>
-
 using namespace Lava;
 
 Input* Input::s_instance = new GLFWInput();

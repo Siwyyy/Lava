@@ -1,9 +1,10 @@
 #include "Lava/Lavapch.h"
 #include "Lava/Application.h"
 
-#include "Lava/Events/MouseEvent.h"
 
 #include "Lava/Log.h"
+#include "Lava/Resources.h"
+#include "Lava/Events/MouseEvent.h"
 
 namespace Lava
 {
@@ -17,7 +18,7 @@ namespace Lava
 
 		initResources();
 
-		m_window = std::unique_ptr<Window>(Window::create({"Lava Engine - Test",720,480}));
+		m_window = std::make_unique<Window>(WindowProps("Lava Engine - Test",720,480));
 		m_window->setEventCallback([this](auto&& e_) { onEvent(e_); });
 	}
 

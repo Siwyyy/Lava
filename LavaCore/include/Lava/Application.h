@@ -1,12 +1,11 @@
 #pragma once
 
 #include "LayerStack.h"
-#include "Resources.h"
 
 #include "Events/ApplicationEvent.h"
 #include "Events/MouseEvent.h"
 
-#include "Graphics/Window.h"
+#include "Window.h"
 
 namespace Lava
 {

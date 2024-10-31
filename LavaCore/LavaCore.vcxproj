@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS;LAVA_DEBUG</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\include;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\glm;$(SolutionDir)LavaCore\vendor\spdlog\include;$(SolutionDir)LavaCore\vendor\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\include;$(SolutionDir)LavaCore\vendor;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableParallelCodeGeneration>
       </EnableParallelCodeGeneration>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS;LAVA_RELEASE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\include;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\glm;$(SolutionDir)LavaCore\vendor\spdlog\include;$(SolutionDir)LavaCore\vendor\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\include;$(SolutionDir)LavaCore\vendor;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -143,7 +143,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\include;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\glm;$(SolutionDir)LavaCore\vendor\spdlog\include;$(SolutionDir)LavaCore\vendor\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\include;$(SolutionDir)LavaCore\vendor;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -168,6 +168,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Graphics\GraphicsContext.cpp" />
     <ClCompile Include="src\Input\GLFWInput.cpp" />
     <ClCompile Include="src\LayerStack.cpp" />
     <ClCompile Include="src\Log.cpp" />
@@ -176,7 +177,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Graphics\VulkanWindow.cpp" />
+    <ClCompile Include="src\Graphics\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Lava\Input\GLFW\GLFWInput.h" />
@@ -185,7 +186,8 @@
     <ClInclude Include="include\Lava\Input\MouseButtonCodes.h" />
     <ClInclude Include="include\Lava\Layer.h" />
     <ClInclude Include="include\Lava\Application.h" />
-    <ClInclude Include="include\Lava\Graphics\Vulkan\Vertex.h" />
+    <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
+    <ClInclude Include="include\Lava\Renderer\Vertex.h" />
     <ClInclude Include="include\Lava\LayerStack.h" />
     <ClInclude Include="include\Lava\Log.h" />
     <ClInclude Include="include\Lava\Core.h" />
@@ -196,8 +198,7 @@
     <ClInclude Include="include\Lava\Events\MouseEvent.h" />
     <ClInclude Include="include\Lava.h" />
     <ClInclude Include="include\Lava\Lavapch.h" />
-    <ClInclude Include="include\Lava\Graphics\Vulkan\VulkanWindow.h" />
-    <ClInclude Include="include\Lava\Graphics\Window.h" />
+    <ClInclude Include="include\Lava\Window.h" />
     <ClInclude Include="include\Lava\Resources.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

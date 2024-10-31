@@ -1,53 +1,20 @@
-#include "Lava/Lavapch.h"
-#include "Lava/Graphics/Vulkan/VulkanWindow.h"
+﻿#include "Lava/Lavapch.h"
+#include "Lava/Renderer/GraphicsContext.h"
 
 #include "Lava/Log.h"
-#include "Lava/Resources.h"
-#include "Lava/Events/ApplicationEvent.h"
-#include "Lava/Events/KeyEvent.h"
-#include "Lava/Events/MouseEvent.h"
-#include "Lava/Graphics/Vulkan/Vertex.h"
+#include "Lava/Renderer/Vertex.h"
 
 #define GLM_FORCE_RADIANS
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+
+#include "Lava/Resources.h"
 
 using namespace Lava;
 
-#ifdef LAVA_DEBUG
-const bool VulkanWindow::validation_layers_enabled = true;
-#else
-const bool VulkanWindow::validation_layers_enabled = false;
-#endif
-
-namespace
+void GraphicsContext::init()
 {
-	bool l_glfw_initialized = false;
-}
-
-Window* Window::create(const WindowProps& props_)
-{
-	return new VulkanWindow(props_);
-}
-
-VulkanWindow::VulkanWindow(const WindowProps& props_)
-{
-	init(props_);
-}
-
-VulkanWindow::~VulkanWindow()
-{
-	shutdown();
-}
-
-void VulkanWindow::init(const WindowProps& props_)
-{
-	m_data.title  = props_.title;
-	m_data.width  = props_.width;
-	m_data.height = props_.height;
-
-	createGlfwWindow();
-
 	LAVA_CORE_INFO("Initializing Vulkan graphics...");
 
 	createVulkanInstance();
@@ -75,9 +42,9 @@ void VulkanWindow::init(const WindowProps& props_)
 	LAVA_CORE_INFO("Vulkan graphics initialization complete");
 }
 
-void VulkanWindow::shutdown()
+void GraphicsContext::shutdown()
 {
-	for (size_t i = 0; i < m_data.max_frames_in_flight; i++)
+	for (size_t i = 0; i < max_frames_in_flight; i++)
 	{
 		vkDestroySemaphore(m_device, m_semaphore_image_available[i], nullptr);
 		vkDestroySemaphore(m_device, m_semaphore_render_finished[i], nullptr);
@@ -95,7 +62,7 @@ void VulkanWindow::shutdown()
 	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
 	vkDestroyDescriptorPool(m_device, m_descriptor_pool, nullptr);
 	vkDestroyDescriptorSetLayout(m_device, m_descriptor_set_layout, nullptr);
-	for (size_t i = 0; i < m_data.max_frames_in_flight; i++)
+	for (size_t i = 0; i < max_frames_in_flight; i++)
 	{
 		vkDestroyBuffer(m_device, m_uniform_buffers[i], nullptr);
 		vkFreeMemory(m_device, m_uniform_buffers_memory[i], nullptr);
@@ -116,21 +83,16 @@ void VulkanWindow::shutdown()
 
 	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 	vkDestroyInstance(m_instance, nullptr);
-
-	glfwDestroyWindow(m_window);
-	glfwTerminate();
 }
 
-void VulkanWindow::onUpdate()
+void GraphicsContext::onUpdate()
 {
 	glfwPollEvents();
 	draw();
 	vkDeviceWaitIdle(m_device);
 }
 
-void VulkanWindow::onMouseMoved(float angle_) { m_angle = angle_; }
-
-void VulkanWindow::draw()
+void GraphicsContext::draw()
 {
 	vkWaitForFences(m_device, 1, &m_fence_in_flight[m_current_frame],VK_TRUE,UINT64_MAX);
 
@@ -200,110 +162,14 @@ void VulkanWindow::draw()
 		LAVA_CORE_ERROR("Failed to acquire swapchain image!");
 	}
 
-	m_current_frame = (m_current_frame + 1) % m_data.max_frames_in_flight;
+	m_current_frame = (m_current_frame + 1) % max_frames_in_flight;
 }
 
 // ////////////////////////// //
 // Initial creation functions //
 // ////////////////////////// //
 
-void VulkanWindow::createGlfwWindow()
-{
-	LAVA_CORE_INFO("Creating window \"{0}\"...", m_data.title);
-
-	if (!l_glfw_initialized)
-	{
-		glfwInit();
-		l_glfw_initialized = true;
-	}
-
-	// Create GLFW Window ///////////////////////////////////
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-	m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
-	glfwSetWindowUserPointer(m_window, &m_data);
-
-	// Set callbacks ////////////////////////////////////////
-	glfwSetWindowSizeCallback(m_window,
-														[](GLFWwindow* window_, int width_, int height_)
-														{
-															WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window_);
-															data.width       = width_;
-															data.height      = height_;
-															WindowResizeEvent event(width_, height_);
-															data.EventCallback(event);
-														});
-
-	glfwSetWindowCloseCallback(m_window,
-														 [](GLFWwindow* window_)
-														 {
-															 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window_);
-															 WindowCloseEvent event;
-															 data.EventCallback(event);
-														 });
-
-	glfwSetKeyCallback(m_window,
-										 [](GLFWwindow* window_, int key_, int scancode_, int action_, int mods_)
-										 {
-											 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window_);
-
-											 switch (action_)
-											 {
-											 case GLFW_PRESS:
-												 {
-													 KeyPressedEvent event(key_, false);
-													 data.EventCallback(event);
-													 break;
-												 }
-											 case GLFW_RELEASE:
-												 {
-													 KeyReleasedEvent event(key_);
-													 data.EventCallback(event);
-													 break;
-												 }
-											 case GLFW_REPEAT:
-												 {
-													 KeyPressedEvent event(key_, true);
-													 data.EventCallback(event);
-													 break;
-												 }
-											 }
-										 });
-
-	glfwSetMouseButtonCallback(m_window,
-														 [](GLFWwindow* window_, int button_, int action_, int mods_)
-														 {
-															 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window_);
-
-															 switch (action_)
-															 {
-															 case GLFW_PRESS:
-																 {
-																	 MouseButtonPressedEvent event(button_);
-																	 data.EventCallback(event);
-																	 break;
-																 }
-															 case GLFW_RELEASE:
-																 {
-																	 MouseButtonReleasedEvent event(button_);
-																	 data.EventCallback(event);
-																	 break;
-																 }
-															 }
-														 });
-
-	glfwSetCursorPosCallback(m_window,
-													 [](GLFWwindow* window_, double x_, double y_)
-													 {
-														 WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window_);
-														 MouseMovedEvent event((float)x_, (float)y_);
-														 data.EventCallback(event);
-													 });
-
-	LAVA_CORE_INFO("Window \"{0}\" created", m_data.title);
-}
-
-void VulkanWindow::createVulkanInstance()
+void GraphicsContext::createVulkanInstance()
 {
 	// Query VkInstance extensions //////////////////////////
 	uint32_t extension_count;
@@ -317,7 +183,7 @@ void VulkanWindow::createVulkanInstance()
 	const char** glfw_extensions_p = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
 	m_required_instance_ext.append_range(std::vector<const char*>{glfw_extensions_p,glfw_extensions_p + glfw_extension_count});
 
-	if (validation_layers_enabled)
+	if (s_validation_layers_enabled)
 		m_required_instance_ext.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 	// Check VkInstance extensions //////////////////////////
@@ -341,7 +207,7 @@ void VulkanWindow::createVulkanInstance()
 		LAVA_CORE_DEBUG("Instance extensions - all available");
 
 	// Check validation layers support //////////////////////
-	if (validation_layers_enabled && !checkValidationLayerSupport())
+	if (s_validation_layers_enabled && !checkValidationLayerSupport())
 	{
 		LAVA_CORE_ERROR("Validation layers requested, but not available!");
 		LAVA_DEBUGBREAK
@@ -361,10 +227,10 @@ void VulkanWindow::createVulkanInstance()
 	instance_create_info.ppEnabledExtensionNames = m_required_instance_ext.data();
 
 	VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
-	if (validation_layers_enabled)
+	if (s_validation_layers_enabled)
 	{
-		instance_create_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());
-		instance_create_info.ppEnabledLayerNames = validation_layers.data();
+		instance_create_info.enabledLayerCount   = static_cast<uint32_t>(s_validation_layers.size());
+		instance_create_info.ppEnabledLayerNames = s_validation_layers.data();
 		debug_create_info                        = debugCreateInfo();
 		instance_create_info.pNext               = &debug_create_info;
 	}
@@ -375,9 +241,9 @@ void VulkanWindow::createVulkanInstance()
 	LAVA_CORE_DEBUG("Created: VkInstance");
 }
 
-void VulkanWindow::createVulkanDebug()
+void GraphicsContext::createVulkanDebug()
 {
-	if (!validation_layers_enabled)
+	if (!s_validation_layers_enabled)
 		return;
 
 	const auto create_func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(
@@ -393,7 +259,7 @@ void VulkanWindow::createVulkanDebug()
 	LAVA_CORE_DEBUG("Created: VkDebugUtilsMessenger");
 }
 
-void VulkanWindow::createVulkanDevice()
+void GraphicsContext::createVulkanDevice()
 {
 	LAVA_CORE_DEBUG("Searching for GPUs...");
 
@@ -514,10 +380,10 @@ void VulkanWindow::createVulkanDevice()
 	device_create_info.ppEnabledExtensionNames = m_required_gpu_ext.data();
 	device_create_info.pEnabledFeatures        = nullptr;
 
-	if (validation_layers_enabled)
+	if (s_validation_layers_enabled)
 	{
-		device_create_info.enabledLayerCount   = static_cast<uint32_t>(validation_layers.size());
-		device_create_info.ppEnabledLayerNames = validation_layers.data();
+		device_create_info.enabledLayerCount   = static_cast<uint32_t>(s_validation_layers.size());
+		device_create_info.ppEnabledLayerNames = s_validation_layers.data();
 	}
 
 	if (vkCreateDevice(m_gpu, &device_create_info, nullptr, &m_device) != VK_SUCCESS)
@@ -530,7 +396,7 @@ void VulkanWindow::createVulkanDevice()
 	vkGetDeviceQueue(m_device, m_queue_family_indices.present.value(), 0, &m_present_queue);
 }
 
-void VulkanWindow::createVulkanSwapchain()
+void GraphicsContext::createVulkanSwapchain()
 {
 	// Query Swapchain support details //////////////////////
 	SwapchainSupportDetails details;
@@ -667,7 +533,7 @@ void VulkanWindow::createVulkanSwapchain()
 	LAVA_CORE_DEBUG("Created: VkImageViews");
 }
 
-void VulkanWindow::createVulkanRenderPass()
+void GraphicsContext::createVulkanRenderPass()
 {
 	VkAttachmentDescription attachment_description;
 	attachment_description.flags          = 0;
@@ -722,7 +588,7 @@ void VulkanWindow::createVulkanRenderPass()
 	LAVA_CORE_DEBUG("Created: VkRenderPass");
 }
 
-void VulkanWindow::createVulkanDescriptorSetLayout()
+void GraphicsContext::createVulkanDescriptorSetLayout()
 {
 	VkDescriptorSetLayoutBinding ubo_layout_binding;
 	ubo_layout_binding.binding            = 0;
@@ -744,7 +610,7 @@ void VulkanWindow::createVulkanDescriptorSetLayout()
 	LAVA_CORE_DEBUG("Created: VkDescriptorSetLayout");
 }
 
-void VulkanWindow::createVulkanGraphicsPipeline()
+void GraphicsContext::createVulkanGraphicsPipeline()
 {
 	auto vert_shader_code = readShaderFile("basic.vert.spv");
 	auto frag_shader_code = readShaderFile("basic.frag.spv");
@@ -905,7 +771,7 @@ void VulkanWindow::createVulkanGraphicsPipeline()
 	LAVA_CORE_DEBUG("Created: VkPipeline");
 }
 
-void VulkanWindow::createVulkanCommandPool()
+void GraphicsContext::createVulkanCommandPool()
 {
 	VkCommandPoolCreateInfo command_pool_create_info;
 	command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -918,11 +784,11 @@ void VulkanWindow::createVulkanCommandPool()
 	LAVA_CORE_DEBUG("Created: VkCommandPool");
 }
 
-void VulkanWindow::createVulkanSyncObjects()
+void GraphicsContext::createVulkanSyncObjects()
 {
-	m_semaphore_image_available.resize(m_data.max_frames_in_flight);
-	m_semaphore_render_finished.resize(m_data.max_frames_in_flight);
-	m_fence_in_flight.resize(m_data.max_frames_in_flight);
+	m_semaphore_image_available.resize(max_frames_in_flight);
+	m_semaphore_render_finished.resize(max_frames_in_flight);
+	m_fence_in_flight.resize(max_frames_in_flight);
 
 	VkSemaphoreCreateInfo semaphore_create_info;
 	semaphore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -934,7 +800,7 @@ void VulkanWindow::createVulkanSyncObjects()
 	fence_create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 	fence_create_info.pNext = nullptr;
 
-	for (size_t i = 0; i < m_data.max_frames_in_flight; i++)
+	for (size_t i = 0; i < max_frames_in_flight; i++)
 	{
 		if (vkCreateSemaphore(m_device, &semaphore_create_info, nullptr, &m_semaphore_image_available[i]) != VK_SUCCESS ||
 				vkCreateSemaphore(m_device, &semaphore_create_info, nullptr, &m_semaphore_render_finished[i]) != VK_SUCCESS ||
@@ -947,14 +813,14 @@ void VulkanWindow::createVulkanSyncObjects()
 // Multiple usage functions //
 // //////////////////////// //
 
-void VulkanWindow::destroyVulkanSwapchain()
+void GraphicsContext::destroyVulkanSwapchain()
 {
 	for (const VkImageView& image_view : m_image_views)
 		vkDestroyImageView(m_device, image_view, nullptr);
 	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
 }
 
-void VulkanWindow::recreateVulkanSwapchain()
+void GraphicsContext::recreateVulkanSwapchain()
 {
 	int width = 0, height = 0;
 	glfwGetFramebufferSize(m_window, &width, &height);
@@ -971,7 +837,7 @@ void VulkanWindow::recreateVulkanSwapchain()
 	recreateVulkanFrameBuffers();
 }
 
-void VulkanWindow::createVulkanFrameBuffers()
+void GraphicsContext::createVulkanFrameBuffers()
 {
 	m_framebuffers.resize(m_image_views.size());
 
@@ -979,8 +845,10 @@ void VulkanWindow::createVulkanFrameBuffers()
 	{
 		const VkImageView attachments[] = {m_image_views[i]};
 
-		VkFramebufferCreateInfo framebuffer_create_info{};
+		VkFramebufferCreateInfo framebuffer_create_info;
 		framebuffer_create_info.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebuffer_create_info.pNext           = nullptr;
+		framebuffer_create_info.flags           = NULL;
 		framebuffer_create_info.renderPass      = m_render_pass;
 		framebuffer_create_info.attachmentCount = 1;
 		framebuffer_create_info.pAttachments    = attachments;
@@ -993,21 +861,21 @@ void VulkanWindow::createVulkanFrameBuffers()
 	}
 }
 
-void VulkanWindow::destroyVulkanFrameBuffers()
+void GraphicsContext::destroyVulkanFrameBuffers()
 {
 	for (const auto framebuffer : m_framebuffers)
 		vkDestroyFramebuffer(m_device, framebuffer, nullptr);
 }
 
-void VulkanWindow::recreateVulkanFrameBuffers()
+void GraphicsContext::recreateVulkanFrameBuffers()
 {
 	destroyVulkanFrameBuffers();
 	createVulkanFrameBuffers();
 }
 
-void VulkanWindow::allocateVulkanCommandBuffers()
+void GraphicsContext::allocateVulkanCommandBuffers()
 {
-	m_command_buffers.resize(m_data.max_frames_in_flight);
+	m_command_buffers.resize(max_frames_in_flight);
 
 	VkCommandBufferAllocateInfo command_buffer_allocate_info;
 	command_buffer_allocate_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -1020,7 +888,7 @@ void VulkanWindow::allocateVulkanCommandBuffers()
 		LAVA_CORE_ERROR("Failed to allocate command buffer!");
 }
 
-void VulkanWindow::recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const
+void GraphicsContext::recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const
 {
 	VkCommandBufferBeginInfo command_buffer_begin_info;
 	command_buffer_begin_info.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -1073,7 +941,7 @@ void VulkanWindow::recordVulkanCommandBuffer(const uint32_t& command_buffer_inde
 		LAVA_CORE_ERROR("Failed to record command buffer!");
 }
 
-void VulkanWindow::createVulkanBuffer(VkDeviceSize size_, VkBufferUsageFlags usage_, VkMemoryPropertyFlags props_, VkBuffer& buffer_, VkDeviceMemory& buffer_memory_)
+void GraphicsContext::createVulkanBuffer(VkDeviceSize size_, VkBufferUsageFlags usage_, VkMemoryPropertyFlags props_, VkBuffer& buffer_, VkDeviceMemory& buffer_memory_)
 {
 	VkBufferCreateInfo buffer_create_info;
 	buffer_create_info.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -1115,7 +983,7 @@ void VulkanWindow::createVulkanBuffer(VkDeviceSize size_, VkBufferUsageFlags usa
 	vkBindBufferMemory(m_device, buffer_, buffer_memory_, 0);
 }
 
-void VulkanWindow::copyVulkanBuffer(VkBuffer src_buffer_, VkBuffer dst_buffer_, VkDeviceSize size_)
+void GraphicsContext::copyVulkanBuffer(VkBuffer src_buffer_, VkBuffer dst_buffer_, VkDeviceSize size_)
 {
 	VkCommandBufferAllocateInfo command_buffer_allocate_info{};
 	command_buffer_allocate_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -1159,7 +1027,7 @@ void VulkanWindow::copyVulkanBuffer(VkBuffer src_buffer_, VkBuffer dst_buffer_, 
 	vkFreeCommandBuffers(m_device, m_command_pool, 1, &command_buffer);
 }
 
-void VulkanWindow::createVulkanVertexBuffer()
+void GraphicsContext::createVulkanVertexBuffer()
 {
 	VkDeviceSize buffer_size = sizeof(VERTICES[0]) * VERTICES.size();
 
@@ -1187,7 +1055,7 @@ void VulkanWindow::createVulkanVertexBuffer()
 	vkFreeMemory(m_device, staging_buffer_memory, nullptr);
 }
 
-void VulkanWindow::createVulkanIndexBuffer()
+void GraphicsContext::createVulkanIndexBuffer()
 {
 	VkDeviceSize buffer_size = sizeof(INDICES[0]) * INDICES.size();
 
@@ -1216,15 +1084,15 @@ void VulkanWindow::createVulkanIndexBuffer()
 	vkFreeMemory(m_device, staging_buffer_memory, nullptr);
 }
 
-void VulkanWindow::createVulkanUniformBuffers()
+void GraphicsContext::createVulkanUniformBuffers()
 {
 	VkDeviceSize buffer_size = sizeof(UniformBufferObject);
 
-	m_uniform_buffers.resize(m_data.max_frames_in_flight);
-	m_uniform_buffers_memory.resize(m_data.max_frames_in_flight);
-	m_uniform_buffers_mapped.resize(m_data.max_frames_in_flight);
+	m_uniform_buffers.resize(max_frames_in_flight);
+	m_uniform_buffers_memory.resize(max_frames_in_flight);
+	m_uniform_buffers_mapped.resize(max_frames_in_flight);
 
-	for (size_t i = 0; i < m_data.max_frames_in_flight; i++)
+	for (size_t i = 0; i < max_frames_in_flight; i++)
 	{
 		createVulkanBuffer(buffer_size,
 											 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
@@ -1236,34 +1104,40 @@ void VulkanWindow::createVulkanUniformBuffers()
 	}
 }
 
-void VulkanWindow::updateVulkanUniformBuffer(uint32_t current_frame_)
+void GraphicsContext::updateVulkanUniformBuffer(uint32_t current_frame_)
 {
-	//static auto start_time = std::chrono::high_resolution_clock::now();
+	static auto start_time = std::chrono::high_resolution_clock::now();
+	static auto rotation   = glm::mat4(1.0f);
 
-	//auto current_time = std::chrono::high_resolution_clock::now();
-	//float time        = std::chrono::duration<float, std::chrono::seconds::period>(current_time - start_time).count();
+	std::chrono::time_point<std::chrono::steady_clock> static last_time;
+	auto current_time = std::chrono::high_resolution_clock::now();
+	if ((current_time - start_time).count() < 0.01f)
+		last_time = current_time;
+	float time = std::chrono::duration<float>(current_time - last_time).count();
 
 	UniformBufferObject ubo;
-	ubo.model = glm::rotate(glm::mat4(1.0f), (float)m_angle * glm::radians(0.5f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.model = glm::rotate(rotation, time * (angle - (float)m_extent_2d.width/2)  * glm::radians(1.f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.view  = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.proj  = glm::perspective(glm::radians(45.0f), (float)m_extent_2d.width / (float)m_extent_2d.height, 0.1f, 10.0f);
 
 	ubo.proj[1][1] *= -1;
 
 	memcpy(m_uniform_buffers_mapped[current_frame_], &ubo, sizeof(ubo));
+	last_time = current_time;
+	rotation  = ubo.model;
 }
 
-void VulkanWindow::createVulkanDescriptorPool()
+void GraphicsContext::createVulkanDescriptorPool()
 {
 	VkDescriptorPoolSize pool_size;
 	pool_size.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	pool_size.descriptorCount = m_data.max_frames_in_flight;
+	pool_size.descriptorCount = max_frames_in_flight;
 
 	VkDescriptorPoolCreateInfo pool_create_info;
 	pool_create_info.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	pool_create_info.pNext         = nullptr;
 	pool_create_info.flags         = NULL;
-	pool_create_info.maxSets       = m_data.max_frames_in_flight;
+	pool_create_info.maxSets       = max_frames_in_flight;
 	pool_create_info.poolSizeCount = 1;
 	pool_create_info.pPoolSizes    = &pool_size;
 
@@ -1271,21 +1145,21 @@ void VulkanWindow::createVulkanDescriptorPool()
 		LAVA_CORE_ERROR("Failed to create VkDescriptorPool!");
 }
 
-void VulkanWindow::createVulkanDescriptorSets()
+void GraphicsContext::createVulkanDescriptorSets()
 {
-	std::vector<VkDescriptorSetLayout> layouts(m_data.max_frames_in_flight, m_descriptor_set_layout);
+	std::vector<VkDescriptorSetLayout> layouts(max_frames_in_flight, m_descriptor_set_layout);
 	VkDescriptorSetAllocateInfo set_allocate_info;
 	set_allocate_info.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	set_allocate_info.pNext              = nullptr;
 	set_allocate_info.descriptorPool     = m_descriptor_pool;
-	set_allocate_info.descriptorSetCount = m_data.max_frames_in_flight;
+	set_allocate_info.descriptorSetCount = max_frames_in_flight;
 	set_allocate_info.pSetLayouts        = layouts.data();
 
-	m_descriptor_sets.resize(m_data.max_frames_in_flight);
+	m_descriptor_sets.resize(max_frames_in_flight);
 	if (vkAllocateDescriptorSets(m_device, &set_allocate_info, m_descriptor_sets.data()) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to allocate descriptor sets!");
 
-	for (size_t i = 0; i < m_data.max_frames_in_flight; i++)
+	for (size_t i = 0; i < max_frames_in_flight; i++)
 	{
 		VkDescriptorBufferInfo buffer_info;
 		buffer_info.buffer = m_uniform_buffers[i];
@@ -1312,7 +1186,7 @@ void VulkanWindow::createVulkanDescriptorSets()
 // Initial creation support functions //
 // ////////////////////////////////// //
 
-bool VulkanWindow::checkValidationLayerSupport()
+bool GraphicsContext::checkValidationLayerSupport()
 {
 	uint32_t layer_count;
 	vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
@@ -1320,7 +1194,7 @@ bool VulkanWindow::checkValidationLayerSupport()
 	std::vector<VkLayerProperties> available_layers(layer_count);
 	vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
 
-	for (const char* layer_name : validation_layers)
+	for (const char* layer_name : s_validation_layers)
 	{
 		bool layer_found = false;
 		for (const auto& layer_properties : available_layers)
@@ -1337,7 +1211,7 @@ bool VulkanWindow::checkValidationLayerSupport()
 	return true;
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL VulkanWindow::debugCallback(
+VKAPI_ATTR VkBool32 VKAPI_CALL GraphicsContext::debugCallback(
 	VkDebugUtilsMessageSeverityFlagBitsEXT msg_severity_,
 	VkDebugUtilsMessageTypeFlagsEXT msg_type_,
 	const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data_,
@@ -1354,7 +1228,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VulkanWindow::debugCallback(
 	return false;
 }
 
-VkDebugUtilsMessengerCreateInfoEXT VulkanWindow::debugCreateInfo()
+VkDebugUtilsMessengerCreateInfoEXT GraphicsContext::debugCreateInfo()
 {
 	VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
 	debug_create_info.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -1372,9 +1246,9 @@ VkDebugUtilsMessengerCreateInfoEXT VulkanWindow::debugCreateInfo()
 	return debug_create_info;
 }
 
-void VulkanWindow::destroyVulkanDebug() const
+void GraphicsContext::destroyVulkanDebug() const
 {
-	if (!validation_layers_enabled)
+	if (!s_validation_layers_enabled)
 		return;
 
 	const auto destroy_func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(
@@ -1386,7 +1260,7 @@ void VulkanWindow::destroyVulkanDebug() const
 		LAVA_CORE_ERROR("Failed to destroy Debug Utils Messenger!");
 }
 
-std::vector<char> VulkanWindow::readShaderFile(const std::string& filename_)
+std::vector<char> GraphicsContext::readShaderFile(const std::string& filename_)
 {
 	std::filesystem::path shaders_path = Resources::getDir(ResourceDir::Shaders);
 	std::ifstream file(shaders_path /= filename_, std::ios::ate | std::ios::binary);
@@ -1403,7 +1277,7 @@ std::vector<char> VulkanWindow::readShaderFile(const std::string& filename_)
 	return buffer;
 }
 
-VkShaderModule VulkanWindow::createShaderModule(const std::vector<char>& code_) const
+VkShaderModule GraphicsContext::createShaderModule(const std::vector<char>& code_) const
 {
 	VkShaderModuleCreateInfo shader_module_create_info;
 	shader_module_create_info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

@@ -1,46 +1,33 @@
-#pragma once
-#include "Lava/Lavapch.h"
+﻿#pragma once
 
-#include "Lava/Graphics/Window.h"
-
-#define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
 #define GLFW_EXPOSE_NATIVE_WIN32
-#include <glfw3.h>
+#define VK_USE_PLATFORM_WIN32_KHR
+#include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
 namespace Lava
 {
-	class VulkanWindow final : public Window
+	class GraphicsContext
 	{
 	public:
-		VulkanWindow(const WindowProps& props_);
-		~VulkanWindow() override;
+		GraphicsContext(GLFWwindow* window_)
+			: m_window(window_) { init(); }
 
-		void init(const WindowProps& props_);
+		~GraphicsContext() { shutdown(); }
+
+		void init();
 		void shutdown();
 
-		void onUpdate() override;
-		void onMouseMoved(float angle_) override;
+		void onUpdate();
 
-		void draw();
-
-		inline uint32_t getWidth() const override { return m_data.width; }
-		inline uint32_t getHeight() const override { return m_data.height; }
-
-		inline void setEventCallback(const EventCallbackFn& callback_) override { m_data.EventCallback = callback_; }
-
-		inline void* getNativeWindow() const override { return m_window; }
+		float angle;
 
 	private:
-		struct WindowData
-		{
-			std::string title;
-			uint32_t width                = 1080, height = 720;
-			uint32_t max_frames_in_flight = 2;
+		void draw();
 
-			EventCallbackFn EventCallback;
-		};
+	private:
+		GLFWwindow* m_window;
 
 		struct QueueFamilyIndices
 		{
@@ -57,9 +44,6 @@ namespace Lava
 			std::vector<VkPresentModeKHR> present_modes;
 		};
 
-		WindowData m_data;
-
-		GLFWwindow* m_window;
 		VkInstance m_instance;
 		VkDebugUtilsMessengerEXT m_debug;
 
@@ -108,13 +92,12 @@ namespace Lava
 		std::vector<VkSemaphore> m_semaphore_image_available;
 		std::vector<VkSemaphore> m_semaphore_render_finished;
 		std::vector<VkFence> m_fence_in_flight;
-		uint32_t m_current_frame  = 0;
-		bool frame_buffer_resized = false;
 
-		float m_angle;
+		uint32_t max_frames_in_flight = 2;
+		uint32_t m_current_frame      = 0;
+		bool frame_buffer_resized     = false;
 
 	private: // Initial creation functions //
-		void createGlfwWindow();
 		void createVulkanInstance();
 		void createVulkanDebug();
 		void createVulkanDevice();
@@ -126,7 +109,7 @@ namespace Lava
 		void createVulkanCommandPool();
 		void createVulkanSyncObjects();
 
-	private:
+	private: // Multiple usage functions //
 		void destroyVulkanSwapchain();
 		void recreateVulkanSwapchain();
 
@@ -154,12 +137,12 @@ namespace Lava
 	private:
 		std::vector<const char*> m_available_instance_ext = {};
 		std::vector<const char*> m_required_instance_ext  = {VK_KHR_SURFACE_EXTENSION_NAME,
-																												 VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
-																												 VK_KHR_DEVICE_GROUP_CREATION_EXTENSION_NAME};
+																												VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+																												VK_KHR_DEVICE_GROUP_CREATION_EXTENSION_NAME};
 		const std::vector<const char*> m_required_gpu_ext = {VK_KHR_DEVICE_GROUP_EXTENSION_NAME,
 																												 VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-	private:
+	private: // Initial creation support functions //
 		static bool checkValidationLayerSupport();
 		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 			VkDebugUtilsMessageSeverityFlagBitsEXT msg_severity_,
@@ -171,7 +154,11 @@ namespace Lava
 		std::vector<char> readShaderFile(const std::string& filename_);
 		VkShaderModule createShaderModule(const std::vector<char>& code_) const;
 
-		static const bool validation_layers_enabled;
-		inline static const std::vector<const char*> validation_layers = {"VK_LAYER_KHRONOS_validation"};
+#ifdef LAVA_DEBUG
+		inline static const bool s_validation_layers_enabled             = true;
+		inline static const std::vector<const char*> s_validation_layers = {"VK_LAYER_KHRONOS_validation"};
+#else
+		inline static const bool GraphicsContext::s_validation_layers_enabled = false;
+#endif
 	};
 }

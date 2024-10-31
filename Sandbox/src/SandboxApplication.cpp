@@ -45,7 +45,7 @@ public:
 private:
 	void initResources() override
 	{
-		Lava::Resources::setDir(Lava::ResourceDir::Shaders, "./Resources/Shaders");
+		Lava::Resources::setDir(Lava::ResourceDir::Shaders, "./resources/shaders");
 	}
 };
 

@@ -18,7 +18,7 @@
     <ClCompile Include="src\Lavapch.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Graphics\VulkanWindow.cpp">
+    <ClCompile Include="src\Graphics\Window.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\Application.cpp">
@@ -31,6 +31,9 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\Input\GLFWInput.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GraphicsContext.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,10 +62,7 @@
     <ClInclude Include="include\Lava\Lavapch.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="include\Lava\Graphics\Vulkan\VulkanWindow.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Lava\Graphics\Window.h">
+    <ClInclude Include="include\Lava\Window.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="include\Lava\Application.h">
@@ -71,7 +71,7 @@
     <ClInclude Include="include\Lava\Log.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="include\Lava\Graphics\Vulkan\Vertex.h">
+    <ClInclude Include="include\Lava\Renderer\Vertex.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="include\Lava\Layer.h">
@@ -96,6 +96,9 @@
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="include\Lava\Resources.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lava\Renderer\GraphicsContext.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
