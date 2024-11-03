@@ -47,8 +47,6 @@ void Window::onUpdate()
 	m_graphics_context->onUpdate();
 }
 
-void Window::onMouseMoved(float angle_) { m_graphics_context->angle = angle_; }
-
 void Window::createGlfwWindow()
 {
 	LAVA_CORE_INFO("Creating window \"{0}\"...", m_data.title);

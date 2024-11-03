@@ -10,6 +10,11 @@
 
 namespace Lava
 {
+	class Pipeline;
+}
+
+namespace Lava
+{
 	class GraphicsContext
 	{
 	public:
@@ -23,21 +28,24 @@ namespace Lava
 
 		void onUpdate();
 
-		float angle;
+	public:
+		inline void pushPipeline(const std::shared_ptr<Pipeline>& pipeline_) { m_pipelines.push_back(pipeline_); }
+
+	public:
+		inline auto& getDevice() { return m_device; }
+		inline auto& getGpu() { return m_gpu; }
+		inline auto& getRenderPass() { return m_render_pass; }
+		inline auto& getFramesInFlight() { return m_frames_in_flight; }
+		inline auto& getExtent2D() { return m_extent_2d; }
+		inline auto& getGraphicsQueueIndex() { return m_queue_family_indices.graphics.value(); }
+		inline auto& getGraphicsQueue() { return m_graphics_queue; }
 
 	private:
 		void draw();
+		void recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const;
 
 	private:
 		GLFWwindow* m_window;
-
-		struct QueueFamilyIndices
-		{
-			std::optional<uint32_t> graphics;
-			std::optional<uint32_t> present;
-
-			bool isComplete() const { return graphics.has_value() && present.has_value(); }
-		};
 
 		struct SwapchainSupportDetails
 		{
@@ -53,7 +61,15 @@ namespace Lava
 		VkDevice m_device;
 		VkPhysicalDevice m_gpu;
 		VkSurfaceKHR m_surface;
-		QueueFamilyIndices m_queue_family_indices;
+
+		struct QueueFamilyIndices
+		{
+			std::optional<uint32_t> graphics;
+			std::optional<uint32_t> present;
+
+			bool isComplete() const { return graphics.has_value() && present.has_value(); }
+		} m_queue_family_indices;
+
 		VkQueue m_graphics_queue;
 		VkQueue m_present_queue;
 
@@ -68,23 +84,6 @@ namespace Lava
 		VkRenderPass m_render_pass;
 		std::vector<VkFramebuffer> m_framebuffers;
 
-		// VkPipeline
-		VkPipeline m_pipeline;
-		VkPipelineLayout m_pipeline_layout;
-		VkDescriptorSetLayout m_descriptor_set_layout;
-		VkDescriptorPool m_descriptor_pool;
-		std::vector<VkDescriptorSet> m_descriptor_sets;
-		VkShaderModule m_vert_shader_module;
-		VkShaderModule m_frag_shader_module;
-		// BUFFERS
-		VkBuffer m_vertex_buffer;
-		VkDeviceMemory m_vertex_buffer_memory;
-		VkBuffer m_index_buffer;
-		VkDeviceMemory m_index_buffer_memory;
-		std::vector<VkBuffer> m_uniform_buffers;
-		std::vector<VkDeviceMemory> m_uniform_buffers_memory;
-		std::vector<void*> m_uniform_buffers_mapped;
-
 		// VkCommandPool
 		VkCommandPool m_command_pool;
 		std::vector<VkCommandBuffer> m_command_buffers;
@@ -94,17 +93,13 @@ namespace Lava
 		std::vector<VkSemaphore> m_semaphore_render_finished;
 		std::vector<VkFence> m_fence_in_flight;
 
-		uint32_t max_frames_in_flight = 2;
-		uint32_t m_current_frame      = 0;
-		bool frame_buffer_resized     = false;
+		uint32_t m_frames_in_flight = 2;
+		uint32_t m_current_frame    = 0;
+		bool m_frame_buffer_resized = false;
 
-		// BUFFERS 2 TEST
-		VkBuffer m_vertex_buffer2;
-		VkDeviceMemory m_vertex_buffer_memory2;
-		VkBuffer m_index_buffer2;
-		VkDeviceMemory m_index_buffer_memory2;
+		std::vector<std::shared_ptr<Pipeline>> m_pipelines;
 
-	private: // Initial creation functions //
+	private:
 		void createVulkanInstance();
 		void createVulkanDebug();
 		void createVulkanDevice();
@@ -121,30 +116,6 @@ namespace Lava
 		void allocateVulkanCommandBuffers();
 		void createVulkanSyncObjects();
 
-		void createVulkanDescriptorSetLayout();
-		void createVulkanGraphicsPipeline();
-
-		void createVulkanVertexBuffer(const std::vector<Vertex3Color>& vertices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
-		void createVulkanIndexBuffer(const std::vector<uint16_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
-
-		void createVulkanUniformBuffers();
-		void createVulkanDescriptorPool();
-		void createVulkanDescriptorSets();
-
-	private: // Multiple usage functions //
-		void recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const;
-
-		void updateVulkanUniformBuffer(uint32_t current_frame_);
-
-		void createVulkanBuffer(VkDeviceSize size_,
-														VkBufferUsageFlags usage_,
-														VkMemoryPropertyFlags props_,
-														VkBuffer& buffer_,
-														VkDeviceMemory& buffer_memory_);
-		void copyVulkanBuffer(VkBuffer src_buffer_,
-													VkBuffer dst_buffer_,
-													VkDeviceSize size_);
-
 	private:
 		std::vector<const char*> m_available_instance_ext = {};
 		std::vector<const char*> m_required_instance_ext  = {VK_KHR_SURFACE_EXTENSION_NAME,
@@ -153,7 +124,7 @@ namespace Lava
 		const std::vector<const char*> m_required_gpu_ext = {VK_KHR_DEVICE_GROUP_EXTENSION_NAME,
 																												 VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-	private: // Initial creation support functions //
+	private: // Debug helper functions //
 		static bool checkValidationLayerSupport();
 		static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 			VkDebugUtilsMessageSeverityFlagBitsEXT msg_severity_,
@@ -162,8 +133,6 @@ namespace Lava
 			void* p_user_data_);
 		static VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo();
 		void destroyVulkanDebug() const;
-		std::vector<char> readShaderFile(const std::string& filename_);
-		VkShaderModule createShaderModule(const std::vector<char>& code_) const;
 
 #ifdef LAVA_DEBUG
 		inline static const bool s_validation_layers_enabled             = true;

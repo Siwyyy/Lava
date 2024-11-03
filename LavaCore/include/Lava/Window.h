@@ -37,12 +37,13 @@ namespace Lava
 		void onUpdate();
 		void onMouseMoved(float angle_);
 
-		uint32_t getWidth() const { return m_data.width; }
-		uint32_t getHeight() const { return m_data.height; }
+		inline uint32_t getWidth() const { return m_data.width; }
+		inline uint32_t getHeight() const { return m_data.height; }
 
-		void setEventCallback(const EventCallbackFn& callback_) { m_data.EventCallback = callback_; }
+		inline void* getNativeWindow() const { return m_window; }
+		inline std::shared_ptr<GraphicsContext> getContext() { return m_graphics_context; }
 
-		void* getNativeWindow() const { return m_window; }
+		inline void setEventCallback(const EventCallbackFn& callback_) { m_data.EventCallback = callback_; }
 
 	private:
 		struct WindowData
@@ -56,7 +57,7 @@ namespace Lava
 		WindowData m_data;
 
 		GLFWwindow* m_window;
-		std::unique_ptr<GraphicsContext> m_graphics_context;
+		std::shared_ptr<GraphicsContext> m_graphics_context;
 
 	private:
 		void createGlfwWindow();

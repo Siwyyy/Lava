@@ -46,13 +46,13 @@ namespace Lava
 
 	const std::vector<uint16_t> INDICES = {1,3,0,3,2,0,2,1,0,2,3,1};
 
-	const float transform = 1.f;
+	const float transform = 2.f;
 
 	const std::vector<Vertex3Color> VERTICES2 = {
-		{{-0.53f,-0.3f + transform,-0.3f},{1.f,0.f,0.f}},
-		{{0.53f,-0.3f + transform,-0.3f},{0.f,1.f,0.f}},
-		{{0.f,0.6f + transform,-0.3f},{0.f,0.f,1.f}},
-		{{0.f,0.f + transform,0.6f},{0.7f,0.7f,0.7f}}
+		{{-0.53f,-0.3f,-0.3f + transform},{1.0f,0.0f,0.0f}},
+		{{0.53f,-0.3f,-0.3f + transform},{0.0f,1.0f,0.0f}},
+		{{0.0f,0.6f,-0.3f + transform},{0.0f,0.0f,1.0f}},
+		{{0.0f,0.0f,0.6f + transform},{0.7f,0.7f,0.7f}}
 	};
 
 	const std::vector<uint16_t> INDICES2 = {1,3,0,3,2,0,2,1,0,2,3,1};

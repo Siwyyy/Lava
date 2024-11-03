@@ -28,10 +28,10 @@ namespace Lava
 
 	private:
 		virtual void initResources() = 0;
+		virtual void initApp() = 0;
 
 	private:
 		bool onWindowClose(WindowCloseEvent& event_);
-		bool onMouseMoved(const MouseMovedEvent& event_) const;
 
 		std::unique_ptr<Window> m_window;
 		bool m_running = true;

@@ -3,13 +3,19 @@
 #include "Lava/Resources.h"
 #include "Lava/Input/Input.h"
 #include "Lava/Input/MouseButtonCodes.h"
+#include "Lava/Renderer/Pipeline.h"
 
 class ExampleLayer final : public Lava::Layer
 {
 public:
 	ExampleLayer() = default;
 
-	inline void onAttach() override {}
+	inline void onAttach() override
+	{
+		m_pipeline = std::make_shared<Lava::Pipeline>();
+		Lava::Application::getInstance().getWindow().getContext()->pushPipeline(m_pipeline);
+	}
+
 	inline void onDetach() override {}
 	inline void onUpdate() override {}
 
@@ -20,6 +26,8 @@ public:
 	}
 
 private:
+	std::shared_ptr<Lava::Pipeline> m_pipeline;
+
 	bool onMouseButtonPressed(const Lava::MouseButtonPressedEvent& event_) const
 	{
 		if (event_.getButtonCode() != LAVA_MOUSE_BUTTON_LEFT)
@@ -35,17 +43,18 @@ private:
 class Sandbox final : public Lava::Application
 {
 public:
-	Sandbox()
-	{
-		pushLayer(new ExampleLayer());
-	}
-
+	Sandbox()           = default;
 	~Sandbox() override = default;
 
 private:
 	void initResources() override
 	{
 		Lava::Resources::setDir(Lava::ResourceDir::Shaders, "./resources/shaders");
+	}
+
+	void initApp() override
+	{
+		pushLayer(new ExampleLayer());
 	}
 };
 

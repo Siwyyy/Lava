@@ -1,10 +1,8 @@
 #include "Lava/Lavapch.h"
 #include "Lava/Application.h"
 
-
 #include "Lava/Log.h"
 #include "Lava/Resources.h"
-#include "Lava/Events/MouseEvent.h"
 
 namespace Lava
 {
@@ -18,8 +16,10 @@ namespace Lava
 
 		initResources();
 
-		m_window = std::make_unique<Window>(WindowProps("Lava Engine - Test",720,480));
+		m_window = std::make_unique<Window>(WindowProps("Lava Engine - Test", 720, 480));
 		m_window->setEventCallback([this](auto&& e_) { onEvent(e_); });
+
+		initApp();
 	}
 
 	void Application::run()
@@ -37,7 +37,6 @@ namespace Lava
 	{
 		EventDispatcher dispatcher(event_);
 		dispatcher.dispatch<WindowCloseEvent>([this](auto&& e_) { return onWindowClose(e_); });
-		dispatcher.dispatch<MouseMovedEvent>([this](auto&& e_) { return onMouseMoved(e_); });
 
 		for (auto it = m_layer_stack.end(); it != m_layer_stack.begin();)
 		{
@@ -50,22 +49,18 @@ namespace Lava
 	void Application::pushLayer(Layer* layer_)
 	{
 		m_layer_stack.pushLayer(layer_);
+		layer_->onAttach();
 	}
 
 	void Application::pushOverlay(Layer* overlay_)
 	{
 		m_layer_stack.pushOverlay(overlay_);
+		overlay_->onAttach();
 	}
 
 	bool Application::onWindowClose(WindowCloseEvent& event_)
 	{
 		m_running = false;
-		return true;
-	}
-
-	bool Application::onMouseMoved(const MouseMovedEvent& event_) const
-	{
-		m_window->onMouseMoved(event_.getX());
 		return true;
 	}
 }
