@@ -167,8 +167,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Renderer\Pipeline.cpp" />
     <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\Graphics\GraphicsContext.cpp" />
+    <ClCompile Include="src\Renderer\GraphicsContext.cpp" />
     <ClCompile Include="src\Input\GLFWInput.cpp" />
     <ClCompile Include="src\LayerStack.cpp" />
     <ClCompile Include="src\Log.cpp" />
@@ -177,7 +178,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Graphics\Window.cpp" />
+    <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Lava\Input\GLFW\GLFWInput.h" />
@@ -187,7 +188,8 @@
     <ClInclude Include="include\Lava\Layer.h" />
     <ClInclude Include="include\Lava\Application.h" />
     <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
-    <ClInclude Include="include\Lava\Renderer\Vertex.h" />
+    <ClInclude Include="include\Lava\Renderer\Pipeline.h" />
+    <ClInclude Include="include\Lava\Renderer\Vertex3Color.h" />
     <ClInclude Include="include\Lava\LayerStack.h" />
     <ClInclude Include="include\Lava\Log.h" />
     <ClInclude Include="include\Lava\Core.h" />

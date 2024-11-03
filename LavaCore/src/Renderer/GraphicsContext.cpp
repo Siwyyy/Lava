@@ -2,7 +2,7 @@
 #include "Lava/Renderer/GraphicsContext.h"
 
 #include "Lava/Log.h"
-#include "Lava/Renderer/Vertex.h"
+#include "Lava/Renderer/Vertex3Color.h"
 
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
@@ -20,67 +20,72 @@ void GraphicsContext::init()
 	createVulkanInstance();
 	createVulkanDebug();
 	createVulkanDevice();
+
 	createVulkanSwapchain();
 	createVulkanRenderPass();
-
-	createVulkanDescriptorSetLayout();
-	createVulkanGraphicsPipeline();
 	createVulkanFrameBuffers();
 
 	createVulkanCommandPool();
 	allocateVulkanCommandBuffers();
+	createVulkanSyncObjects();
 
-	createVulkanVertexBuffer();
-	createVulkanIndexBuffer();
+	createVulkanDescriptorSetLayout();
+	createVulkanGraphicsPipeline();
+
+	createVulkanVertexBuffer(VERTICES, m_vertex_buffer, m_vertex_buffer_memory);
+	createVulkanIndexBuffer(INDICES, m_index_buffer, m_index_buffer_memory);
+
+	createVulkanVertexBuffer(VERTICES2, m_vertex_buffer2, m_vertex_buffer_memory2);
+	createVulkanIndexBuffer(INDICES2, m_index_buffer2, m_index_buffer_memory2);
+
 	createVulkanUniformBuffers();
-
 	createVulkanDescriptorPool();
 	createVulkanDescriptorSets();
-
-	createVulkanSyncObjects();
 
 	LAVA_CORE_INFO("Vulkan graphics initialization complete");
 }
 
 void GraphicsContext::shutdown()
 {
+	vkDestroyDescriptorPool(m_device, m_descriptor_pool, nullptr);
 	for (size_t i = 0; i < max_frames_in_flight; i++)
 	{
-		vkDestroySemaphore(m_device, m_semaphore_image_available[i], nullptr);
-		vkDestroySemaphore(m_device, m_semaphore_render_finished[i], nullptr);
-		vkDestroyFence(m_device, m_fence_in_flight[i], nullptr);
+		vkDestroyBuffer(m_device, m_uniform_buffers[i], nullptr);
+		vkFreeMemory(m_device, m_uniform_buffers_memory[i], nullptr);
 	}
+
+	vkDestroyBuffer(m_device, m_index_buffer2, nullptr);
+	vkFreeMemory(m_device, m_index_buffer_memory2, nullptr);
+	vkDestroyBuffer(m_device, m_vertex_buffer2, nullptr);
+	vkFreeMemory(m_device, m_vertex_buffer_memory2, nullptr);
 
 	vkDestroyBuffer(m_device, m_index_buffer, nullptr);
 	vkFreeMemory(m_device, m_index_buffer_memory, nullptr);
 	vkDestroyBuffer(m_device, m_vertex_buffer, nullptr);
 	vkFreeMemory(m_device, m_vertex_buffer_memory, nullptr);
 
-	vkDestroyCommandPool(m_device, m_command_pool, nullptr);
-
 	vkDestroyPipeline(m_device, m_pipeline, nullptr);
 	vkDestroyPipelineLayout(m_device, m_pipeline_layout, nullptr);
-	vkDestroyDescriptorPool(m_device, m_descriptor_pool, nullptr);
-	vkDestroyDescriptorSetLayout(m_device, m_descriptor_set_layout, nullptr);
-	for (size_t i = 0; i < max_frames_in_flight; i++)
-	{
-		vkDestroyBuffer(m_device, m_uniform_buffers[i], nullptr);
-		vkFreeMemory(m_device, m_uniform_buffers_memory[i], nullptr);
-	}
 	vkDestroyShaderModule(m_device, m_vert_shader_module, nullptr);
 	vkDestroyShaderModule(m_device, m_frag_shader_module, nullptr);
+	vkDestroyDescriptorSetLayout(m_device, m_descriptor_set_layout, nullptr);
+
+	for (size_t i = 0; i < max_frames_in_flight; i++)
+	{
+		vkDestroySemaphore(m_device, m_semaphore_image_available[i], nullptr);
+		vkDestroySemaphore(m_device, m_semaphore_render_finished[i], nullptr);
+		vkDestroyFence(m_device, m_fence_in_flight[i], nullptr);
+	}
+	vkDestroyCommandPool(m_device, m_command_pool, nullptr);
 
 	destroyVulkanFrameBuffers();
 	vkDestroyRenderPass(m_device, m_render_pass, nullptr);
-
 	for (const VkImageView& image_view : m_image_views)
 		vkDestroyImageView(m_device, image_view, nullptr);
 	vkDestroySwapchainKHR(m_device, m_swapchain, nullptr);
 
 	vkDestroyDevice(m_device, nullptr);
-
 	destroyVulkanDebug();
-
 	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 	vkDestroyInstance(m_instance, nullptr);
 }
@@ -639,8 +644,8 @@ void GraphicsContext::createVulkanGraphicsPipeline()
 	VkPipelineShaderStageCreateInfo shader_stage_create_info[] = {vert_shader_stage_create_info,
 																																frag_shader_stage_create_info};
 
-	auto binding_description    = Vertex::getBindingDescription();
-	auto attribute_descriptions = Vertex::getAttributeDescriptions();
+	auto binding_description    = Vertex3Color::getBindingDescription();
+	auto attribute_descriptions = Vertex3Color::getAttributeDescriptions();
 
 	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info;
 	vertex_input_state_create_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -927,13 +932,19 @@ void GraphicsContext::recordVulkanCommandBuffer(const uint32_t& command_buffer_i
 	scissor.extent = m_extent_2d;
 	vkCmdSetScissor(m_command_buffers[command_buffer_index_], 0, 1, &scissor);
 
+	vkCmdBindDescriptorSets(m_command_buffers[command_buffer_index_], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[m_current_frame], 0, nullptr);
+
 	const VkBuffer vertex_buffers[] = {m_vertex_buffer};
 	const VkDeviceSize offsets[]    = {0};
 	vkCmdBindVertexBuffers(m_command_buffers[command_buffer_index_], 0, 1, vertex_buffers, offsets);
 	vkCmdBindIndexBuffer(m_command_buffers[command_buffer_index_], m_index_buffer, 0, VK_INDEX_TYPE_UINT16);
-	vkCmdBindDescriptorSets(m_command_buffers[command_buffer_index_], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[m_current_frame], 0, nullptr);
-
 	vkCmdDrawIndexed(m_command_buffers[command_buffer_index_], static_cast<uint32_t>(INDICES.size()), 1, 0, 0, 0);
+
+	const VkBuffer vertex_buffers2[] = {m_vertex_buffer2};
+	const VkDeviceSize offsets2[]    = {0};
+	vkCmdBindVertexBuffers(m_command_buffers[command_buffer_index_], 0, 1, vertex_buffers2, offsets2);
+	vkCmdBindIndexBuffer(m_command_buffers[command_buffer_index_], m_index_buffer2, 0, VK_INDEX_TYPE_UINT16);
+	vkCmdDrawIndexed(m_command_buffers[command_buffer_index_], static_cast<uint32_t>(INDICES2.size()), 1, 0, 0, 0);
 
 	vkCmdEndRenderPass(m_command_buffers[command_buffer_index_]);
 
@@ -1027,9 +1038,9 @@ void GraphicsContext::copyVulkanBuffer(VkBuffer src_buffer_, VkBuffer dst_buffer
 	vkFreeCommandBuffers(m_device, m_command_pool, 1, &command_buffer);
 }
 
-void GraphicsContext::createVulkanVertexBuffer()
+void GraphicsContext::createVulkanVertexBuffer(const std::vector<Vertex3Color>& vertices_, VkBuffer& buffer_, VkDeviceMemory& memory_)
 {
-	VkDeviceSize buffer_size = sizeof(VERTICES[0]) * VERTICES.size();
+	VkDeviceSize buffer_size = sizeof(vertices_[0]) * vertices_.size();
 
 	VkBuffer staging_buffer;
 	VkDeviceMemory staging_buffer_memory;
@@ -1041,23 +1052,23 @@ void GraphicsContext::createVulkanVertexBuffer()
 
 	void* data;
 	vkMapMemory(m_device, staging_buffer_memory, 0, buffer_size,NULL, &data);
-	memcpy(data, VERTICES.data(), (size_t)buffer_size);
+	memcpy(data, vertices_.data(), (size_t)buffer_size);
 	vkUnmapMemory(m_device, staging_buffer_memory);
 
 	createVulkanBuffer(buffer_size,
 										 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
 										 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-										 m_vertex_buffer,
-										 m_vertex_buffer_memory);
+										 buffer_,
+										 memory_);
 
-	copyVulkanBuffer(staging_buffer, m_vertex_buffer, buffer_size);
+	copyVulkanBuffer(staging_buffer, buffer_, buffer_size);
 	vkDestroyBuffer(m_device, staging_buffer, nullptr);
 	vkFreeMemory(m_device, staging_buffer_memory, nullptr);
 }
 
-void GraphicsContext::createVulkanIndexBuffer()
+void GraphicsContext::createVulkanIndexBuffer(const std::vector<uint16_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_)
 {
-	VkDeviceSize buffer_size = sizeof(INDICES[0]) * INDICES.size();
+	VkDeviceSize buffer_size = sizeof(indices_[0]) * indices_.size();
 
 	VkBuffer staging_buffer;
 	VkDeviceMemory staging_buffer_memory;
@@ -1069,16 +1080,16 @@ void GraphicsContext::createVulkanIndexBuffer()
 
 	void* data;
 	vkMapMemory(m_device, staging_buffer_memory, 0, buffer_size, 0, &data);
-	memcpy(data, INDICES.data(), (size_t)buffer_size);
+	memcpy(data, indices_.data(), (size_t)buffer_size);
 	vkUnmapMemory(m_device, staging_buffer_memory);
 
 	createVulkanBuffer(buffer_size,
 										 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
 										 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-										 m_index_buffer,
-										 m_index_buffer_memory);
+										 buffer_,
+										 memory_);
 
-	copyVulkanBuffer(staging_buffer, m_index_buffer, buffer_size);
+	copyVulkanBuffer(staging_buffer, buffer_, buffer_size);
 
 	vkDestroyBuffer(m_device, staging_buffer, nullptr);
 	vkFreeMemory(m_device, staging_buffer_memory, nullptr);
@@ -1116,7 +1127,7 @@ void GraphicsContext::updateVulkanUniformBuffer(uint32_t current_frame_)
 	float time = std::chrono::duration<float>(current_time - last_time).count();
 
 	UniformBufferObject ubo;
-	ubo.model = glm::rotate(rotation, time * (angle - (float)m_extent_2d.width/2)  * glm::radians(1.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ubo.model = glm::rotate(rotation, time * (angle - (float)m_extent_2d.width / 2) * glm::radians(1.f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.view  = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	ubo.proj  = glm::perspective(glm::radians(45.0f), (float)m_extent_2d.width / (float)m_extent_2d.height, 0.1f, 10.0f);
 

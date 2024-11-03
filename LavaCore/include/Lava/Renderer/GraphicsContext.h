@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.h>
 
+#include "Vertex3Color.h"
+
 namespace Lava
 {
 	class GraphicsContext
@@ -62,7 +64,6 @@ namespace Lava
 		VkExtent2D m_extent_2d;
 		VkSurfaceFormatKHR m_surface_format;
 		VkPresentModeKHR m_present_mode;
-
 		// VkRenderPass
 		VkRenderPass m_render_pass;
 		std::vector<VkFramebuffer> m_framebuffers;
@@ -97,27 +98,43 @@ namespace Lava
 		uint32_t m_current_frame      = 0;
 		bool frame_buffer_resized     = false;
 
+		// BUFFERS 2 TEST
+		VkBuffer m_vertex_buffer2;
+		VkDeviceMemory m_vertex_buffer_memory2;
+		VkBuffer m_index_buffer2;
+		VkDeviceMemory m_index_buffer_memory2;
+
 	private: // Initial creation functions //
 		void createVulkanInstance();
 		void createVulkanDebug();
 		void createVulkanDevice();
-		void createVulkanSwapchain();
-		void createVulkanRenderPass();
-		void createVulkanDescriptorSetLayout();
-		void createVulkanGraphicsPipeline();
-		void createVulkanFrameBuffers();
-		void createVulkanCommandPool();
-		void createVulkanSyncObjects();
 
-	private: // Multiple usage functions //
+		void createVulkanSwapchain();
 		void destroyVulkanSwapchain();
 		void recreateVulkanSwapchain();
-
+		void createVulkanRenderPass();
+		void createVulkanFrameBuffers();
 		void destroyVulkanFrameBuffers();
 		void recreateVulkanFrameBuffers();
 
+		void createVulkanCommandPool();
 		void allocateVulkanCommandBuffers();
+		void createVulkanSyncObjects();
+
+		void createVulkanDescriptorSetLayout();
+		void createVulkanGraphicsPipeline();
+
+		void createVulkanVertexBuffer(const std::vector<Vertex3Color>& vertices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
+		void createVulkanIndexBuffer(const std::vector<uint16_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
+
+		void createVulkanUniformBuffers();
+		void createVulkanDescriptorPool();
+		void createVulkanDescriptorSets();
+
+	private: // Multiple usage functions //
 		void recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const;
+
+		void updateVulkanUniformBuffer(uint32_t current_frame_);
 
 		void createVulkanBuffer(VkDeviceSize size_,
 														VkBufferUsageFlags usage_,
@@ -127,12 +144,6 @@ namespace Lava
 		void copyVulkanBuffer(VkBuffer src_buffer_,
 													VkBuffer dst_buffer_,
 													VkDeviceSize size_);
-		void createVulkanVertexBuffer();
-		void createVulkanIndexBuffer();
-		void createVulkanUniformBuffers();
-		void updateVulkanUniformBuffer(uint32_t current_frame_);
-		void createVulkanDescriptorPool();
-		void createVulkanDescriptorSets();
 
 	private:
 		std::vector<const char*> m_available_instance_ext = {};
