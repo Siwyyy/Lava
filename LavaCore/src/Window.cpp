@@ -1,13 +1,9 @@
 #include "Lava/Lavapch.h"
 #include "Lava/Window.h"
 
-#include "Lava/Log.h"
 #include "Lava/Events/ApplicationEvent.h"
 #include "Lava/Events/KeyEvent.h"
 #include "Lava/Events/MouseEvent.h"
-
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
 
 using namespace Lava;
 

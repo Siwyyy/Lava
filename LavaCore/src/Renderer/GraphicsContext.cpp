@@ -1,12 +1,6 @@
 ﻿#include "Lava/Lavapch.h"
 #include "Lava/Renderer/GraphicsContext.h"
 
-#include "Lava/Log.h"
-#include "Lava/Renderer/Vertex3Color.h"
-
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-
 #include "Lava/Renderer/Pipeline.h"
 
 using namespace Lava;
@@ -56,7 +50,6 @@ void GraphicsContext::onUpdate()
 {
 	glfwPollEvents();
 	draw();
-	vkDeviceWaitIdle(m_device);
 }
 
 // Drawing //

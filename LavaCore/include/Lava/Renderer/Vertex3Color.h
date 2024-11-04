@@ -1,13 +1,21 @@
 #pragma once
-
-#include <glm/glm.hpp>
-#include <vulkan/vulkan_core.h>
+#include "Lava/Lavapch.h"
 
 namespace Lava
 {
-	struct Vertex3Color
+	struct Vertex3
 	{
+		Vertex3(glm::vec3 pos_)
+			: pos(pos_) {}
+
 		glm::vec3 pos;
+	};
+
+	struct Vertex3Color : Vertex3
+	{
+		Vertex3Color(glm::vec3 pos_, glm::vec3 color_)
+			: Vertex3(pos_) { color = color_; }
+
 		glm::vec3 color;
 
 		static VkVertexInputBindingDescription getBindingDescription()
@@ -44,18 +52,18 @@ namespace Lava
 		{{0.f,0.f,0.6f},{0.7f,0.7f,0.7f}}
 	};
 
-	const std::vector<uint16_t> INDICES = {1,3,0,3,2,0,2,1,0,2,3,1};
+	const std::vector<uint32_t> INDICES = {1,3,0,3,2,0,2,1,0,2,3,1};
 
-	const float transform = 2.f;
+	const float TRANSFORM = 2.f;
 
 	const std::vector<Vertex3Color> VERTICES2 = {
-		{{-0.53f,-0.3f,-0.3f + transform},{1.0f,0.0f,0.0f}},
-		{{0.53f,-0.3f,-0.3f + transform},{0.0f,1.0f,0.0f}},
-		{{0.0f,0.6f,-0.3f + transform},{0.0f,0.0f,1.0f}},
-		{{0.0f,0.0f,0.6f + transform},{0.7f,0.7f,0.7f}}
+		{{-0.53f,-0.3f + TRANSFORM,-0.3f},{1.0f,0.0f,0.0f}},
+		{{0.53f,-0.3f + TRANSFORM,-0.3f},{0.0f,1.0f,0.0f}},
+		{{0.0f,0.6f + TRANSFORM,-0.3f},{0.0f,0.0f,1.0f}},
+		{{0.0f,0.0f + TRANSFORM,0.6f},{0.7f,0.7f,0.7f}}
 	};
 
-	const std::vector<uint16_t> INDICES2 = {1,3,0,3,2,0,2,1,0,2,3,1};
+	const std::vector<uint32_t> INDICES2 = {1,3,0,3,2,0,2,1,0,2,3,1};
 
 	struct UniformBufferObject
 	{

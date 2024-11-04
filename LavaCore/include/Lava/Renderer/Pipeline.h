@@ -3,6 +3,7 @@
 
 namespace Lava
 {
+	class BasicBody3D;
 	class GraphicsContext;
 
 	class Pipeline
@@ -13,6 +14,8 @@ namespace Lava
 
 		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_);
 		void updateVulkanUniformBuffer(uint32_t current_frame_);
+
+		void pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& objects_);
 
 	private:
 		std::shared_ptr<GraphicsContext> m_context;
@@ -27,7 +30,7 @@ namespace Lava
 		VkShaderModule m_frag_shader_module;
 
 		// Command pool for command buffers for copying buffers
-		VkCommandPool m_command_pool;
+		VkCommandPool m_copy_command_pool;
 
 		// BUFFERS
 		VkBuffer m_vertex_buffer;
@@ -35,16 +38,12 @@ namespace Lava
 		VkBuffer m_index_buffer;
 		VkDeviceMemory m_index_buffer_memory;
 
-		// BUFFERS 2 TEST
-		VkBuffer m_vertex_buffer2;
-		VkDeviceMemory m_vertex_buffer_memory2;
-		VkBuffer m_index_buffer2;
-		VkDeviceMemory m_index_buffer_memory2;
-
 		// Uniform buffers
 		std::vector<VkBuffer> m_uniform_buffers;
 		std::vector<VkDeviceMemory> m_uniform_buffers_memory;
 		std::vector<void*> m_uniform_buffers_mapped;
+
+		std::vector<std::shared_ptr<BasicBody3D>> m_objects;
 
 	private:
 		void createVulkanDescriptorSetLayout();
@@ -53,7 +52,7 @@ namespace Lava
 		void createVulkanCommandPool();
 
 		void createVulkanVertexBuffer(const std::vector<Vertex3Color>& vertices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
-		void createVulkanIndexBuffer(const std::vector<uint16_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
+		void createVulkanIndexBuffer(const std::vector<uint32_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
 
 		void createVulkanUniformBuffers();
 

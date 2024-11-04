@@ -1,12 +1,8 @@
 #pragma once
+#include "Lava/Lavapch.h"
+
 #include "Lava/Events/Event.h"
-
-#define GLFW_INCLUDE_VULKAN
-#define GLFW_EXPOSE_NATIVE_WIN32
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <GLFW/glfw3.h>
-
-#include "Renderer/GraphicsContext.h"
+#include "Lava/Renderer/GraphicsContext.h"
 
 namespace Lava
 {

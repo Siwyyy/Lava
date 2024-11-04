@@ -1,12 +1,5 @@
 ﻿#pragma once
-
-#define GLFW_INCLUDE_VULKAN
-#define GLFW_EXPOSE_NATIVE_WIN32
-#define VK_USE_PLATFORM_WIN32_KHR
-#include <GLFW/glfw3.h>
-#include <vulkan/vulkan.h>
-
-#include "Vertex3Color.h"
+#include  "Lava/Lavapch.h"
 
 namespace Lava
 {
@@ -134,11 +127,11 @@ namespace Lava
 		static VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo();
 		void destroyVulkanDebug() const;
 
-#ifdef LAVA_DEBUG
-		inline static const bool s_validation_layers_enabled             = true;
 		inline static const std::vector<const char*> s_validation_layers = {"VK_LAYER_KHRONOS_validation"};
+#ifdef LAVA_DEBUG
+		inline static const bool s_validation_layers_enabled = true;
 #else
-		inline static const bool GraphicsContext::s_validation_layers_enabled = false;
+		inline static const bool s_validation_layers_enabled = false;
 #endif
 	};
 }

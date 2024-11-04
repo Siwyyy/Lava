@@ -1,14 +1,15 @@
 ﻿#include "Lava/Lavapch.h"
 #include "Lava/Renderer/Pipeline.h"
 
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
-
 #include "Lava/Application.h"
-#include "Lava/Log.h"
 #include "Lava/Resources.h"
 #include "Lava/Input/Input.h"
 #include "Lava/Input/KeyCodes.h"
+
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_transform.hpp>
+
+#include "Lava/Renderer/BasicBody3DModel.h"
 
 using namespace Lava;
 
@@ -21,12 +22,6 @@ Pipeline::Pipeline()
 	createVulkanGraphicsPipeline();
 
 	createVulkanCommandPool();
-
-	createVulkanVertexBuffer(VERTICES, m_vertex_buffer, m_vertex_buffer_memory);
-	createVulkanIndexBuffer(INDICES, m_index_buffer, m_index_buffer_memory);
-
-	createVulkanVertexBuffer(VERTICES2, m_vertex_buffer2, m_vertex_buffer_memory2);
-	createVulkanIndexBuffer(INDICES2, m_index_buffer2, m_index_buffer_memory2);
 
 	createVulkanUniformBuffers();
 	createVulkanDescriptorPool();
@@ -41,16 +36,6 @@ Pipeline::~Pipeline()
 		vkDestroyBuffer(m_context->getDevice(), m_uniform_buffers[i], nullptr);
 		vkFreeMemory(m_context->getDevice(), m_uniform_buffers_memory[i], nullptr);
 	}
-
-	vkDestroyBuffer(m_context->getDevice(), m_index_buffer2, nullptr);
-	vkFreeMemory(m_context->getDevice(), m_index_buffer_memory2, nullptr);
-	vkDestroyBuffer(m_context->getDevice(), m_vertex_buffer2, nullptr);
-	vkFreeMemory(m_context->getDevice(), m_vertex_buffer_memory2, nullptr);
-
-	vkDestroyBuffer(m_context->getDevice(), m_index_buffer, nullptr);
-	vkFreeMemory(m_context->getDevice(), m_index_buffer_memory, nullptr);
-	vkDestroyBuffer(m_context->getDevice(), m_vertex_buffer, nullptr);
-	vkFreeMemory(m_context->getDevice(), m_vertex_buffer_memory, nullptr);
 
 	vkDestroyPipeline(m_context->getDevice(), m_pipeline, nullptr);
 	vkDestroyPipelineLayout(m_context->getDevice(), m_pipeline_layout, nullptr);
@@ -79,17 +64,21 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 
 	vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[current_frame_], 0, nullptr);
 
-	const VkBuffer vertex_buffers[] = {m_vertex_buffer};
-	const VkDeviceSize offsets[]    = {0};
-	vkCmdBindVertexBuffers(command_buffer_, 0, 1, vertex_buffers, offsets);
-	vkCmdBindIndexBuffer(command_buffer_, m_index_buffer, 0, VK_INDEX_TYPE_UINT16);
-	vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(INDICES.size()), 1, 0, 0, 0);
+	for (auto object : m_objects)
+	{
+		object->drawIndexed(command_buffer_);
+	}
+	//
+	//
+	//
+	//
+	//
 
-	const VkBuffer vertex_buffers2[] = {m_vertex_buffer2};
-	const VkDeviceSize offsets2[]    = {0};
-	vkCmdBindVertexBuffers(command_buffer_, 0, 1, vertex_buffers2, offsets2);
-	vkCmdBindIndexBuffer(command_buffer_, m_index_buffer2, 0, VK_INDEX_TYPE_UINT16);
-	vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(INDICES2.size()), 1, 0, 0, 0);
+	//const VkBuffer vertex_buffers2[] = {m_vertex_buffer2};
+	//const VkDeviceSize offsets2[]    = {0};
+	//vkCmdBindVertexBuffers(command_buffer_, 0, 1, vertex_buffers2, offsets2);
+	//vkCmdBindIndexBuffer(command_buffer_, m_index_buffer2, 0, VK_INDEX_TYPE_UINT32);
+	//vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(INDICES2.size()), 1, 0, 0, 0);
 }
 
 void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
@@ -109,7 +98,7 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 	if (Input::isKeyPressed(LAVA_KEY_A) && x > -10.f) { x += .001f; }
 	if (Input::isKeyPressed(LAVA_KEY_D) && x < 10.f) { x -= .001f; }
 	if (Input::isKeyPressed(LAVA_KEY_SPACE) && z < 10.f) { z += .001f; }
-	if (Input::isKeyPressed(LAVA_KEY_LEFT_SHIFT) && z > 2.f) { z -= .001f; }
+	if (Input::isKeyPressed(LAVA_KEY_LEFT_SHIFT) && z > 1.f) { z -= .001f; }
 
 	UniformBufferObject ubo;
 	ubo.model = glm::rotate(rotation, time * glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -122,6 +111,19 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 	last_time = current_time;
 	rotation  = ubo.model;
 }
+
+void Pipeline::pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& objects_)
+{
+	for (auto& object : objects_)
+	{
+		if (!object->state.ready_to_draw && object->state.ready_to_copy)
+			object->copyStgBuffersToGpu(m_copy_command_pool);
+
+		m_objects.push_back(object);
+	}
+}
+
+// //////////////////// //
 
 void Pipeline::createVulkanDescriptorSetLayout()
 {
@@ -306,6 +308,8 @@ void Pipeline::createVulkanGraphicsPipeline()
 	LAVA_CORE_DEBUG("Created: VkPipeline");
 }
 
+//
+
 void Pipeline::createVulkanCommandPool()
 {
 	VkCommandPoolCreateInfo command_pool_create_info;
@@ -314,10 +318,12 @@ void Pipeline::createVulkanCommandPool()
 	command_pool_create_info.flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
 	command_pool_create_info.queueFamilyIndex = m_context->getGraphicsQueueIndex();
 
-	if (vkCreateCommandPool(m_context->getDevice(), &command_pool_create_info, nullptr, &m_command_pool) != VK_SUCCESS)
+	if (vkCreateCommandPool(m_context->getDevice(), &command_pool_create_info, nullptr, &m_copy_command_pool) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to create command pool!");
 	LAVA_CORE_DEBUG("Created: VkCommandPool");
 }
+
+//
 
 void Pipeline::createVulkanVertexBuffer(const std::vector<Vertex3Color>& vertices_, VkBuffer& buffer_, VkDeviceMemory& memory_)
 {
@@ -347,7 +353,7 @@ void Pipeline::createVulkanVertexBuffer(const std::vector<Vertex3Color>& vertice
 	vkFreeMemory(m_context->getDevice(), staging_buffer_memory, nullptr);
 }
 
-void Pipeline::createVulkanIndexBuffer(const std::vector<uint16_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_)
+void Pipeline::createVulkanIndexBuffer(const std::vector<uint32_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_)
 {
 	VkDeviceSize buffer_size = sizeof(indices_[0]) * indices_.size();
 
@@ -371,7 +377,6 @@ void Pipeline::createVulkanIndexBuffer(const std::vector<uint16_t>& indices_, Vk
 										 memory_);
 
 	copyVulkanBuffer(staging_buffer, buffer_, buffer_size);
-
 	vkDestroyBuffer(m_context->getDevice(), staging_buffer, nullptr);
 	vkFreeMemory(m_context->getDevice(), staging_buffer_memory, nullptr);
 }
@@ -531,7 +536,7 @@ void Pipeline::copyVulkanBuffer(VkBuffer src_buffer_, VkBuffer dst_buffer_, VkDe
 	VkCommandBufferAllocateInfo command_buffer_allocate_info{};
 	command_buffer_allocate_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	command_buffer_allocate_info.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	command_buffer_allocate_info.commandPool        = m_command_pool;
+	command_buffer_allocate_info.commandPool        = m_copy_command_pool;
 	command_buffer_allocate_info.commandBufferCount = 1;
 
 	VkCommandBuffer command_buffer;
@@ -567,5 +572,5 @@ void Pipeline::copyVulkanBuffer(VkBuffer src_buffer_, VkBuffer dst_buffer_, VkDe
 	vkQueueSubmit(m_context->getGraphicsQueue(), 1, &submit_info,VK_NULL_HANDLE);
 	vkQueueWaitIdle(m_context->getGraphicsQueue());
 
-	vkFreeCommandBuffers(m_context->getDevice(), m_command_pool, 1, &command_buffer);
+	vkFreeCommandBuffers(m_context->getDevice(), m_copy_command_pool, 1, &command_buffer);
 }

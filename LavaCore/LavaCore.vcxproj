@@ -167,6 +167,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Renderer\BasicBody3DModel.cpp" />
     <ClCompile Include="src\Renderer\Pipeline.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Renderer\GraphicsContext.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="include\Lava\Layer.h" />
     <ClInclude Include="include\Lava\Application.h" />
     <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
+    <ClInclude Include="include\Lava\Renderer\BasicBody3DModel.h" />
     <ClInclude Include="include\Lava\Renderer\Pipeline.h" />
     <ClInclude Include="include\Lava\Renderer\Vertex3Color.h" />
     <ClInclude Include="include\Lava\LayerStack.h" />
@@ -203,6 +205,7 @@
     <ClInclude Include="include\Lava\Window.h" />
     <ClInclude Include="include\Lava\Resources.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="include\Lava\Renderer\Buffers.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="shaders\compile.bat.txt" />
