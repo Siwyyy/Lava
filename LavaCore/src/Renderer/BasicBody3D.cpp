@@ -1,5 +1,5 @@
 #include "Lava/Lavapch.h"
-#include "Lava/Renderer/BasicBody3DModel.h"
+#include "Lava/Renderer/BasicBody3D.h"
 
 #include "Lava/Application.h"
 #include "Lava/Renderer/Buffers.h"
@@ -7,31 +7,45 @@
 
 using namespace Lava;
 
-BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_, const std::vector<uint32_t>& indices_)
-	: transform({0,0,0,0})
-	, rotation({0,0,0,0})
-	, vertices(vertices_)
-	, indices(indices_)
-{
-	init();
-}
-
-BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_, const std::vector<uint32_t>& indices_, const glm::mat4& transform_)
-	: transform(transform_)
-	, rotation({0,0,0,0})
-	, vertices(vertices_)
-	, indices(indices_)
-{
-	init();
-}
-
-BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_, const std::vector<uint32_t>& indices_, const glm::mat4& transform_, const glm::mat4& rotation_)
+BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_,
+												 const std::vector<uint32_t>& indices_,
+												 const glm::mat4& transform_,
+												 const glm::mat4& rotation_)
 	: transform(transform_)
 	, rotation(rotation_)
 	, vertices(vertices_)
 	, indices(indices_)
 {
-	init();
+	auto context = Application::getInstance().getWindow().getContext();
+	// init vertex buffers
+	VkDeviceSize vertex_buffer_size = sizeof(vertices[0]) * vertices.size();
+	Buffers::createVulkanBuffer(vertex_buffer_size,
+															VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+															VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+															m_vertex_staging_buffer,
+															m_vertex_staging_buffer_memory);
+	vkMapMemory(context->getDevice(), m_vertex_staging_buffer_memory, 0, vertex_buffer_size, 0, &m_vertex_staging_buffer_memory_mapped);
+	Buffers::createVulkanBuffer(vertex_buffer_size,
+															VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+															VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+															m_vertex_buffer,
+															m_vertex_buffer_memory);
+
+	// init index buffers
+	VkDeviceSize index_buffer_size = sizeof(indices[0]) * indices.size();
+	Buffers::createVulkanBuffer(index_buffer_size,
+															VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+															VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+															m_index_staging_buffer,
+															m_index_staging_buffer_memory);
+	vkMapMemory(context->getDevice(), m_index_staging_buffer_memory, 0, index_buffer_size, 0, &m_index_staging_buffer_memory_mapped);
+	Buffers::createVulkanBuffer(vertex_buffer_size,
+															VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+															VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+															m_index_buffer,
+															m_index_buffer_memory);
+
+	loadStgBuffers();
 }
 
 BasicBody3D::~BasicBody3D()
@@ -116,38 +130,4 @@ void BasicBody3D::drawIndexed(const VkCommandBuffer& command_buffer_)
 	vkCmdBindVertexBuffers(command_buffer_, 0, 1, vertex_buffers, offsets);
 	vkCmdBindIndexBuffer(command_buffer_, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
 	vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
-}
-
-void BasicBody3D::init()
-{
-	auto context = Application::getInstance().getWindow().getContext();
-	// init vertex buffers
-	VkDeviceSize vertex_buffer_size = sizeof(vertices[0]) * vertices.size();
-	Buffers::createVulkanBuffer(vertex_buffer_size,
-															VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-															VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-															m_vertex_staging_buffer,
-															m_vertex_staging_buffer_memory);
-	vkMapMemory(context->getDevice(), m_vertex_staging_buffer_memory, 0, vertex_buffer_size, 0, &m_vertex_staging_buffer_memory_mapped);
-	Buffers::createVulkanBuffer(vertex_buffer_size,
-															VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-															VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-															m_vertex_buffer,
-															m_vertex_buffer_memory);
-
-	// init index buffers
-	VkDeviceSize index_buffer_size = sizeof(indices[0]) * indices.size();
-	Buffers::createVulkanBuffer(index_buffer_size,
-															VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-															VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-															m_index_staging_buffer,
-															m_index_staging_buffer_memory);
-	vkMapMemory(context->getDevice(), m_index_staging_buffer_memory, 0, index_buffer_size, 0, &m_index_staging_buffer_memory_mapped);
-	Buffers::createVulkanBuffer(vertex_buffer_size,
-															VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-															VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-															m_index_buffer,
-															m_index_buffer_memory);
-
-	loadStgBuffers();
 }

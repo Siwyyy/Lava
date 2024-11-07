@@ -8,9 +8,10 @@ namespace Lava
 	class BasicBody3D
 	{
 	public:
-		BasicBody3D(const std::vector<Vertex3Color>& vertices_, const std::vector<uint32_t>& indices_);
-		BasicBody3D(const std::vector<Vertex3Color>& vertices_, const std::vector<uint32_t>& indices_, const glm::mat4& transform_);
-		BasicBody3D(const std::vector<Vertex3Color>& vertices_, const std::vector<uint32_t>& indices_, const glm::mat4& transform_, const glm::mat4& rotation_);
+		BasicBody3D(const std::vector<Vertex3Color>& vertices_,
+								const std::vector<uint32_t>& indices_,
+								const glm::mat4& transform_ = glm::mat4({0,0,0,0}),
+								const glm::mat4& rotation_  = glm::mat4({0,0,0,0}));
 		~BasicBody3D();
 
 		glm::mat4 transform;
@@ -42,8 +43,5 @@ namespace Lava
 		void* m_index_staging_buffer_memory_mapped;
 		VkBuffer m_index_buffer;
 		VkDeviceMemory m_index_buffer_memory;
-
-	private:
-		void init();
 	};
 }

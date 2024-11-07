@@ -39,7 +39,7 @@
     <ClCompile Include="src\Renderer\Pipeline.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\BasicBody3DModel.cpp">
+    <ClCompile Include="src\Renderer\BasicBody3D.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Buffers.cpp">
@@ -113,7 +113,7 @@
     <ClInclude Include="include\Lava\Renderer\Pipeline.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="include\Lava\Renderer\BasicBody3DModel.h">
+    <ClInclude Include="include\Lava\Renderer\BasicBody3D.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="include\Lava\Renderer\Buffers.h">

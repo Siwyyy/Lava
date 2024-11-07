@@ -5,7 +5,7 @@
 #include "Lava/Resources.h"
 #include "Lava/Input/Input.h"
 #include "Lava/Input/KeyCodes.h"
-#include "Lava/Renderer/BasicBody3DModel.h"
+#include "Lava/Renderer/BasicBody3D.h"
 #include "Lava/Renderer/Buffers.h"
 #include "Lava/Renderer/Vertex.h"
 
