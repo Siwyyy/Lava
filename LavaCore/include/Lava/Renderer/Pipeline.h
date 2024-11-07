@@ -15,6 +15,7 @@ namespace Lava
 		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_);
 		void updateVulkanUniformBuffer(uint32_t current_frame_);
 
+		void pushObjects(const std::shared_ptr<BasicBody3D>& objects_);
 		void pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& objects_);
 
 	private:
@@ -50,9 +51,6 @@ namespace Lava
 		void createVulkanGraphicsPipeline();
 
 		void createVulkanCommandPool();
-
-		void createVulkanVertexBuffer(const std::vector<Vertex3Color>& vertices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
-		void createVulkanIndexBuffer(const std::vector<uint32_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_);
 
 		void createVulkanUniformBuffers();
 

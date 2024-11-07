@@ -64,21 +64,10 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 
 	vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[current_frame_], 0, nullptr);
 
-	for (auto object : m_objects)
+	for (auto& object : m_objects)
 	{
 		object->drawIndexed(command_buffer_);
 	}
-	//
-	//
-	//
-	//
-	//
-
-	//const VkBuffer vertex_buffers2[] = {m_vertex_buffer2};
-	//const VkDeviceSize offsets2[]    = {0};
-	//vkCmdBindVertexBuffers(command_buffer_, 0, 1, vertex_buffers2, offsets2);
-	//vkCmdBindIndexBuffer(command_buffer_, m_index_buffer2, 0, VK_INDEX_TYPE_UINT32);
-	//vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(INDICES2.size()), 1, 0, 0, 0);
 }
 
 void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
@@ -110,6 +99,14 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 	memcpy(m_uniform_buffers_mapped[current_frame_], &ubo, sizeof(ubo));
 	last_time = current_time;
 	rotation  = ubo.model;
+}
+
+void Pipeline::pushObjects(const std::shared_ptr<BasicBody3D>& object_)
+{
+	if (!object_->state.ready_to_draw && object_->state.ready_to_copy)
+		object_->copyStgBuffersToGpu(m_copy_command_pool);
+
+	m_objects.push_back(object_);
 }
 
 void Pipeline::pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& objects_)
@@ -324,62 +321,6 @@ void Pipeline::createVulkanCommandPool()
 }
 
 //
-
-void Pipeline::createVulkanVertexBuffer(const std::vector<Vertex3Color>& vertices_, VkBuffer& buffer_, VkDeviceMemory& memory_)
-{
-	VkDeviceSize buffer_size = sizeof(vertices_[0]) * vertices_.size();
-
-	VkBuffer staging_buffer;
-	VkDeviceMemory staging_buffer_memory;
-	createVulkanBuffer(buffer_size,
-										 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-										 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-										 staging_buffer,
-										 staging_buffer_memory);
-
-	void* data;
-	vkMapMemory(m_context->getDevice(), staging_buffer_memory, 0, buffer_size,NULL, &data);
-	memcpy(data, vertices_.data(), (size_t)buffer_size);
-	vkUnmapMemory(m_context->getDevice(), staging_buffer_memory);
-
-	createVulkanBuffer(buffer_size,
-										 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-										 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-										 buffer_,
-										 memory_);
-
-	copyVulkanBuffer(staging_buffer, buffer_, buffer_size);
-	vkDestroyBuffer(m_context->getDevice(), staging_buffer, nullptr);
-	vkFreeMemory(m_context->getDevice(), staging_buffer_memory, nullptr);
-}
-
-void Pipeline::createVulkanIndexBuffer(const std::vector<uint32_t>& indices_, VkBuffer& buffer_, VkDeviceMemory& memory_)
-{
-	VkDeviceSize buffer_size = sizeof(indices_[0]) * indices_.size();
-
-	VkBuffer staging_buffer;
-	VkDeviceMemory staging_buffer_memory;
-	createVulkanBuffer(buffer_size,
-										 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-										 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-										 staging_buffer,
-										 staging_buffer_memory);
-
-	void* data;
-	vkMapMemory(m_context->getDevice(), staging_buffer_memory, 0, buffer_size, 0, &data);
-	memcpy(data, indices_.data(), (size_t)buffer_size);
-	vkUnmapMemory(m_context->getDevice(), staging_buffer_memory);
-
-	createVulkanBuffer(buffer_size,
-										 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-										 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-										 buffer_,
-										 memory_);
-
-	copyVulkanBuffer(staging_buffer, buffer_, buffer_size);
-	vkDestroyBuffer(m_context->getDevice(), staging_buffer, nullptr);
-	vkFreeMemory(m_context->getDevice(), staging_buffer_memory, nullptr);
-}
 
 void Pipeline::createVulkanUniformBuffers()
 {

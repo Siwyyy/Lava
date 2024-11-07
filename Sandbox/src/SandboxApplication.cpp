@@ -35,10 +35,11 @@ private:
 	bool onMouseButtonPressed(const Lava::MouseButtonPressedEvent& event_) const
 	{
 		if (event_.getButtonCode() != LAVA_MOUSE_BUTTON_LEFT)
-		{
-			m_pipeline->pushObjects(m_objects);
 			return false;
-		}
+
+		static uint32_t object_counter = 0;
+		if (object_counter < m_objects.size())
+			m_pipeline->pushObjects(m_objects[object_counter++]);
 
 		auto mouse_pos = Lava::Input::getMousePosition();
 
