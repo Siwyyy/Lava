@@ -15,8 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sandbox.cpp">
+    <ClCompile Include="src\SandboxApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\basic.frag" />
+    <None Include="resources\shaders\basic.vert" />
+    <None Include="resources\shaders\compile.bat">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="resources\shaders\basic.frag.spv" />
+    <CopyFileToFolders Include="resources\shaders\basic.vert.spv" />
   </ItemGroup>
 </Project>
