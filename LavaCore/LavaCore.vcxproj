@@ -191,6 +191,7 @@
     <ClInclude Include="include\Lava\Application.h" />
     <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
     <ClInclude Include="include\Lava\Renderer\BasicBody3D.h" />
+    <ClInclude Include="include\Lava\Renderer\Initializers.h" />
     <ClInclude Include="include\Lava\Renderer\Pipeline.h" />
     <ClInclude Include="include\Lava\Renderer\Vertex.h" />
     <ClInclude Include="include\Lava\LayerStack.h" />

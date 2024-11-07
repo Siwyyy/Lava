@@ -12,6 +12,8 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include "Lava/Renderer/Initializers.h"
+
 using namespace Lava;
 
 Pipeline::Pipeline()
@@ -24,7 +26,7 @@ Pipeline::Pipeline()
 
 	createVulkanCommandPool();
 
-	createVulkanUniformBuffers();
+	createStaticUniformBuffers();
 	createVulkanDescriptorPool();
 	createVulkanDescriptorSets();
 }
@@ -45,7 +47,7 @@ Pipeline::~Pipeline()
 	vkDestroyDescriptorSetLayout(m_context->getDevice(), m_descriptor_set_layout, nullptr);
 }
 
-void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_)
+void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const
 {
 	vkCmdBindPipeline(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
@@ -90,15 +92,15 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 	if (Input::isKeyPressed(LAVA_KEY_SPACE) && z < 10.f) { z += .001f; }
 	if (Input::isKeyPressed(LAVA_KEY_LEFT_SHIFT) && z > 1.f) { z -= .001f; }
 
-	m_ubo.model = glm::rotate(rotation, time * glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f));
-	m_ubo.view  = glm::lookAt(glm::vec3(x, y, z), glm::vec3(x, y - 2.f, z - 2.f), glm::vec3(0.0f, 0.0f, 1.0f));
-	m_ubo.proj  = glm::perspective(glm::radians(45.0f), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
+	m_static_uniform.model = glm::rotate(rotation, time * glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	m_static_uniform.view  = glm::lookAt(glm::vec3(x, y, z), glm::vec3(x, y - 2.f, z - 2.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	m_static_uniform.proj  = glm::perspective(glm::radians(45.0f), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
 
-	m_ubo.proj[1][1] *= -1;
+	m_static_uniform.proj[1][1] *= -1;
 
-	memcpy(m_uniform_buffers_mapped[current_frame_], &m_ubo, sizeof(m_ubo));
+	memcpy(m_uniform_buffers_mapped[current_frame_], &m_static_uniform, sizeof(m_static_uniform));
 	last_time = current_time;
-	rotation  = m_ubo.model;
+	rotation  = m_static_uniform.model;
 }
 
 void Pipeline::pushObjects(const std::shared_ptr<BasicBody3D>& object_)
@@ -124,19 +126,13 @@ void Pipeline::pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& obje
 
 void Pipeline::createVulkanDescriptorSetLayout()
 {
-	VkDescriptorSetLayoutBinding ubo_layout_binding;
-	ubo_layout_binding.binding            = 0;
-	ubo_layout_binding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	ubo_layout_binding.descriptorCount    = 1;
-	ubo_layout_binding.stageFlags         = VK_SHADER_STAGE_VERTEX_BIT;
-	ubo_layout_binding.pImmutableSamplers = nullptr;
+	std::vector<VkDescriptorSetLayoutBinding> set_layout_bindings =
+	{
+		Initializers::descriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT) /*,
+		Initializers::descriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT)*/
+	};
 
-	VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info;
-	descriptor_set_layout_create_info.sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	descriptor_set_layout_create_info.pNext        = nullptr;
-	descriptor_set_layout_create_info.flags        = NULL;
-	descriptor_set_layout_create_info.bindingCount = 1;
-	descriptor_set_layout_create_info.pBindings    = &ubo_layout_binding;
+	VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info = Initializers::descriptorSetLayoutCreateInfo(set_layout_bindings);
 
 	if (vkCreateDescriptorSetLayout(m_context->getDevice(), &descriptor_set_layout_create_info, nullptr, &m_descriptor_set_layout) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to create descriptor set layout!");
@@ -152,127 +148,36 @@ void Pipeline::createVulkanGraphicsPipeline()
 	m_vert_shader_module = createShaderModule(vert_shader_code);
 	m_frag_shader_module = createShaderModule(frag_shader_code);
 
-	VkPipelineShaderStageCreateInfo vert_shader_stage_create_info;
-	vert_shader_stage_create_info.sType               = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	vert_shader_stage_create_info.pNext               = nullptr;
-	vert_shader_stage_create_info.flags               = 0;
-	vert_shader_stage_create_info.stage               = VK_SHADER_STAGE_VERTEX_BIT;
-	vert_shader_stage_create_info.module              = m_vert_shader_module;
-	vert_shader_stage_create_info.pName               = "main";
-	vert_shader_stage_create_info.pSpecializationInfo = nullptr;
+	VkPipelineShaderStageCreateInfo shader_stage_create_info[] =
+	{
+		Initializers::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_VERTEX_BIT, m_vert_shader_module),
+		Initializers::pipelineShaderStageCreateInfo(VK_SHADER_STAGE_FRAGMENT_BIT, m_frag_shader_module)
+	};
 
-	VkPipelineShaderStageCreateInfo frag_shader_stage_create_info;
-	frag_shader_stage_create_info.sType               = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	frag_shader_stage_create_info.pNext               = nullptr;
-	frag_shader_stage_create_info.flags               = 0;
-	frag_shader_stage_create_info.stage               = VK_SHADER_STAGE_FRAGMENT_BIT;
-	frag_shader_stage_create_info.module              = m_frag_shader_module;
-	frag_shader_stage_create_info.pName               = "main";
-	frag_shader_stage_create_info.pSpecializationInfo = nullptr;
-
-	VkPipelineShaderStageCreateInfo shader_stage_create_info[] = {vert_shader_stage_create_info,
-																																frag_shader_stage_create_info};
-
-	auto binding_description    = Vertex3Color::getBindingDescription();
+	auto binding_descriptions   = Vertex3Color::getBindingDescriptions();
 	auto attribute_descriptions = Vertex3Color::getAttributeDescriptions();
 
-	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info;
-	vertex_input_state_create_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertex_input_state_create_info.pNext                           = VK_NULL_HANDLE;
-	vertex_input_state_create_info.flags                           = 0;
-	vertex_input_state_create_info.vertexBindingDescriptionCount   = 1;
-	vertex_input_state_create_info.pVertexBindingDescriptions      = &binding_description;
-	vertex_input_state_create_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(attribute_descriptions.size());
-	vertex_input_state_create_info.pVertexAttributeDescriptions    = attribute_descriptions.data();
+	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info    = Initializers::pipelineVertexInputStageCreateInfo(binding_descriptions, attribute_descriptions);
+	VkPipelineInputAssemblyStateCreateInfo input_assembly_create_info      = Initializers::pipelineInputAssemblyStateCreateInfo();
+	VkPipelineViewportStateCreateInfo viewport_state_create_info           = Initializers::pipelineViewportStateCreateInfo(1, 1);
+	VkPipelineRasterizationStateCreateInfo rasterization_state_create_info = Initializers::pipelineRasterizationStateCreateInfo(VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+	VkPipelineMultisampleStateCreateInfo multisample_state_create_info     = Initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
 
-	VkPipelineInputAssemblyStateCreateInfo input_assembly_create_info;
-	input_assembly_create_info.sType                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	input_assembly_create_info.pNext                  = nullptr;
-	input_assembly_create_info.flags                  = NULL;
-	input_assembly_create_info.topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	input_assembly_create_info.primitiveRestartEnable = VK_FALSE;
+	std::vector<VkPipelineColorBlendAttachmentState> color_blend_attachment_states =
+	{
+		Initializers::pipelineColorBlendAttachmentState(VK_FALSE, VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT)
+	};
+
+	VkPipelineColorBlendStateCreateInfo color_blend_state_create_info = Initializers::pipelineColorBlendStateCreateInfo(color_blend_attachment_states);
 
 	const std::vector<VkDynamicState> dynamic_states = {
 		VK_DYNAMIC_STATE_VIEWPORT,
 		VK_DYNAMIC_STATE_SCISSOR
 	};
 
-	VkPipelineDynamicStateCreateInfo dynamic_state_create_info;
-	dynamic_state_create_info.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamic_state_create_info.pNext             = nullptr;
-	dynamic_state_create_info.flags             = NULL;
-	dynamic_state_create_info.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
-	dynamic_state_create_info.pDynamicStates    = dynamic_states.data();
+	VkPipelineDynamicStateCreateInfo dynamic_state_create_info = Initializers::pipelineDynamicStateCreateInfo(dynamic_states);
 
-	VkPipelineViewportStateCreateInfo viewport_state_create_info;
-	viewport_state_create_info.sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewport_state_create_info.pNext         = nullptr;
-	viewport_state_create_info.flags         = NULL;
-	viewport_state_create_info.viewportCount = 1;
-	viewport_state_create_info.pViewports    = nullptr; // nullptr because using dynamic state viewport
-	viewport_state_create_info.scissorCount  = 1;
-	viewport_state_create_info.pScissors     = nullptr; // nullptr because using dynamic state scissor
-
-	VkPipelineRasterizationStateCreateInfo rasterization_state_create_info;
-	rasterization_state_create_info.sType                   = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-	rasterization_state_create_info.pNext                   = nullptr;
-	rasterization_state_create_info.flags                   = NULL;
-	rasterization_state_create_info.depthClampEnable        = VK_FALSE;
-	rasterization_state_create_info.rasterizerDiscardEnable = VK_FALSE;
-	rasterization_state_create_info.polygonMode             = VK_POLYGON_MODE_FILL;
-	rasterization_state_create_info.cullMode                = VK_CULL_MODE_BACK_BIT;
-	rasterization_state_create_info.frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-	rasterization_state_create_info.depthBiasEnable         = VK_FALSE;
-	rasterization_state_create_info.depthBiasConstantFactor = 0.0f;
-	rasterization_state_create_info.depthBiasClamp          = 0.0f;
-	rasterization_state_create_info.depthBiasSlopeFactor    = 0.0f;
-	rasterization_state_create_info.lineWidth               = 1.0f;
-
-	VkPipelineMultisampleStateCreateInfo multisample_state_create_info;
-	multisample_state_create_info.sType                 = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	multisample_state_create_info.pNext                 = nullptr;
-	multisample_state_create_info.flags                 = NULL;
-	multisample_state_create_info.rasterizationSamples  = VK_SAMPLE_COUNT_1_BIT;
-	multisample_state_create_info.sampleShadingEnable   = VK_FALSE;
-	multisample_state_create_info.minSampleShading      = 1.0f;
-	multisample_state_create_info.pSampleMask           = nullptr;
-	multisample_state_create_info.alphaToCoverageEnable = VK_FALSE;
-	multisample_state_create_info.alphaToOneEnable      = VK_FALSE;
-
-	VkPipelineColorBlendAttachmentState color_blend_attachment_state;
-	color_blend_attachment_state.blendEnable         = VK_FALSE;
-	color_blend_attachment_state.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-	color_blend_attachment_state.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
-	color_blend_attachment_state.colorBlendOp        = VK_BLEND_OP_ADD;
-	color_blend_attachment_state.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	color_blend_attachment_state.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-	color_blend_attachment_state.alphaBlendOp        = VK_BLEND_OP_ADD;
-	color_blend_attachment_state.colorWriteMask      = VK_COLOR_COMPONENT_R_BIT |
-																										 VK_COLOR_COMPONENT_G_BIT |
-																										 VK_COLOR_COMPONENT_B_BIT |
-																										 VK_COLOR_COMPONENT_A_BIT;
-
-	VkPipelineColorBlendStateCreateInfo color_blend_state_create_info;
-	color_blend_state_create_info.sType             = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	color_blend_state_create_info.pNext             = nullptr;
-	color_blend_state_create_info.flags             = NULL;
-	color_blend_state_create_info.logicOpEnable     = VK_FALSE;
-	color_blend_state_create_info.logicOp           = VK_LOGIC_OP_COPY;
-	color_blend_state_create_info.attachmentCount   = 1;
-	color_blend_state_create_info.pAttachments      = &color_blend_attachment_state;
-	color_blend_state_create_info.blendConstants[0] = 0.0f;
-	color_blend_state_create_info.blendConstants[1] = 0.0f;
-	color_blend_state_create_info.blendConstants[2] = 0.0f;
-	color_blend_state_create_info.blendConstants[3] = 0.0f;
-
-	VkPipelineLayoutCreateInfo pipeline_layout_create_info;
-	pipeline_layout_create_info.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipeline_layout_create_info.pNext                  = nullptr;
-	pipeline_layout_create_info.flags                  = NULL;
-	pipeline_layout_create_info.setLayoutCount         = 1;
-	pipeline_layout_create_info.pSetLayouts            = &m_descriptor_set_layout;
-	pipeline_layout_create_info.pushConstantRangeCount = 0;
-	pipeline_layout_create_info.pPushConstantRanges    = nullptr;
+	VkPipelineLayoutCreateInfo pipeline_layout_create_info = Initializers::pipelineLayoutCreateInfo(m_descriptor_set_layout);
 
 	if (vkCreatePipelineLayout(m_context->getDevice(), &pipeline_layout_create_info, nullptr, &m_pipeline_layout) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to create pipeline layout!");
@@ -322,9 +227,9 @@ void Pipeline::createVulkanCommandPool()
 
 //
 
-void Pipeline::createVulkanUniformBuffers()
+void Pipeline::createStaticUniformBuffers()
 {
-	VkDeviceSize buffer_size = sizeof(UniformBufferObject);
+	VkDeviceSize buffer_size = sizeof(StaticUniformBufferObject);
 
 	m_uniform_buffers.resize(m_context->getFramesInFlight());
 	m_uniform_buffers_memory.resize(m_context->getFramesInFlight());
@@ -342,19 +247,17 @@ void Pipeline::createVulkanUniformBuffers()
 	}
 }
 
+void Pipeline::createDynamicUniformBuffer() {}
+
 void Pipeline::createVulkanDescriptorPool()
 {
-	VkDescriptorPoolSize pool_size;
-	pool_size.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	pool_size.descriptorCount = m_context->getFramesInFlight();
+	std::vector<VkDescriptorPoolSize> pool_sizes =
+	{
+		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_context->getFramesInFlight()) /*,
+		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, m_context->getFramesInFlight())*/
+	};
 
-	VkDescriptorPoolCreateInfo pool_create_info;
-	pool_create_info.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	pool_create_info.pNext         = nullptr;
-	pool_create_info.flags         = NULL;
-	pool_create_info.maxSets       = m_context->getFramesInFlight();
-	pool_create_info.poolSizeCount = 1;
-	pool_create_info.pPoolSizes    = &pool_size;
+	VkDescriptorPoolCreateInfo pool_create_info = Initializers::descriptorPoolCreateInfo(pool_sizes, m_context->getFramesInFlight());
 
 	if (vkCreateDescriptorPool(m_context->getDevice(), &pool_create_info, nullptr, &m_descriptor_pool) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to create VkDescriptorPool!");
@@ -379,7 +282,7 @@ void Pipeline::createVulkanDescriptorSets()
 		VkDescriptorBufferInfo buffer_info;
 		buffer_info.buffer = m_uniform_buffers[i];
 		buffer_info.offset = 0;
-		buffer_info.range  = sizeof(UniformBufferObject);
+		buffer_info.range  = sizeof(StaticUniformBufferObject);
 
 		VkWriteDescriptorSet write_descriptor_set;
 		write_descriptor_set.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

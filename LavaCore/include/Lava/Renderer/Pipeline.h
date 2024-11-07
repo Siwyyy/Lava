@@ -11,7 +11,7 @@ namespace Lava
 		Pipeline();
 		~Pipeline();
 
-		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_);
+		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const;
 		void updateVulkanUniformBuffer(uint32_t current_frame_);
 
 		void pushObjects(const std::shared_ptr<BasicBody3D>& object_);
@@ -32,17 +32,23 @@ namespace Lava
 		// Command pool for command buffers for copying buffers
 		VkCommandPool m_copy_command_pool;
 
-		// Uniform buffers
-		struct UniformBufferObject
+		// Static Uniform Buffer
+		struct StaticUniformBufferObject
 		{
 			glm::mat4 model;
 			glm::mat4 view;
 			glm::mat4 proj;
-		} m_ubo;
+		} m_static_uniform;
 
 		std::vector<VkBuffer> m_uniform_buffers;
 		std::vector<VkDeviceMemory> m_uniform_buffers_memory;
 		std::vector<void*> m_uniform_buffers_mapped;
+
+		// Dynamic Uniform Buffer
+		struct DynamicUniformBufferObject
+		{
+			glm::mat4 transform;
+		} m_dynamic_uniform;
 
 		std::vector<std::shared_ptr<BasicBody3D>> m_objects;
 
@@ -52,7 +58,8 @@ namespace Lava
 
 		void createVulkanCommandPool();
 
-		void createVulkanUniformBuffers();
+		void createStaticUniformBuffers();
+		void createDynamicUniformBuffer();
 
 		void createVulkanDescriptorPool();
 		void createVulkanDescriptorSets();

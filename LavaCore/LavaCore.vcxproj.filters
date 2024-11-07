@@ -119,6 +119,9 @@
     <ClInclude Include="include\Lava\Renderer\Buffers.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="include\Lava\Renderer\Initializers.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="shaders\compile.bat.txt" />

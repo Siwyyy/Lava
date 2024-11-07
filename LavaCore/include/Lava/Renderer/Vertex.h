@@ -10,12 +10,12 @@ namespace Lava
 
 		glm::vec3 pos;
 
-		static VkVertexInputBindingDescription getBindingDescription()
+		static std::vector<VkVertexInputBindingDescription> getBindingDescriptions()
 		{
-			VkVertexInputBindingDescription binding_description;
-			binding_description.binding   = 0;
-			binding_description.stride    = sizeof(Vertex3);
-			binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+			std::vector<VkVertexInputBindingDescription> binding_description(1);
+			binding_description[0].binding   = 0;
+			binding_description[0].stride    = sizeof(Vertex3);
+			binding_description[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 			return binding_description;
 		}
 
@@ -39,12 +39,12 @@ namespace Lava
 
 		glm::vec3 color;
 
-		static VkVertexInputBindingDescription getBindingDescription()
+		static std::vector<VkVertexInputBindingDescription> getBindingDescriptions()
 		{
-			VkVertexInputBindingDescription binding_description;
-			binding_description.binding   = 0;
-			binding_description.stride    = sizeof(Vertex3Color);
-			binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+			std::vector<VkVertexInputBindingDescription> binding_description(1);
+			binding_description[0].binding   = 0;
+			binding_description[0].stride    = sizeof(Vertex3Color);
+			binding_description[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 			return binding_description;
 		}
 
