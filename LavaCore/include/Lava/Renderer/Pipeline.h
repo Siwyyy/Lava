@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "Vertex3Color.h"
 
 namespace Lava
 {
@@ -15,7 +14,7 @@ namespace Lava
 		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_);
 		void updateVulkanUniformBuffer(uint32_t current_frame_);
 
-		void pushObjects(const std::shared_ptr<BasicBody3D>& objects_);
+		void pushObjects(const std::shared_ptr<BasicBody3D>& object_);
 		void pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& objects_);
 
 	private:
@@ -33,13 +32,14 @@ namespace Lava
 		// Command pool for command buffers for copying buffers
 		VkCommandPool m_copy_command_pool;
 
-		// BUFFERS
-		VkBuffer m_vertex_buffer;
-		VkDeviceMemory m_vertex_buffer_memory;
-		VkBuffer m_index_buffer;
-		VkDeviceMemory m_index_buffer_memory;
-
 		// Uniform buffers
+		struct UniformBufferObject
+		{
+			glm::mat4 model;
+			glm::mat4 view;
+			glm::mat4 proj;
+		} m_ubo;
+
 		std::vector<VkBuffer> m_uniform_buffers;
 		std::vector<VkDeviceMemory> m_uniform_buffers_memory;
 		std::vector<void*> m_uniform_buffers_mapped;
@@ -59,14 +59,5 @@ namespace Lava
 
 		std::vector<char> readShaderFile(const std::string& filename_);
 		VkShaderModule createShaderModule(const std::vector<char>& code_) const;
-
-		void createVulkanBuffer(VkDeviceSize size_,
-														VkBufferUsageFlags usage_,
-														VkMemoryPropertyFlags props_,
-														VkBuffer& buffer_,
-														VkDeviceMemory& buffer_memory_);
-		void copyVulkanBuffer(VkBuffer src_buffer_,
-													VkBuffer dst_buffer_,
-													VkDeviceSize size_);
 	};
 }

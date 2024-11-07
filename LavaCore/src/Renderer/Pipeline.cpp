@@ -5,11 +5,12 @@
 #include "Lava/Resources.h"
 #include "Lava/Input/Input.h"
 #include "Lava/Input/KeyCodes.h"
+#include "Lava/Renderer/BasicBody3DModel.h"
+#include "Lava/Renderer/Buffers.h"
+#include "Lava/Renderer/Vertex.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-
-#include "Lava/Renderer/BasicBody3DModel.h"
 
 using namespace Lava;
 
@@ -89,16 +90,15 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 	if (Input::isKeyPressed(LAVA_KEY_SPACE) && z < 10.f) { z += .001f; }
 	if (Input::isKeyPressed(LAVA_KEY_LEFT_SHIFT) && z > 1.f) { z -= .001f; }
 
-	UniformBufferObject ubo;
-	ubo.model = glm::rotate(rotation, time * glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.view  = glm::lookAt(glm::vec3(x, y, z), glm::vec3(x, y - 2.f, z - 2.f), glm::vec3(0.0f, 0.0f, 1.0f));
-	ubo.proj  = glm::perspective(glm::radians(45.0f), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
+	m_ubo.model = glm::rotate(rotation, time * glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	m_ubo.view  = glm::lookAt(glm::vec3(x, y, z), glm::vec3(x, y - 2.f, z - 2.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	m_ubo.proj  = glm::perspective(glm::radians(45.0f), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
 
-	ubo.proj[1][1] *= -1;
+	m_ubo.proj[1][1] *= -1;
 
-	memcpy(m_uniform_buffers_mapped[current_frame_], &ubo, sizeof(ubo));
+	memcpy(m_uniform_buffers_mapped[current_frame_], &m_ubo, sizeof(m_ubo));
 	last_time = current_time;
-	rotation  = ubo.model;
+	rotation  = m_ubo.model;
 }
 
 void Pipeline::pushObjects(const std::shared_ptr<BasicBody3D>& object_)
@@ -332,11 +332,11 @@ void Pipeline::createVulkanUniformBuffers()
 
 	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
 	{
-		createVulkanBuffer(buffer_size,
-											 VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-											 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-											 m_uniform_buffers[i],
-											 m_uniform_buffers_memory[i]);
+		Buffers::createVulkanBuffer(buffer_size,
+																VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+																VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+																m_uniform_buffers[i],
+																m_uniform_buffers_memory[i]);
 
 		vkMapMemory(m_context->getDevice(), m_uniform_buffers_memory[i], 0, buffer_size,NULL, &m_uniform_buffers_mapped[i]);
 	}
@@ -397,6 +397,8 @@ void Pipeline::createVulkanDescriptorSets()
 	}
 }
 
+//
+
 std::vector<char> Pipeline::readShaderFile(const std::string& filename_)
 {
 	std::filesystem::path shaders_path = Resources::getDir(ResourceDir::Shaders);
@@ -428,90 +430,4 @@ VkShaderModule Pipeline::createShaderModule(const std::vector<char>& code_) cons
 		LAVA_CORE_ERROR("Failed to create shader module!");
 
 	return shader_module;
-}
-
-void Pipeline::createVulkanBuffer(VkDeviceSize size_, VkBufferUsageFlags usage_, VkMemoryPropertyFlags props_, VkBuffer& buffer_, VkDeviceMemory& buffer_memory_)
-{
-	VkBufferCreateInfo buffer_create_info;
-	buffer_create_info.sType                 = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	buffer_create_info.pNext                 = nullptr;
-	buffer_create_info.flags                 = NULL;
-	buffer_create_info.size                  = size_;
-	buffer_create_info.usage                 = usage_;
-	buffer_create_info.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
-	buffer_create_info.queueFamilyIndexCount = 0;
-	buffer_create_info.pQueueFamilyIndices   = nullptr;
-
-	if (vkCreateBuffer(m_context->getDevice(), &buffer_create_info, nullptr, &buffer_) != VK_SUCCESS)
-		LAVA_CORE_ERROR("failed to create vertex buffer!");
-
-	VkMemoryRequirements memory_requirements;
-	vkGetBufferMemoryRequirements(m_context->getDevice(), buffer_, &memory_requirements);
-
-	uint32_t memory_type_index = 0;
-	bool found                 = false;
-	VkPhysicalDeviceMemoryProperties properties;
-	vkGetPhysicalDeviceMemoryProperties(m_context->getGpu(), &properties);
-	for (uint32_t i = 0; i < properties.memoryTypeCount; i++)
-		if ((memory_requirements.memoryTypeBits & (1 << i)) && (properties.memoryTypes[i].propertyFlags & props_) == props_)
-		{
-			memory_type_index = i;
-			found             = true;
-		}
-	LAVA_ASSERT(found, "Failed to find memory type!")
-
-	VkMemoryAllocateInfo allocate_info;
-	allocate_info.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	allocate_info.pNext           = nullptr;
-	allocate_info.allocationSize  = memory_requirements.size;
-	allocate_info.memoryTypeIndex = memory_type_index;
-
-	if (vkAllocateMemory(m_context->getDevice(), &allocate_info, nullptr, &buffer_memory_) != VK_SUCCESS)
-		LAVA_CORE_ERROR("failed to allocate vertex buffer memory!");
-
-	vkBindBufferMemory(m_context->getDevice(), buffer_, buffer_memory_, 0);
-}
-
-void Pipeline::copyVulkanBuffer(VkBuffer src_buffer_, VkBuffer dst_buffer_, VkDeviceSize size_)
-{
-	VkCommandBufferAllocateInfo command_buffer_allocate_info{};
-	command_buffer_allocate_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	command_buffer_allocate_info.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	command_buffer_allocate_info.commandPool        = m_copy_command_pool;
-	command_buffer_allocate_info.commandBufferCount = 1;
-
-	VkCommandBuffer command_buffer;
-	vkAllocateCommandBuffers(m_context->getDevice(), &command_buffer_allocate_info, &command_buffer);
-
-	VkCommandBufferBeginInfo command_buffer_begin_info;
-	command_buffer_begin_info.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	command_buffer_begin_info.pNext            = nullptr;
-	command_buffer_begin_info.flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-	command_buffer_begin_info.pInheritanceInfo = nullptr;
-
-	vkBeginCommandBuffer(command_buffer, &command_buffer_begin_info);
-
-	VkBufferCopy copy_region;
-	copy_region.srcOffset = 0;
-	copy_region.dstOffset = 0;
-	copy_region.size      = size_;
-	vkCmdCopyBuffer(command_buffer, src_buffer_, dst_buffer_, 1, &copy_region);
-
-	vkEndCommandBuffer(command_buffer);
-
-	VkSubmitInfo submit_info;
-	submit_info.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	submit_info.pNext                = nullptr;
-	submit_info.waitSemaphoreCount   = 0;
-	submit_info.pWaitSemaphores      = nullptr;
-	submit_info.pWaitDstStageMask    = nullptr;
-	submit_info.commandBufferCount   = 1;
-	submit_info.pCommandBuffers      = &command_buffer;
-	submit_info.signalSemaphoreCount = 0;
-	submit_info.pSignalSemaphores    = nullptr;
-
-	vkQueueSubmit(m_context->getGraphicsQueue(), 1, &submit_info,VK_NULL_HANDLE);
-	vkQueueWaitIdle(m_context->getGraphicsQueue());
-
-	vkFreeCommandBuffers(m_context->getDevice(), m_copy_command_pool, 1, &command_buffer);
 }

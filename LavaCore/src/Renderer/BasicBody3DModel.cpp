@@ -3,7 +3,7 @@
 
 #include "Lava/Application.h"
 #include "Lava/Renderer/Buffers.h"
-#include "Lava/Renderer/Vertex3Color.h"
+#include "Lava/Renderer/Vertex.h"
 
 using namespace Lava;
 

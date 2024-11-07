@@ -203,11 +203,8 @@ void GraphicsContext::createVulkanInstance()
 
 	// Check validation layers support //////////////////////
 	if (s_validation_layers_enabled && !checkValidationLayerSupport())
-	{
 		LAVA_CORE_ERROR("Validation layers requested, but not available!");
-		LAVA_DEBUGBREAK
-	}
-	else
+	else if (!s_validation_layers_enabled)
 		LAVA_CORE_INFO("Validation layers disabled");
 
 	// Create VkInstance ////////////////////////////////////

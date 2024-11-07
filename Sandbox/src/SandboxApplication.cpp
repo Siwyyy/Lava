@@ -1,10 +1,6 @@
 #include "Lava.h"
 
-#include "Lava/Resources.h"
-#include "Lava/Input/Input.h"
-#include "Lava/Input/MouseButtonCodes.h"
-#include "Lava/Renderer/BasicBody3DModel.h"
-#include "Lava/Renderer/Pipeline.h"
+#include "Lava/Renderer/Vertex.h"
 
 class ExampleLayer final : public Lava::Layer
 {
@@ -13,9 +9,29 @@ public:
 
 	inline void onAttach() override
 	{
+		const std::vector<Lava::Vertex3Color> vertices = {
+			{{-0.53f,-0.3f,-0.3f},{1.f,0.f,0.f}},
+			{{0.53f,-0.3f,-0.3f},{0.f,1.f,0.f}},
+			{{0.f,0.6f,-0.3f},{0.f,0.f,1.f}},
+			{{0.f,0.f,0.6f},{0.7f,0.7f,0.7f}}
+		};
+
+		const std::vector<uint32_t> indices = {1,3,0,3,2,0,2,1,0,2,3,1};
+
+		const float transform = 2.f;
+
+		const std::vector<Lava::Vertex3Color> vertices2 = {
+			{{-0.53f,-0.3f + transform,-0.3f},{1.0f,0.0f,0.0f}},
+			{{0.53f,-0.3f + transform,-0.3f},{0.0f,1.0f,0.0f}},
+			{{0.0f,0.6f + transform,-0.3f},{0.0f,0.0f,1.0f}},
+			{{0.0f,0.0f + transform,0.6f},{0.7f,0.7f,0.7f}}
+		};
+
+		const std::vector<uint32_t> indices2 = {1,3,0,3,2,0,2,1,0,2,3,1};
+
 		m_pipeline = std::make_shared<Lava::Pipeline>();
-		m_objects.push_back(std::make_shared<Lava::BasicBody3D>(Lava::VERTICES, Lava::INDICES));
-		m_objects.push_back(std::make_shared<Lava::BasicBody3D>(Lava::VERTICES2, Lava::INDICES2));
+		m_objects.push_back(std::make_shared<Lava::BasicBody3D>(vertices, indices));
+		m_objects.push_back(std::make_shared<Lava::BasicBody3D>(vertices2, indices2));
 		Lava::Application::getInstance().getWindow().getContext()->pushPipeline(m_pipeline);
 	}
 
@@ -40,6 +56,8 @@ private:
 		static uint32_t object_counter = 0;
 		if (object_counter < m_objects.size())
 			m_pipeline->pushObjects(m_objects[object_counter++]);
+		else
+			LAVA_CLIENT_DEBUG("All objects are being drawn");
 
 		auto mouse_pos = Lava::Input::getMousePosition();
 
