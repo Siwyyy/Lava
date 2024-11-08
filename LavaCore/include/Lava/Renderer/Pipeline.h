@@ -2,6 +2,7 @@
 
 namespace Lava
 {
+	class Camera3D;
 	class BasicBody3D;
 	class GraphicsContext;
 
@@ -16,6 +17,8 @@ namespace Lava
 
 		void pushObjects(const std::shared_ptr<BasicBody3D>& object_);
 		void pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& objects_);
+
+		inline void setCamera(const std::shared_ptr<Camera3D>& camera_) { m_camera = camera_; }
 
 	private:
 		std::shared_ptr<GraphicsContext> m_context;
@@ -35,23 +38,26 @@ namespace Lava
 		// Static Uniform Buffer
 		struct StaticUniformBufferObject
 		{
-			glm::mat4 model;
 			glm::mat4 view;
-			glm::mat4 proj;
-		} m_static_uniform_object;
+			glm::mat4 projection;
+			glm::mat4 projection_view;
+
+			inline void calculateProjectionView() { projection_view = projection * view; }
+		} m_camera_ubo_data;
 
 		struct StaticUniformBuffer
 		{
 			std::vector<VkBuffer> buffers;
 			std::vector<VkDeviceMemory> buffers_memory;
 			std::vector<void*> buffers_mapped;
-		} m_static_uniform_buffer;
+		} m_camera_uniform;
 
 		// Dynamic Uniform Buffer
 		struct DynamicUniformBufferObject
 		{
-			glm::mat4* transform = nullptr;
-		} m_dynamic_uniform_object;
+			glm::mat4 transform;
+			glm::mat4 rotation;
+		}* m_model_ubo_data = nullptr;
 
 		struct DynamicUniformBuffer
 		{
@@ -59,11 +65,12 @@ namespace Lava
 			std::vector<VkDeviceMemory> buffers_memory;
 			std::vector<void*> buffers_mapped;
 			const uint32_t num_objects = 128;
-			VkDeviceSize aligned_object_size;
+			VkDeviceSize alignment;
 			VkDeviceSize buffer_size;
-		} m_dynamic_uniform_buffer;
+		} m_model_uniform;
 
 		std::vector<std::shared_ptr<BasicBody3D>> m_objects;
+		std::shared_ptr<Camera3D> m_camera = nullptr;
 
 	private:
 		void createVulkanDescriptorSetLayout();
@@ -71,7 +78,8 @@ namespace Lava
 
 		void createVulkanCommandPool();
 
-		void createUniformBuffers();
+		void createStaticUniformBuffers();
+		void createDynamicUniformBuffers();
 
 		void createVulkanDescriptorPool();
 		void createVulkanDescriptorSets();

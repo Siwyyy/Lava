@@ -189,6 +189,7 @@
     <ClInclude Include="include\Lava\Input\MouseButtonCodes.h" />
     <ClInclude Include="include\Lava\Layer.h" />
     <ClInclude Include="include\Lava\Application.h" />
+    <ClInclude Include="include\Lava\Renderer\Camera3D.h" />
     <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
     <ClInclude Include="include\Lava\Renderer\BasicBody3D.h" />
     <ClInclude Include="include\Lava\Renderer\Initializers.h" />

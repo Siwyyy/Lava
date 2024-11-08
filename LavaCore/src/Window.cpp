@@ -58,6 +58,7 @@ void Window::createGlfwWindow()
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 	m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
 	glfwSetWindowUserPointer(m_window, &m_data);
+	glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Set callbacks ////////////////////////////////////////
 	glfwSetWindowSizeCallback(m_window,
