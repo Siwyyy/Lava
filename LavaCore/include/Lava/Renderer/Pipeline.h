@@ -38,17 +38,30 @@ namespace Lava
 			glm::mat4 model;
 			glm::mat4 view;
 			glm::mat4 proj;
-		} m_static_uniform;
+		} m_static_uniform_object;
 
-		std::vector<VkBuffer> m_uniform_buffers;
-		std::vector<VkDeviceMemory> m_uniform_buffers_memory;
-		std::vector<void*> m_uniform_buffers_mapped;
+		struct StaticUniformBuffer
+		{
+			std::vector<VkBuffer> buffers;
+			std::vector<VkDeviceMemory> buffers_memory;
+			std::vector<void*> buffers_mapped;
+		} m_static_uniform_buffer;
 
 		// Dynamic Uniform Buffer
 		struct DynamicUniformBufferObject
 		{
-			glm::mat4 transform;
-		} m_dynamic_uniform;
+			glm::mat4* transform = nullptr;
+		} m_dynamic_uniform_object;
+
+		struct DynamicUniformBuffer
+		{
+			std::vector<VkBuffer> buffers;
+			std::vector<VkDeviceMemory> buffers_memory;
+			std::vector<void*> buffers_mapped;
+			const uint32_t num_objects = 128;
+			VkDeviceSize aligned_object_size;
+			VkDeviceSize buffer_size;
+		} m_dynamic_uniform_buffer;
 
 		std::vector<std::shared_ptr<BasicBody3D>> m_objects;
 
@@ -58,8 +71,7 @@ namespace Lava
 
 		void createVulkanCommandPool();
 
-		void createStaticUniformBuffers();
-		void createDynamicUniformBuffer();
+		void createUniformBuffers();
 
 		void createVulkanDescriptorPool();
 		void createVulkanDescriptorSets();

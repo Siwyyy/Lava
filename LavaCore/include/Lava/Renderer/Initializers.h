@@ -195,4 +195,47 @@ namespace Lava::Initializers
 		pipeline_layout_create_info.pPushConstantRanges    = nullptr;
 		return pipeline_layout_create_info;
 	}
+
+	inline VkDescriptorSetAllocateInfo descriptorSetAllocateInfo(const VkDescriptorPool& descriptor_pool_,
+																															 const std::vector<VkDescriptorSetLayout>& set_layouts_)
+	{
+		VkDescriptorSetAllocateInfo descriptor_set_allocate_info;
+		descriptor_set_allocate_info.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		descriptor_set_allocate_info.pNext              = nullptr;
+		descriptor_set_allocate_info.descriptorPool     = descriptor_pool_;
+		descriptor_set_allocate_info.descriptorSetCount = static_cast<uint32_t>(set_layouts_.size());
+		descriptor_set_allocate_info.pSetLayouts        = set_layouts_.data();
+		return descriptor_set_allocate_info;
+	}
+
+	inline VkDescriptorBufferInfo descriptorBufferInfo(const VkBuffer& buffer_,
+																										 uint32_t offset_,
+																										 VkDeviceSize range_)
+	{
+		VkDescriptorBufferInfo buffer_info;
+		buffer_info.buffer = buffer_;
+		buffer_info.offset = offset_;
+		buffer_info.range  = range_;
+		return buffer_info;
+	}
+
+	inline VkWriteDescriptorSet writeDescriptorSet(const VkDescriptorSet& dst_set_,
+																								 uint32_t binding_,
+																								 uint32_t descriptor_count_,
+																								 VkDescriptorType descriptor_type_,
+																								 const VkDescriptorBufferInfo& buffer_info_)
+	{
+		VkWriteDescriptorSet write_descriptor_set;
+		write_descriptor_set.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		write_descriptor_set.pNext            = nullptr;
+		write_descriptor_set.dstSet           = dst_set_;
+		write_descriptor_set.dstBinding       = binding_;
+		write_descriptor_set.dstArrayElement  = 0;
+		write_descriptor_set.descriptorCount  = descriptor_count_;
+		write_descriptor_set.descriptorType   = descriptor_type_;
+		write_descriptor_set.pImageInfo       = nullptr;
+		write_descriptor_set.pBufferInfo      = &buffer_info_;
+		write_descriptor_set.pTexelBufferView = nullptr;
+		return write_descriptor_set;
+	}
 }

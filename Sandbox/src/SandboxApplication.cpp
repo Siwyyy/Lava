@@ -1,3 +1,5 @@
+#include <glm/ext/matrix_transform.hpp>
+
 #include "Lava.h"
 
 #include "Lava/Renderer/Vertex.h"
@@ -30,7 +32,7 @@ public:
 		const std::vector<uint32_t> indices2 = {1,3,0,3,2,0,2,1,0,2,3,1};
 
 		m_pipeline = std::make_shared<Lava::Pipeline>();
-		m_objects.push_back(std::make_shared<Lava::BasicBody3D>(vertices, indices));
+		m_objects.push_back(std::make_shared<Lava::BasicBody3D>(vertices, indices, glm::vec3(1, 1, 0)));
 		m_objects.push_back(std::make_shared<Lava::BasicBody3D>(vertices2, indices2));
 		Lava::Application::getInstance().getWindow().getContext()->pushPipeline(m_pipeline);
 	}

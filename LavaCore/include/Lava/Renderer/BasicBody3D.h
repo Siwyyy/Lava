@@ -10,11 +10,11 @@ namespace Lava
 	public:
 		BasicBody3D(const std::vector<Vertex3Color>& vertices_,
 								const std::vector<uint32_t>& indices_,
-								const glm::mat4& transform_ = glm::mat4({0,0,0,0}),
+								const glm::vec3& transform_ = glm::vec3(0, 0, 0),
 								const glm::mat4& rotation_  = glm::mat4({0,0,0,0}));
 		~BasicBody3D();
 
-		glm::mat4 transform;
+		glm::vec3 transform;
 		glm::mat4 rotation;
 
 		std::vector<Vertex3Color> vertices;

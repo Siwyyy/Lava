@@ -26,7 +26,7 @@ Pipeline::Pipeline()
 
 	createVulkanCommandPool();
 
-	createStaticUniformBuffers();
+	createUniformBuffers();
 	createVulkanDescriptorPool();
 	createVulkanDescriptorSets();
 }
@@ -36,9 +36,12 @@ Pipeline::~Pipeline()
 	vkDestroyDescriptorPool(m_context->getDevice(), m_descriptor_pool, nullptr);
 	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
 	{
-		vkDestroyBuffer(m_context->getDevice(), m_uniform_buffers[i], nullptr);
-		vkFreeMemory(m_context->getDevice(), m_uniform_buffers_memory[i], nullptr);
+		vkDestroyBuffer(m_context->getDevice(), m_static_uniform_buffer.buffers[i], nullptr);
+		vkFreeMemory(m_context->getDevice(), m_static_uniform_buffer.buffers_memory[i], nullptr);
+		vkDestroyBuffer(m_context->getDevice(), m_dynamic_uniform_buffer.buffers[i], nullptr);
+		vkFreeMemory(m_context->getDevice(), m_dynamic_uniform_buffer.buffers_memory[i], nullptr);
 	}
+	_aligned_free(m_dynamic_uniform_object.transform);
 
 	vkDestroyPipeline(m_context->getDevice(), m_pipeline, nullptr);
 	vkDestroyPipelineLayout(m_context->getDevice(), m_pipeline_layout, nullptr);
@@ -65,11 +68,11 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 	scissor.extent = m_context->getExtent2D();
 	vkCmdSetScissor(command_buffer_, 0, 1, &scissor);
 
-	vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[current_frame_], 0, nullptr);
-
-	for (auto& object : m_objects)
+	for (size_t i = 0; i < m_objects.size(); i++)
 	{
-		object->drawIndexed(command_buffer_);
+		uint32_t dynamic_offset = static_cast<uint32_t>(i * m_dynamic_uniform_buffer.aligned_object_size);
+		vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[current_frame_], 1, &dynamic_offset);
+		m_objects[i]->drawIndexed(command_buffer_);
 	}
 }
 
@@ -92,15 +95,23 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 	if (Input::isKeyPressed(LAVA_KEY_SPACE) && z < 10.f) { z += .001f; }
 	if (Input::isKeyPressed(LAVA_KEY_LEFT_SHIFT) && z > 1.f) { z -= .001f; }
 
-	m_static_uniform.model = glm::rotate(rotation, time * glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f));
-	m_static_uniform.view  = glm::lookAt(glm::vec3(x, y, z), glm::vec3(x, y - 2.f, z - 2.f), glm::vec3(0.0f, 0.0f, 1.0f));
-	m_static_uniform.proj  = glm::perspective(glm::radians(45.0f), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
+	m_static_uniform_object.model = glm::rotate(rotation, time * glm::radians(90.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	m_static_uniform_object.view  = glm::lookAt(glm::vec3(x, y, z), glm::vec3(x, y - 2.f, z - 2.f), glm::vec3(0.0f, 0.0f, 1.0f));
+	m_static_uniform_object.proj  = glm::perspective(glm::radians(45.0f), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
 
-	m_static_uniform.proj[1][1] *= -1;
+	m_static_uniform_object.proj[1][1] *= -1;
 
-	memcpy(m_uniform_buffers_mapped[current_frame_], &m_static_uniform, sizeof(m_static_uniform));
+	memcpy(m_static_uniform_buffer.buffers_mapped[current_frame_], &m_static_uniform_object, sizeof(m_static_uniform_object));
 	last_time = current_time;
-	rotation  = m_static_uniform.model;
+	rotation  = m_static_uniform_object.model;
+
+	for (size_t i = 0; i < m_objects.size(); i++)
+	{
+		auto transform = reinterpret_cast<glm::mat4*>(reinterpret_cast<uintptr_t>(m_dynamic_uniform_object.transform) + (i * m_dynamic_uniform_buffer.aligned_object_size));
+		*transform     = translate(glm::mat4(1.0f), m_objects[i]->transform);
+		LAVA_CORE_TRACE("{0} {1} {2}", m_objects[i]->transform.x, m_objects[i]->transform.y, m_objects[i]->transform.z);
+	}
+	memcpy(m_dynamic_uniform_buffer.buffers_mapped[current_frame_], m_dynamic_uniform_object.transform, m_dynamic_uniform_buffer.buffer_size);
 }
 
 void Pipeline::pushObjects(const std::shared_ptr<BasicBody3D>& object_)
@@ -128,8 +139,8 @@ void Pipeline::createVulkanDescriptorSetLayout()
 {
 	std::vector<VkDescriptorSetLayoutBinding> set_layout_bindings =
 	{
-		Initializers::descriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT) /*,
-		Initializers::descriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT)*/
+		Initializers::descriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT),
+		Initializers::descriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT)
 	};
 
 	VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info = Initializers::descriptorSetLayoutCreateInfo(set_layout_bindings);
@@ -227,34 +238,58 @@ void Pipeline::createVulkanCommandPool()
 
 //
 
-void Pipeline::createStaticUniformBuffers()
+void Pipeline::createUniformBuffers()
 {
-	VkDeviceSize buffer_size = sizeof(StaticUniformBufferObject);
+	// Static
+	VkDeviceSize static_buffer_size = sizeof(StaticUniformBufferObject);
 
-	m_uniform_buffers.resize(m_context->getFramesInFlight());
-	m_uniform_buffers_memory.resize(m_context->getFramesInFlight());
-	m_uniform_buffers_mapped.resize(m_context->getFramesInFlight());
+	m_static_uniform_buffer.buffers.resize(m_context->getFramesInFlight());
+	m_static_uniform_buffer.buffers_memory.resize(m_context->getFramesInFlight());
+	m_static_uniform_buffer.buffers_mapped.resize(m_context->getFramesInFlight());
 
 	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
 	{
-		Buffers::createVulkanBuffer(buffer_size,
+		Buffers::createVulkanBuffer(static_buffer_size,
 																VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 																VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-																m_uniform_buffers[i],
-																m_uniform_buffers_memory[i]);
+																m_static_uniform_buffer.buffers[i],
+																m_static_uniform_buffer.buffers_memory[i]);
 
-		vkMapMemory(m_context->getDevice(), m_uniform_buffers_memory[i], 0, buffer_size,NULL, &m_uniform_buffers_mapped[i]);
+		vkMapMemory(m_context->getDevice(), m_static_uniform_buffer.buffers_memory[i], 0, static_buffer_size,NULL, &m_static_uniform_buffer.buffers_mapped[i]);
 	}
-}
 
-void Pipeline::createDynamicUniformBuffer() {}
+	// Dynamic
+	VkPhysicalDeviceProperties deviceProperties;
+	vkGetPhysicalDeviceProperties(m_context->getGpu(), &deviceProperties);
+	VkDeviceSize min_ubo_alignment               = deviceProperties.limits.minUniformBufferOffsetAlignment;
+	m_dynamic_uniform_buffer.aligned_object_size = (sizeof(glm::mat4) + min_ubo_alignment - 1) & ~(min_ubo_alignment - 1);
+
+	m_dynamic_uniform_buffer.buffer_size = m_dynamic_uniform_buffer.aligned_object_size * m_dynamic_uniform_buffer.num_objects;
+
+	m_dynamic_uniform_buffer.buffers.resize(m_context->getFramesInFlight());
+	m_dynamic_uniform_buffer.buffers_memory.resize(m_context->getFramesInFlight());
+	m_dynamic_uniform_buffer.buffers_mapped.resize(m_context->getFramesInFlight());
+
+	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
+	{
+		Buffers::createVulkanBuffer(m_dynamic_uniform_buffer.buffer_size,
+																VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+																VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+																m_dynamic_uniform_buffer.buffers[i],
+																m_dynamic_uniform_buffer.buffers_memory[i]);
+
+		vkMapMemory(m_context->getDevice(), m_dynamic_uniform_buffer.buffers_memory[i], 0, m_dynamic_uniform_buffer.buffer_size, NULL, &m_dynamic_uniform_buffer.buffers_mapped[i]);
+	}
+
+	m_dynamic_uniform_object.transform = static_cast<glm::mat4*>(_aligned_malloc(m_dynamic_uniform_buffer.num_objects, m_dynamic_uniform_buffer.aligned_object_size));
+}
 
 void Pipeline::createVulkanDescriptorPool()
 {
 	std::vector<VkDescriptorPoolSize> pool_sizes =
 	{
-		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_context->getFramesInFlight()) /*,
-		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, m_context->getFramesInFlight())*/
+		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_context->getFramesInFlight()),
+		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, m_context->getFramesInFlight())
 	};
 
 	VkDescriptorPoolCreateInfo pool_create_info = Initializers::descriptorPoolCreateInfo(pool_sizes, m_context->getFramesInFlight());
@@ -266,37 +301,21 @@ void Pipeline::createVulkanDescriptorPool()
 void Pipeline::createVulkanDescriptorSets()
 {
 	std::vector<VkDescriptorSetLayout> layouts(m_context->getFramesInFlight(), m_descriptor_set_layout);
-	VkDescriptorSetAllocateInfo set_allocate_info;
-	set_allocate_info.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	set_allocate_info.pNext              = nullptr;
-	set_allocate_info.descriptorPool     = m_descriptor_pool;
-	set_allocate_info.descriptorSetCount = m_context->getFramesInFlight();
-	set_allocate_info.pSetLayouts        = layouts.data();
+	VkDescriptorSetAllocateInfo descriptor_set_allocate_info = Initializers::descriptorSetAllocateInfo(m_descriptor_pool, layouts);
 
 	m_descriptor_sets.resize(m_context->getFramesInFlight());
-	if (vkAllocateDescriptorSets(m_context->getDevice(), &set_allocate_info, m_descriptor_sets.data()) != VK_SUCCESS)
+	if (vkAllocateDescriptorSets(m_context->getDevice(), &descriptor_set_allocate_info, m_descriptor_sets.data()) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to allocate descriptor sets!");
 
 	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
 	{
-		VkDescriptorBufferInfo buffer_info;
-		buffer_info.buffer = m_uniform_buffers[i];
-		buffer_info.offset = 0;
-		buffer_info.range  = sizeof(StaticUniformBufferObject);
+		VkDescriptorBufferInfo static_buffer_info        = Initializers::descriptorBufferInfo(m_static_uniform_buffer.buffers[i], 0, sizeof(StaticUniformBufferObject));
+		VkWriteDescriptorSet static_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, static_buffer_info);
+		vkUpdateDescriptorSets(m_context->getDevice(), 1, &static_write_descriptor_set, 0, nullptr);
 
-		VkWriteDescriptorSet write_descriptor_set;
-		write_descriptor_set.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		write_descriptor_set.pNext            = nullptr;
-		write_descriptor_set.dstSet           = m_descriptor_sets[i];
-		write_descriptor_set.dstBinding       = 0;
-		write_descriptor_set.dstArrayElement  = 0;
-		write_descriptor_set.descriptorCount  = 1;
-		write_descriptor_set.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		write_descriptor_set.pImageInfo       = nullptr;
-		write_descriptor_set.pBufferInfo      = &buffer_info;
-		write_descriptor_set.pTexelBufferView = nullptr;
-
-		vkUpdateDescriptorSets(m_context->getDevice(), 1, &write_descriptor_set, 0, nullptr);
+		VkDescriptorBufferInfo dynamic_buffer_info        = Initializers::descriptorBufferInfo(m_dynamic_uniform_buffer.buffers[i], 0, m_dynamic_uniform_buffer.aligned_object_size);
+		VkWriteDescriptorSet dynamic_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 1, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, dynamic_buffer_info);
+		vkUpdateDescriptorSets(m_context->getDevice(), 1, &dynamic_write_descriptor_set, 0, nullptr);
 	}
 }
 

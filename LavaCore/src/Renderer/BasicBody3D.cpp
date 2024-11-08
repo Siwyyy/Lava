@@ -9,7 +9,7 @@ using namespace Lava;
 
 BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_,
 												 const std::vector<uint32_t>& indices_,
-												 const glm::mat4& transform_,
+												 const glm::vec3& transform_,
 												 const glm::mat4& rotation_)
 	: transform(transform_)
 	, rotation(rotation_)
