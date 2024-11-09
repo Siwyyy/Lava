@@ -157,7 +157,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/resources/shaders/</DestinationFolders>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">$(OutDir)/resources/shaders/</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/shaders/</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="resources\Shaders\basic.frag.spv">
       <FileType>Document</FileType>
@@ -166,7 +166,7 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/resources/shaders/</DestinationFolders>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">$(OutDir)/resources/shaders/</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/shaders/</DestinationFolders>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
     </CopyFileToFolders>
     <None Include="resources\Shaders\basic.vert" />
     <None Include="resources\Shaders\compile.bat" />

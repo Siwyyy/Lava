@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>LAVA_PLATFORM_WINDOWS;LAVA_RELEASE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\include;$(SolutionDir)LavaCore\vendor;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)LavaCore\include;$(SolutionDir)LavaCore\vendor;$(SolutionDir)LavaCore\vendor\Vulkan\Include;$(SolutionDir)LavaCore\vendor\GLFW\Include;$(SolutionDir)LavaCore\vendor\tiny_obj_loader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>Use</PrecompiledHeader>

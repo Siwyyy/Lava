@@ -7,6 +7,7 @@ namespace Lava
 {
 	Application* Application::s_instance           = nullptr;
 	std::filesystem::path Resources::m_shaders_dir = "Shaders/Dir/Not/Set";
+	std::filesystem::path Resources::m_models_dir = "Models/Dir/Not/Set";
 
 	void Application::init()
 	{

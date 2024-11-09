@@ -4,6 +4,9 @@
 
 #include "Lava/Events/KeyEvent.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader/tiny_obj_loader.h"
+
 void SceneLayer::onAttach()
 {
 	// Tri 1
@@ -37,16 +40,6 @@ void SceneLayer::onAttach()
 	const std::vector<uint32_t> x_indices = {4,0,1,4,1,2,4,2,3,4,3,0,2,1,0,3,2,0};
 	m_objects.push_back(std::make_shared<Lava::BasicBody3D>(x_vertices, x_indices));
 
-	const std::vector<Lava::Vertex3Color> y_vertices = {
-		{{0.1f,0.1f,0.1f},{1.0f,0.0f,0.0f}},
-		{{0.1f,0.1f,-0.1f},{1.0f,0.0f,0.0f}},
-		{{-0.1f,0.1f,-0.1f},{1.0f,0.0f,0.0f}},
-		{{-0.1f,0.1f,0.1f},{1.0f,0.0f,0.0f}},
-		{{-0.0f,0.5f,0.0f},{1.0f,0.0f,0.0f}}
-	};
-	const std::vector<uint32_t> y_indices = {4,0,1,4,1,2,4,2,3,4,3,0,2,1,0,3,2,0};
-	m_objects.push_back(std::make_shared<Lava::BasicBody3D>(y_vertices, y_indices));
-
 	const std::vector<Lava::Vertex3Color> z_vertices = {
 		{{0.1f,0.1f,0.1f},{0.0f,0.0f,1.0f}},
 		{{-0.1f,0.1f,0.1f},{0.0f,0.0f,1.0f}},
@@ -57,14 +50,20 @@ void SceneLayer::onAttach()
 	const std::vector<uint32_t> z_indices = {4,0,1,4,1,2,4,2,3,4,3,0,2,1,0,3,2,0};
 	m_objects.push_back(std::make_shared<Lava::BasicBody3D>(z_vertices, z_indices));
 
+	std::vector<Lava::Vertex3Color> y_arrow_vertices{};
+	std::vector<uint32_t> y_arrow_indices{};
+
+	Lava::loadModel(Lava::Resources::getDir(Lava::ResourceDir::Models) /= "Arrow.obj", {1.0f,0.0f,0.0f}, y_arrow_vertices, y_arrow_indices);
+	m_objects.push_back(std::make_shared<Lava::BasicBody3D>(y_arrow_vertices, y_arrow_indices));
+
 	// Camera
 	m_camera = std::make_shared<Lava::Camera3D>();
 
 	// Pipeline
 	m_pipeline = std::make_shared<Lava::Pipeline>();
 	m_pipeline->setCamera(m_camera);
-	Lava::Application::getInstance().getWindow().getContext()->pushPipeline(m_pipeline);
 	m_pipeline->pushObjects(m_objects);
+	Lava::Application::getInstance().getWindow().getContext()->pushPipeline(m_pipeline);
 }
 
 void SceneLayer::onDetach() {}
@@ -93,6 +92,6 @@ bool SceneLayer::onKeyPressed(const Lava::KeyPressedEvent& event_) const
 	{
 	case LAVA_KEY_ESCAPE:
 		Lava::Application::getInstance().shutdown();
-		return true; 
+		return true;
 	}
 }

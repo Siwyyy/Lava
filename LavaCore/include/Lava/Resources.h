@@ -4,7 +4,8 @@ namespace Lava
 {
 	enum class ResourceDir
 	{
-		Shaders
+		Shaders,
+		Models
 	};
 
 	struct Resources
@@ -16,6 +17,10 @@ namespace Lava
 			{
 			case ResourceDir::Shaders:
 				m_shaders_dir = path_;
+				break;
+			case ResourceDir::Models:
+				m_models_dir = path_;
+				break;
 			}
 		}
 
@@ -25,11 +30,14 @@ namespace Lava
 			{
 			case ResourceDir::Shaders:
 				return m_shaders_dir;
+			case ResourceDir::Models:
+				return m_models_dir;
 			}
 			return "Error/Wrong/Dir";
 		}
 
 	private:
 		static std::filesystem::path m_shaders_dir;
+		static std::filesystem::path m_models_dir;
 	};
 }
