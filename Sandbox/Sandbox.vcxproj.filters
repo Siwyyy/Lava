@@ -18,16 +18,24 @@
     <ClCompile Include="src\SandboxApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\SceneLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\shaders\basic.frag" />
-    <None Include="resources\shaders\basic.vert" />
-    <None Include="resources\shaders\compile.bat">
+    <None Include="resources\Shaders\basic.frag" />
+    <None Include="resources\Shaders\basic.vert" />
+    <None Include="resources\Shaders\compile.bat">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="resources\shaders\basic.frag.spv" />
-    <CopyFileToFolders Include="resources\shaders\basic.vert.spv" />
+    <CopyFileToFolders Include="resources\Shaders\basic.frag.spv" />
+    <CopyFileToFolders Include="resources\Shaders\basic.vert.spv" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\SceneLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

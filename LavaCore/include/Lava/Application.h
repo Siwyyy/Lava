@@ -20,6 +20,7 @@ namespace Lava
 
 		void init();
 		void run();
+		void shutdown();
 
 		void onEvent(Event& event_);
 

@@ -5,13 +5,12 @@
 #include "Lava/Resources.h"
 #include "Lava/Renderer/BasicBody3D.h"
 #include "Lava/Renderer/Buffers.h"
+#include "Lava/Renderer/Camera3D.h"
+#include "Lava/Renderer/Initializers.h"
 #include "Lava/Renderer/Vertex.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_transform.hpp>
-
-#include "Lava/Renderer/Camera3D.h"
-#include "Lava/Renderer/Initializers.h"
 
 using namespace Lava;
 
@@ -78,9 +77,9 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 
 void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 {
-	m_camera_ubo_data.view       = m_camera->getOrientation() * translate(glm::mat4(1.0f), m_camera->getPosition());
+	m_camera_ubo_data.view       = m_camera->getViewMatrix();
 	m_camera_ubo_data.projection = glm::perspective(glm::radians(45.0f), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
-	m_camera_ubo_data.projection[1][1] *= -1;
+	//m_camera_ubo_data.projection[1][1] *= -1;
 	m_camera_ubo_data.calculateProjectionView();
 
 	memcpy(m_camera_uniform.buffers_mapped[current_frame_], &m_camera_ubo_data, sizeof(m_camera_ubo_data));
@@ -91,7 +90,7 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 		model->transform = translate(glm::mat4(1.0f), m_objects[i]->transform);
 		model->rotation  = m_objects[i]->rotation;
 	}
-	memcpy(m_model_uniform.buffers_mapped[current_frame_], m_model_ubo_data, m_model_uniform.buffer_size);
+	memcpy(m_model_uniform.buffers_mapped[current_frame_], m_model_ubo_data, m_model_uniform.alignment * m_objects.size());
 }
 
 void Pipeline::pushObjects(const std::shared_ptr<BasicBody3D>& object_)

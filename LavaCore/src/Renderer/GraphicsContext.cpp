@@ -22,6 +22,8 @@ void GraphicsContext::init()
 	createVulkanSyncObjects();
 
 	LAVA_CORE_INFO("Vulkan graphics initialization complete");
+
+	vkQueueWaitIdle(m_present_queue);
 }
 
 void GraphicsContext::shutdown()
@@ -139,7 +141,7 @@ void GraphicsContext::recordVulkanCommandBuffer(const uint32_t& command_buffer_i
 	if (vkBeginCommandBuffer(m_command_buffers[command_buffer_index_], &command_buffer_begin_info) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to begin command buffer recording!");
 
-	const VkClearValue clear_value = {{{0.0f,0.0f,0.0f,0.0f}}};
+	const VkClearValue clear_value = {{{0.01f,0.01f,0.01f,0.0f}}};
 	VkRenderPassBeginInfo render_pass_begin_info;
 	render_pass_begin_info.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	render_pass_begin_info.renderPass        = m_render_pass;

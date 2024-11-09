@@ -32,6 +32,11 @@ namespace Lava
 		}
 	}
 
+	void Application::shutdown()
+	{
+		m_running = false;
+	}
+
 	void Application::onEvent(Event& event_)
 	{
 		EventDispatcher dispatcher(event_);
@@ -59,7 +64,7 @@ namespace Lava
 
 	bool Application::onWindowClose(WindowCloseEvent& event_)
 	{
-		m_running = false;
+		shutdown();
 		return true;
 	}
 }

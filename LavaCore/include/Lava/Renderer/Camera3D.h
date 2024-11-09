@@ -4,7 +4,6 @@
 #include "Lava/Input/KeyCodes.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
-#include "glm/glm.hpp"
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 
@@ -13,47 +12,60 @@ namespace Lava
 	class Camera3D
 	{
 	public:
-		Camera3D(glm::vec3 position_ = {0,0,0}, const glm::mat4& orientation_ = {1.0f})
-			: m_position(position_)
-			, m_orientation(orientation_) {}
+		Camera3D(const glm::vec3& position_ = glm::vec3(0.0f), const glm::quat& rotation_ = {1,0,0,0})
+			: m_positionxxx(position_)
+			, m_rotation(rotation_) {}
 
-		inline const glm::vec3& getPosition() const { return m_position; }
-		inline const glm::mat4& getOrientation() const { return m_orientation; }
+		inline glm::mat4 getViewMatrix() const { return glm::toMat4(m_rotation) * translate(glm::mat4(1.0f), m_positionxxx); }
 
 		inline void update()
 		{
-			updatePosition();
 			updateOrientation();
+			updatePosition();
 		}
 
 	private:
-		glm::vec3 m_position;
-		glm::mat4 m_orientation;
-		float m_pitch;
-		float m_yaw;
+		glm::vec3 m_positionxxx;
+		glm::quat m_rotation;
+		glm::vec2 m_last_mouse_pos = {0.0f,0.0f};
+		float m_pitch              = 0.0f;
+		float m_yaw                = 0.0f;
 
 		inline void updatePosition()
 		{
-			if (Input::isKeyPressed(LAVA_KEY_W)) { m_position.y -= .001f; }
-			if (Input::isKeyPressed(LAVA_KEY_S)) { m_position.y += .001f; }
-			if (Input::isKeyPressed(LAVA_KEY_A)) { m_position.x += .001f; }
-			if (Input::isKeyPressed(LAVA_KEY_D)) { m_position.x -= .001f; }
-			if (Input::isKeyPressed(LAVA_KEY_SPACE)) { m_position.z -= .001f; }
-			if (Input::isKeyPressed(LAVA_KEY_LEFT_SHIFT)) { m_position.z += .001f; }
+			glm::vec3 move = {0,0,0};
+			if (Input::isKeyPressed(LAVA_KEY_W)) { move.y += 1.0f; }
+			if (Input::isKeyPressed(LAVA_KEY_S)) { move.y += -1.0f; }
+
+			if (Input::isKeyPressed(LAVA_KEY_A)) { move.x += -1.0f; }
+			if (Input::isKeyPressed(LAVA_KEY_D)) { move.x += 1.0f; }
+
+			if (Input::isKeyPressed(LAVA_KEY_SPACE)) { move.z += 1.0f; }
+			if (Input::isKeyPressed(LAVA_KEY_LEFT_SHIFT)) { move.z += -1.0f; }
+
+			if (!(move.x || move.y || move.z))
+				return;
+
+			glm::quat q_yaw = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0, 0, 1));
+			m_positionxxx += conjugate(q_yaw) * -normalize(move) * 0.001f;
 		}
 
 		inline void updateOrientation()
 		{
+			// Check mouse movement
 			glm::vec2 new_mouse_pos = Input::getMousePosition();
-			m_pitch                 = new_mouse_pos.y;
-			m_yaw                   = new_mouse_pos.x;
+			float dz_angle          = (new_mouse_pos.x - m_last_mouse_pos.x) / 15.0f;
+			float dx_angle          = (new_mouse_pos.y - m_last_mouse_pos.y) / 15.0f;
+			m_last_mouse_pos        = new_mouse_pos;
 
-			glm::quat q_pitch = glm::angleAxis(glm::radians(m_pitch), glm::vec3(1, 0, 0));
-			glm::quat q_yaw   = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0, 0, 1));
+			// Apply rotation changes
+			m_pitch = std::clamp(m_pitch + dx_angle, 0.0f, 180.0f);
+			m_yaw += dz_angle;
 
-			glm::quat q_orientation = glm::normalize(q_pitch * q_yaw);
-
-			m_orientation = glm::toMat4(q_orientation);
+			// Calculate orientation
+			glm::quat x_rotation = glm::angleAxis(glm::radians(m_pitch), glm::vec3(1, 0, 0));
+			glm::quat z_rotation = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0, 0, 1));
+			m_rotation           = glm::normalize(x_rotation * z_rotation);
 		}
 	};
 }
