@@ -87,8 +87,8 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 	for (size_t i = 0; i < m_objects.size(); i++)
 	{
 		auto model       = reinterpret_cast<DynamicUniformBufferObject*>(reinterpret_cast<uintptr_t>(m_model_ubo_data) + (i * m_model_uniform.alignment));
-		model->transform = translate(glm::mat4(1.0f), m_objects[i]->transform);
-		model->rotation  = m_objects[i]->rotation;
+		model->transform = m_objects[i]->getTranslationMatrix();
+		model->rotation  = m_objects[i]->getRotationMatrix();
 	}
 	memcpy(m_model_uniform.buffers_mapped[current_frame_], m_model_ubo_data, m_model_uniform.alignment * m_objects.size());
 }
@@ -199,8 +199,6 @@ void Pipeline::createVulkanGraphicsPipeline()
 		LAVA_CORE_ERROR("Failed to create graphics pipeline!");
 	LAVA_CORE_DEBUG("Created: VkPipeline");
 }
-
-//
 
 void Pipeline::createVulkanCommandPool()
 {

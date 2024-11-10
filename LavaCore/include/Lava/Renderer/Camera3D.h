@@ -13,10 +13,11 @@ namespace Lava
 	{
 	public:
 		Camera3D(const glm::vec3& position_ = glm::vec3(0.0f), const glm::quat& rotation_ = {1,0,0,0})
-			: m_positionxxx(position_)
+			: m_position(position_)
 			, m_rotation(rotation_) {}
 
-		inline glm::mat4 getViewMatrix() const { return glm::toMat4(m_rotation) * translate(glm::mat4(1.0f), m_positionxxx); }
+		inline glm::mat4 getViewMatrix() const { return glm::toMat4(m_rotation) * translate(glm::mat4(1.0f), -m_position); }
+		inline glm::mat4 getRotationMatrix() const { return glm::toMat4(m_rotation); }
 
 		inline void update()
 		{
@@ -25,10 +26,10 @@ namespace Lava
 		}
 
 	private:
-		glm::vec3 m_positionxxx;
+		glm::vec3 m_position;
 		glm::quat m_rotation;
 		glm::vec2 m_last_mouse_pos = {0.0f,0.0f};
-		float m_pitch              = 0.0f;
+		float m_pitch              = 110.0f;
 		float m_yaw                = 0.0f;
 
 		inline void updatePosition()
@@ -47,7 +48,7 @@ namespace Lava
 				return;
 
 			glm::quat q_yaw = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0, 0, 1));
-			m_positionxxx += conjugate(q_yaw) * -normalize(move) * 0.001f;
+			m_position += conjugate(q_yaw) * normalize(move) * 0.001f;
 		}
 
 		inline void updateOrientation()

@@ -11,14 +11,14 @@ BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_,
 												 const std::vector<uint32_t>& indices_,
 												 const glm::vec3& transform_,
 												 const glm::mat4& rotation_)
-	: transform(transform_)
-	, rotation(rotation_)
-	, vertices(vertices_)
-	, indices(indices_)
+	: m_position(transform_)
+	, m_rotation(rotation_)
+	, m_vertices(vertices_)
+	, m_indices(indices_)
 {
 	auto context = Application::getInstance().getWindow().getContext();
 	// init vertex buffers
-	VkDeviceSize vertex_buffer_size = sizeof(vertices[0]) * vertices.size();
+	VkDeviceSize vertex_buffer_size = sizeof(m_vertices[0]) * m_vertices.size();
 	Buffers::createVulkanBuffer(vertex_buffer_size,
 															VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 															VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -32,7 +32,7 @@ BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_,
 															m_vertex_buffer_memory);
 
 	// init index buffers
-	VkDeviceSize index_buffer_size = sizeof(indices[0]) * indices.size();
+	VkDeviceSize index_buffer_size = sizeof(m_indices[0]) * m_indices.size();
 	Buffers::createVulkanBuffer(index_buffer_size,
 															VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 															VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -65,8 +65,8 @@ BasicBody3D::~BasicBody3D()
 
 void BasicBody3D::loadStgBuffers()
 {
-	memcpy(m_vertex_staging_buffer_memory_mapped, vertices.data(), sizeof(vertices[0]) * vertices.size());
-	memcpy(m_index_staging_buffer_memory_mapped, indices.data(), sizeof(indices[0]) * indices.size());
+	memcpy(m_vertex_staging_buffer_memory_mapped, m_vertices.data(), sizeof(m_vertices[0]) * m_vertices.size());
+	memcpy(m_index_staging_buffer_memory_mapped, m_indices.data(), sizeof(m_indices[0]) * m_indices.size());
 	state.ready_to_copy = true;
 }
 
@@ -93,13 +93,13 @@ void BasicBody3D::copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_)
 	VkBufferCopy copy_region_vertex;
 	copy_region_vertex.srcOffset = 0;
 	copy_region_vertex.dstOffset = 0;
-	copy_region_vertex.size      = sizeof(vertices[0]) * vertices.size();
+	copy_region_vertex.size      = sizeof(m_vertices[0]) * m_vertices.size();
 	vkCmdCopyBuffer(command_buffer, m_vertex_staging_buffer, m_vertex_buffer, 1, &copy_region_vertex);
 
 	VkBufferCopy copy_region_index;
 	copy_region_index.srcOffset = 0;
 	copy_region_index.dstOffset = 0;
-	copy_region_index.size      = sizeof(indices[0]) * indices.size();
+	copy_region_index.size      = sizeof(m_indices[0]) * m_indices.size();
 	vkCmdCopyBuffer(command_buffer, m_index_staging_buffer, m_index_buffer, 1, &copy_region_index);
 
 	vkEndCommandBuffer(command_buffer);
@@ -129,5 +129,5 @@ void BasicBody3D::drawIndexed(const VkCommandBuffer& command_buffer_)
 	const VkDeviceSize offsets[]    = {0};
 	vkCmdBindVertexBuffers(command_buffer_, 0, 1, vertex_buffers, offsets);
 	vkCmdBindIndexBuffer(command_buffer_, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
-	vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+	vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
 }
