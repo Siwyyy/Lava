@@ -206,6 +206,7 @@
     <ClInclude Include="include\Lava\Events\MouseEvent.h" />
     <ClInclude Include="include\Lava.h" />
     <ClInclude Include="include\Lava\Lavapch.h" />
+    <ClInclude Include="include\Lava\Time.h" />
     <ClInclude Include="include\Lava\Window.h" />
     <ClInclude Include="include\Lava\Resources.h" />
     <ClInclude Include="resource.h" />

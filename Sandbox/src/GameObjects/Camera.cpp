@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+#include "Lava/Time.h"
 #include "Lava/Input/Input.h"
 #include "Lava/Input/KeyCodes.h"
 
@@ -21,7 +22,7 @@ void Camera::movement()
 		return;
 
 	glm::quat q_yaw = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0, 0, 1));
-	direction       = conjugate(q_yaw) * glm::normalize(direction) * 0.001f;
+	direction       = conjugate(q_yaw) * glm::normalize(direction) * m_speed * Lava::Time::deltaTime();
 	moveBy(direction);
 }
 

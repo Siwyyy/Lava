@@ -2,17 +2,20 @@
 #include "Lava/Application.h"
 
 #include "Lava/Resources.h"
+#include "Lava/Time.h"
 
 namespace Lava
 {
 	Application* Application::s_instance           = nullptr;
 	std::filesystem::path Resources::m_shaders_dir = "Shaders/Dir/Not/Set";
-	std::filesystem::path Resources::m_models_dir = "Models/Dir/Not/Set";
+	std::filesystem::path Resources::m_models_dir  = "Models/Dir/Not/Set";
 
 	void Application::init()
 	{
 		LAVA_ASSERT(!s_instance, "Application instance already running")
 		s_instance = this;
+
+		Time::s_instance = new Time();
 
 		initResources();
 
@@ -26,6 +29,8 @@ namespace Lava
 	{
 		while (m_running)
 		{
+			Time::onUpdate();
+
 			for (Layer* layer : m_layer_stack)
 				layer->onUpdate();
 

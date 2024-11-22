@@ -128,6 +128,9 @@
     <ClInclude Include="include\Lava\Components\BasicBody3D.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="include\Lava\Time.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="shaders\compile.bat.txt" />

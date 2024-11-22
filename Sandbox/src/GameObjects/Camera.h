@@ -18,6 +18,7 @@ private:
 	glm::vec2 m_last_mouse_pos = {0.0f,0.0f};
 	float m_pitch              = 110.0f;
 	float m_yaw                = 0.0f;
+	float m_speed              = 2.f;
 
 	void movement();
 	void rotation();
