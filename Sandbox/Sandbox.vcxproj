@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameObjects\Camera.cpp" />
     <ClCompile Include="src\SandboxApplication.cpp" />
     <ClCompile Include="src\SceneLayer.cpp" />
   </ItemGroup>
@@ -172,6 +173,8 @@
     <None Include="resources\Shaders\compile.bat" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\GameObjects\Camera.h" />
+    <ClInclude Include="src\GameObjects\ObjectTest.h" />
     <ClInclude Include="src\SceneLayer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

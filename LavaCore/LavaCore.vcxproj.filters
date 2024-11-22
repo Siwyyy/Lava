@@ -39,10 +39,10 @@
     <ClCompile Include="src\Renderer\Pipeline.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\BasicBody3D.cpp">
+    <ClCompile Include="src\Renderer\Buffers.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers.cpp">
+    <ClCompile Include="src\Components\BasicBody3D.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,16 +113,19 @@
     <ClInclude Include="include\Lava\Renderer\Pipeline.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="include\Lava\Renderer\BasicBody3D.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="include\Lava\Renderer\Buffers.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="include\Lava\Renderer\Initializers.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="include\Lava\Renderer\Camera3D.h">
+    <ClInclude Include="include\Lava\Renderer\RenderObjects\Camera3D.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lava\Components\Transform.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lava\Components\BasicBody3D.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

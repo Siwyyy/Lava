@@ -21,6 +21,9 @@
     <ClCompile Include="src\SceneLayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameObjects\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\Shaders\basic.frag" />
@@ -35,6 +38,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SceneLayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameObjects\ObjectTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

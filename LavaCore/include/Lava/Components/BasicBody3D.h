@@ -1,38 +1,36 @@
 ﻿#pragma once
+
 #include "Lava/Lavapch.h"
-#include <glm/ext/matrix_transform.hpp>
+#include "Lava/Renderer/Vertex.h"
 
-namespace Lava
+namespace Lava::Components
 {
-	struct Vertex3Color;
+	class Transform;
+}
 
+namespace Lava::Components
+{
 	class BasicBody3D
 	{
 	public:
 		BasicBody3D(const std::vector<Vertex3Color>& vertices_,
-								const std::vector<uint32_t>& indices_,
-								const glm::vec3& transform_ = glm::vec3(0, 0, 0),
-								const glm::mat4& rotation_  = glm::mat4(1.0f));
-		~BasicBody3D();
+								const std::vector<uint32_t>& indices_);
 
-		inline glm::mat4 getTranslationMatrix() const { return translate(glm::mat4(1.0f), m_position); }
-		inline glm::mat4 getRotationMatrix() const { return m_rotation; }
+		virtual ~BasicBody3D();
 
-		struct State
+		void loadStgBuffers();
+		void copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_);
+		void drawIndexed(const VkCommandBuffer& command_buffer_) const;
+
+		struct Data
 		{
 			bool ready_to_copy = false;
 			bool ready_to_draw = false;
-		} state;
+		} basic_body_3d;
 
-	public:
-		void loadStgBuffers();
-		void copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_);
-		void drawIndexed(const VkCommandBuffer& command_buffer_);
+		Transform* transform_data = nullptr;
 
 	private:
-		glm::vec3 m_position;
-		glm::mat4 m_rotation;
-
 		std::vector<Vertex3Color> m_vertices;
 		std::vector<uint32_t> m_indices;
 

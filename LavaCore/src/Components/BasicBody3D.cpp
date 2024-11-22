@@ -1,19 +1,14 @@
-#include "Lava/Lavapch.h"
-#include "Lava/Renderer/BasicBody3D.h"
+﻿#include "Lava/Lavapch.h"
+
+#include "Lava/Components/BasicBody3D.h"
 
 #include "Lava/Application.h"
 #include "Lava/Renderer/Buffers.h"
-#include "Lava/Renderer/Vertex.h"
 
-using namespace Lava;
+using namespace Lava::Components;
 
-BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_,
-												 const std::vector<uint32_t>& indices_,
-												 const glm::vec3& transform_,
-												 const glm::mat4& rotation_)
-	: m_position(transform_)
-	, m_rotation(rotation_)
-	, m_vertices(vertices_)
+BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_, const std::vector<uint32_t>& indices_)
+	: m_vertices(vertices_)
 	, m_indices(indices_)
 {
 	auto context = Application::getInstance().getWindow().getContext();
@@ -67,7 +62,7 @@ void BasicBody3D::loadStgBuffers()
 {
 	memcpy(m_vertex_staging_buffer_memory_mapped, m_vertices.data(), sizeof(m_vertices[0]) * m_vertices.size());
 	memcpy(m_index_staging_buffer_memory_mapped, m_indices.data(), sizeof(m_indices[0]) * m_indices.size());
-	state.ready_to_copy = true;
+	basic_body_3d.ready_to_copy = true;
 }
 
 void BasicBody3D::copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_)
@@ -120,10 +115,10 @@ void BasicBody3D::copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_)
 
 	vkFreeCommandBuffers(context->getDevice(), copy_command_pool_, 1, &command_buffer);
 
-	state.ready_to_draw = true;
+	basic_body_3d.ready_to_draw = true;
 }
 
-void BasicBody3D::drawIndexed(const VkCommandBuffer& command_buffer_)
+void BasicBody3D::drawIndexed(const VkCommandBuffer& command_buffer_) const
 {
 	const VkBuffer vertex_buffers[] = {m_vertex_buffer};
 	const VkDeviceSize offsets[]    = {0};

@@ -3,9 +3,9 @@
 
 #include "Lava/Application.h"
 #include "Lava/Resources.h"
-#include "Lava/Renderer/BasicBody3D.h"
+#include "Lava/Components/BasicBody3D.h"
 #include "Lava/Renderer/Buffers.h"
-#include "Lava/Renderer/Camera3D.h"
+#include "Lava/Renderer/RenderObjects/Camera3D.h"
 #include "Lava/Renderer/Initializers.h"
 #include "Lava/Renderer/Vertex.h"
 
@@ -78,7 +78,7 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 {
 	m_camera_ubo_data.view       = m_camera->getViewMatrix();
-	m_camera_ubo_data.projection = glm::perspective(glm::radians(45.0f), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
+	m_camera_ubo_data.projection = glm::perspective(glm::radians(m_camera->getFov()), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
 	//m_camera_ubo_data.projection[1][1] *= -1;
 	m_camera_ubo_data.calculateProjectionView();
 
@@ -87,25 +87,25 @@ void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
 	for (size_t i = 0; i < m_objects.size(); i++)
 	{
 		auto model       = reinterpret_cast<DynamicUniformBufferObject*>(reinterpret_cast<uintptr_t>(m_model_ubo_data) + (i * m_model_uniform.alignment));
-		model->transform = m_objects[i]->getTranslationMatrix();
-		model->rotation  = m_objects[i]->getRotationMatrix();
+		model->transform = m_objects[i]->transform_data->getTranslationMatrix();
+		model->rotation  = m_objects[i]->transform_data->getRotationMatrix();
 	}
 	memcpy(m_model_uniform.buffers_mapped[current_frame_], m_model_ubo_data, m_model_uniform.alignment * m_objects.size());
 }
 
-void Pipeline::pushObjects(const std::shared_ptr<BasicBody3D>& object_)
+void Pipeline::pushObjects(const std::shared_ptr<Components::BasicBody3D>& object_)
 {
-	if (!object_->state.ready_to_draw && object_->state.ready_to_copy)
+	if (!object_->basic_body_3d.ready_to_draw && object_->basic_body_3d.ready_to_copy)
 		object_->copyStgBuffersToGpu(m_copy_command_pool);
 
 	m_objects.push_back(object_);
 }
 
-void Pipeline::pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& objects_)
+void Pipeline::pushObjects(const std::vector<std::shared_ptr<Components::BasicBody3D>>& objects_)
 {
 	for (auto& object : objects_)
 	{
-		if (!object->state.ready_to_draw && object->state.ready_to_copy)
+		if (!object->basic_body_3d.ready_to_draw && object->basic_body_3d.ready_to_copy)
 			object->copyStgBuffersToGpu(m_copy_command_pool);
 
 		m_objects.push_back(object);
@@ -202,11 +202,7 @@ void Pipeline::createVulkanGraphicsPipeline()
 
 void Pipeline::createVulkanCommandPool()
 {
-	VkCommandPoolCreateInfo command_pool_create_info;
-	command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	command_pool_create_info.pNext            = nullptr;
-	command_pool_create_info.flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
-	command_pool_create_info.queueFamilyIndex = m_context->getGraphicsQueueIndex();
+	VkCommandPoolCreateInfo command_pool_create_info = Initializers::commandPoolCreateInfo(VK_COMMAND_POOL_CREATE_TRANSIENT_BIT, m_context->getGraphicsQueueIndex());
 
 	if (vkCreateCommandPool(m_context->getDevice(), &command_pool_create_info, nullptr, &m_copy_command_pool) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to create command pool!");

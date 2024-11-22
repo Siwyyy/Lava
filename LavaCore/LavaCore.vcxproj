@@ -167,7 +167,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Renderer\BasicBody3D.cpp" />
+    <ClCompile Include="src\Components\BasicBody3D.cpp" />
     <ClCompile Include="src\Renderer\Buffers.cpp" />
     <ClCompile Include="src\Renderer\Pipeline.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -189,9 +189,10 @@
     <ClInclude Include="include\Lava\Input\MouseButtonCodes.h" />
     <ClInclude Include="include\Lava\Layer.h" />
     <ClInclude Include="include\Lava\Application.h" />
-    <ClInclude Include="include\Lava\Renderer\Camera3D.h" />
+    <ClInclude Include="include\Lava\Components\Transform.h" />
+    <ClInclude Include="include\Lava\Components\BasicBody3D.h" />
+    <ClInclude Include="include\Lava\Renderer\RenderObjects\Camera3D.h" />
     <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
-    <ClInclude Include="include\Lava\Renderer\BasicBody3D.h" />
     <ClInclude Include="include\Lava\Renderer\Initializers.h" />
     <ClInclude Include="include\Lava\Renderer\Pipeline.h" />
     <ClInclude Include="include\Lava\Renderer\Vertex.h" />

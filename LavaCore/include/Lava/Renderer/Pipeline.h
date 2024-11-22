@@ -2,8 +2,11 @@
 
 namespace Lava
 {
+	namespace Components {
+		class BasicBody3D;
+	}
+
 	class Camera3D;
-	class BasicBody3D;
 	class GraphicsContext;
 
 	class Pipeline
@@ -15,8 +18,8 @@ namespace Lava
 		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const;
 		void updateVulkanUniformBuffer(uint32_t current_frame_);
 
-		void pushObjects(const std::shared_ptr<BasicBody3D>& object_);
-		void pushObjects(const std::vector<std::shared_ptr<BasicBody3D>>& objects_);
+		void pushObjects(const std::shared_ptr<Components::BasicBody3D>& object_);
+		void pushObjects(const std::vector<std::shared_ptr<Components::BasicBody3D>>& objects_);
 
 		inline void setCamera(const std::shared_ptr<Camera3D>& camera_) { m_camera = camera_; }
 
@@ -69,7 +72,7 @@ namespace Lava
 			VkDeviceSize buffer_size;
 		} m_model_uniform;
 
-		std::vector<std::shared_ptr<BasicBody3D>> m_objects;
+		std::vector<std::shared_ptr<Components::BasicBody3D>> m_objects;
 		std::shared_ptr<Camera3D> m_camera = nullptr;
 
 	private:

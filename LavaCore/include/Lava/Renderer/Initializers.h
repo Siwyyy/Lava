@@ -238,4 +238,14 @@ namespace Lava::Initializers
 		write_descriptor_set.pTexelBufferView = nullptr;
 		return write_descriptor_set;
 	}
+
+	inline VkCommandPoolCreateInfo commandPoolCreateInfo(VkCommandPoolCreateFlags flags_, uint32_t queue_index_)
+	{
+		VkCommandPoolCreateInfo command_pool_create_info;
+		command_pool_create_info.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		command_pool_create_info.pNext            = nullptr;
+		command_pool_create_info.flags            = flags_;
+		command_pool_create_info.queueFamilyIndex = queue_index_;
+		return command_pool_create_info;
+	}
 }
