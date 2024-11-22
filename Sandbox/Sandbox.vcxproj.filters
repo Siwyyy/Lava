@@ -35,6 +35,7 @@
   <ItemGroup>
     <CopyFileToFolders Include="resources\Shaders\basic.frag.spv" />
     <CopyFileToFolders Include="resources\Shaders\basic.vert.spv" />
+    <CopyFileToFolders Include="resources\Models\Arrow.obj" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SceneLayer.h">

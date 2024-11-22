@@ -58,6 +58,9 @@ void GraphicsContext::onUpdate()
 
 void GraphicsContext::draw()
 {
+	for (auto& pipeline : m_pipelines)
+		pipeline->updateVulkanUniformBuffer(m_current_frame);
+
 	vkWaitForFences(m_device, 1, &m_fence_in_flight[m_current_frame],VK_TRUE,UINT64_MAX);
 
 	uint32_t image_index;
@@ -85,9 +88,6 @@ void GraphicsContext::draw()
 	const VkSemaphore wait_semaphores[]      = {m_semaphore_image_available[m_current_frame]};
 	const VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 	const VkSemaphore signal_semaphores[]    = {m_semaphore_render_finished[m_current_frame]};
-
-	for (auto& pipeline : m_pipelines)
-		pipeline->updateVulkanUniformBuffer(m_current_frame);
 
 	VkSubmitInfo submit_info;
 	submit_info.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
