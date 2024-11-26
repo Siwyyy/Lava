@@ -169,6 +169,7 @@
   <ItemGroup>
     <ClCompile Include="src\Components\BasicBody3D.cpp" />
     <ClCompile Include="src\Renderer\Buffers.cpp" />
+    <ClCompile Include="src\Renderer\ObjLoader.cpp" />
     <ClCompile Include="src\Renderer\Pipeline.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Renderer\GraphicsContext.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="include\Lava\Application.h" />
     <ClInclude Include="include\Lava\Components\Transform.h" />
     <ClInclude Include="include\Lava\Components\BasicBody3D.h" />
+    <ClInclude Include="include\Lava\Renderer\ObjLoader.h" />
     <ClInclude Include="include\Lava\Renderer\RenderObjects\Camera3D.h" />
     <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
     <ClInclude Include="include\Lava\Renderer\Initializers.h" />

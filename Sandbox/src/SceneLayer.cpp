@@ -1,15 +1,12 @@
 ﻿#include "SceneLayer.h"
 
 #include "GameObjects/Camera.h"
+#include "GameObjects/ObjectTest.h"
 
 #include "Lava.h"
 #include "Lava/Events/KeyEvent.h"
 #include "Lava/Input/KeyCodes.h"
-
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "GameObjects/ObjectTest.h"
-
-#include "tiny_obj_loader/tiny_obj_loader.h"
+#include "Lava/Renderer/ObjLoader.h"
 
 void SceneLayer::onAttach()
 {
