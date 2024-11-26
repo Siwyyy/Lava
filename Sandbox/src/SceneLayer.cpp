@@ -59,7 +59,7 @@ void SceneLayer::onAttach()
 	m_pipeline->setCamera(m_camera);
 	for (const auto& object : m_objects)
 	{
-		m_pipeline->pushObjects(object);
+		m_pipeline->pushObjects(object->getMesh());
 	}
 	Lava::Application::getInstance().getWindow().getContext()->pushPipeline(m_pipeline);
 }

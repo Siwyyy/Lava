@@ -8,19 +8,21 @@ namespace Lava
 	struct Vertex3Color;
 }
 
-class ObjectTest final : public Lava::Components::Transform,
-												 public Lava::Components::BasicBody3D
+class ObjectTest
 {
 public:
 	ObjectTest(const std::vector<Lava::Vertex3Color>& vertices_,
 						 const std::vector<uint32_t>& indices_,
 						 const glm::vec3& position_ = glm::vec3(0.f),
 						 const glm::quat& rotation_ = glm::quat())
-		: Transform(position_, rotation_)
-		, BasicBody3D(vertices_, indices_)
-	{
-		transform_data = getTransform();
-	}
+		: m_transform(std::make_shared<Lava::Components::Transform>(position_, rotation_))
+		, m_basic_body_3d(std::make_shared<Lava::Components::BasicBody3D>(m_transform, vertices_, indices_)) {}
 
-	~ObjectTest() override = default;
+	const auto& getMesh() const { return m_basic_body_3d; }
+
+	~ObjectTest() = default;
+
+private:
+	std::shared_ptr<Lava::Components::Transform> m_transform;
+	std::shared_ptr<Lava::Components::BasicBody3D> m_basic_body_3d;
 };

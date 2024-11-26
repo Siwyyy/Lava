@@ -22,8 +22,6 @@ void GraphicsContext::init()
 	createVulkanSyncObjects();
 
 	LAVA_CORE_INFO("Vulkan graphics initialization complete");
-
-	vkQueueWaitIdle(m_present_queue);
 }
 
 void GraphicsContext::shutdown()
@@ -53,13 +51,13 @@ void GraphicsContext::onUpdate()
 	glfwPollEvents();
 	draw();
 }
-
-// Drawing //
-
-void GraphicsContext::draw()
-{
+ 
+// Drawing //  
+  
+void GraphicsContext::draw() 
+{ 
 	for (auto& pipeline : m_pipelines)
-		pipeline->updateVulkanUniformBuffer(m_current_frame);
+		pipeline->updateVulkanUniformBuffer(m_current_frame);   
 
 	vkWaitForFences(m_device, 1, &m_fence_in_flight[m_current_frame],VK_TRUE,UINT64_MAX);
 
@@ -67,27 +65,27 @@ void GraphicsContext::draw()
 	VkResult result = vkAcquireNextImageKHR(m_device,
 																					m_swapchain,
 																					UINT64_MAX,
-																					m_semaphore_image_available[m_current_frame],
+																					m_semaphore_image_available[m_current_frame], 
 																					VK_NULL_HANDLE,
-																					&image_index);
+																					&image_index);  
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
 		recreateVulkanSwapchain();
 		return;
 	}
-	else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+	if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
 	{
 		LAVA_CORE_ERROR("Failed to acquire swapchain image!");
 	}
 
 	vkResetFences(m_device, 1, &m_fence_in_flight[m_current_frame]);
-	vkResetCommandBuffer(m_command_buffers[m_current_frame], 0);
+	vkResetCommandBuffer(m_command_buffers[m_current_frame], NULL);
 	recordVulkanCommandBuffer(m_current_frame, image_index);
 
-	const VkSemaphore wait_semaphores[]      = {m_semaphore_image_available[m_current_frame]};
-	const VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-	const VkSemaphore signal_semaphores[]    = {m_semaphore_render_finished[m_current_frame]};
+	VkSemaphore wait_semaphores[]      = {m_semaphore_image_available[m_current_frame]};
+	VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+	VkSemaphore signal_semaphores[]    = {m_semaphore_render_finished[m_current_frame]};
 
 	VkSubmitInfo submit_info;
 	submit_info.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -122,21 +120,21 @@ void GraphicsContext::draw()
 		m_frame_buffer_resized = false;
 		return;
 	}
-	else if (result != VK_SUCCESS)
+	else if (result != VK_SUCCESS) 
 	{
 		LAVA_CORE_ERROR("Failed to acquire swapchain image!");
 	}
 
-	m_current_frame = (m_current_frame + 1) % m_frames_in_flight;
+	m_current_frame = (m_current_frame + 1) % m_frames_in_flight; 
 }
 
 void GraphicsContext::recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const
 {
 	VkCommandBufferBeginInfo command_buffer_begin_info;
 	command_buffer_begin_info.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	command_buffer_begin_info.flags            = 0;
-	command_buffer_begin_info.pInheritanceInfo = nullptr;
 	command_buffer_begin_info.pNext            = nullptr;
+	command_buffer_begin_info.flags            = NULL;
+	command_buffer_begin_info.pInheritanceInfo = nullptr;
 
 	if (vkBeginCommandBuffer(m_command_buffers[command_buffer_index_], &command_buffer_begin_info) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to begin command buffer recording!");

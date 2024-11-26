@@ -7,11 +7,15 @@
 
 using namespace Lava::Components;
 
-BasicBody3D::BasicBody3D(const std::vector<Vertex3Color>& vertices_, const std::vector<uint32_t>& indices_)
-	: m_vertices(vertices_)
+BasicBody3D::BasicBody3D(const std::shared_ptr<Transform>& transform_,
+												 const std::vector<Vertex3Color>& vertices_,
+												 const std::vector<uint32_t>& indices_)
+	: transform_data(transform_)
+	, m_vertices(vertices_)
 	, m_indices(indices_)
 {
 	auto context = Application::getInstance().getWindow().getContext();
+
 	// init vertex buffers
 	VkDeviceSize vertex_buffer_size = sizeof(m_vertices[0]) * m_vertices.size();
 	Buffers::createVulkanBuffer(vertex_buffer_size,
@@ -56,13 +60,6 @@ BasicBody3D::~BasicBody3D()
 	vkFreeMemory(context->getDevice(), m_index_buffer_memory, nullptr);
 	vkDestroyBuffer(context->getDevice(), m_vertex_buffer, nullptr);
 	vkFreeMemory(context->getDevice(), m_vertex_buffer_memory, nullptr);
-}
-
-void BasicBody3D::loadStgBuffers()
-{
-	memcpy(m_vertex_staging_buffer_memory_mapped, m_vertices.data(), sizeof(m_vertices[0]) * m_vertices.size());
-	memcpy(m_index_staging_buffer_memory_mapped, m_indices.data(), sizeof(m_indices[0]) * m_indices.size());
-	basic_body_3d.ready_to_copy = true;
 }
 
 void BasicBody3D::copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_)
@@ -125,4 +122,13 @@ void BasicBody3D::drawIndexed(const VkCommandBuffer& command_buffer_) const
 	vkCmdBindVertexBuffers(command_buffer_, 0, 1, vertex_buffers, offsets);
 	vkCmdBindIndexBuffer(command_buffer_, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
 	vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
+}
+
+void BasicBody3D::init() {}
+
+void BasicBody3D::loadStgBuffers()
+{
+	memcpy(m_vertex_staging_buffer_memory_mapped, m_vertices.data(), sizeof(m_vertices[0]) * m_vertices.size());
+	memcpy(m_index_staging_buffer_memory_mapped, m_indices.data(), sizeof(m_indices[0]) * m_indices.size());
+	basic_body_3d.ready_to_copy = true;
 }

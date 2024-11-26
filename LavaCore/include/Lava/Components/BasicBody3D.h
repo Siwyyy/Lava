@@ -13,12 +13,12 @@ namespace Lava::Components
 	class BasicBody3D
 	{
 	public:
-		BasicBody3D(const std::vector<Vertex3Color>& vertices_,
+		BasicBody3D(const std::shared_ptr<Transform>& transform_,
+								const std::vector<Vertex3Color>& vertices_,
 								const std::vector<uint32_t>& indices_);
 
 		virtual ~BasicBody3D();
 
-		void loadStgBuffers();
 		void copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_);
 		void drawIndexed(const VkCommandBuffer& command_buffer_) const;
 
@@ -28,11 +28,14 @@ namespace Lava::Components
 			bool ready_to_draw = false;
 		} basic_body_3d;
 
-		Transform* transform_data = nullptr;
+		std::shared_ptr<Transform> transform_data = nullptr;
 
 	private:
 		std::vector<Vertex3Color> m_vertices;
 		std::vector<uint32_t> m_indices;
+
+		void init();
+		void loadStgBuffers();
 
 		VkBuffer m_vertex_staging_buffer;
 		VkBuffer m_vertex_buffer;
