@@ -1,8 +1,11 @@
 ﻿#pragma once
+#include "Lava/Renderer/ResourceBuffer/DynamicUniformBuffer.h"
+#include "Lava/Renderer/ResourceBuffer/UniformBuffer.h"
 
 namespace Lava
 {
-	namespace Components {
+	namespace Components
+	{
 		class BasicBody3D;
 	}
 
@@ -16,7 +19,8 @@ namespace Lava
 		~Pipeline();
 
 		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const;
-		void updateVulkanUniformBuffer(uint32_t current_frame_);
+		void updateCameraUniformBuffer(uint32_t current_frame_);
+		void updateModelDynamicUniformBuffer(uint32_t current_frame_);
 
 		void pushObjects(const std::shared_ptr<Components::BasicBody3D>& object_);
 		void pushObjects(const std::vector<std::shared_ptr<Components::BasicBody3D>>& objects_);
@@ -38,39 +42,26 @@ namespace Lava
 		// Command pool for command buffers for copying buffers
 		VkCommandPool m_copy_command_pool;
 
-		// Static Uniform Buffer
-		struct StaticUniformBufferObject
+		// Camera Uniform Buffer
+		struct CameraData
 		{
 			glm::mat4 view;
 			glm::mat4 projection;
 			glm::mat4 projection_view;
 
 			inline void calculateProjectionView() { projection_view = projection * view; }
-		} m_camera_ubo_data;
+		} m_camera_data;
 
-		struct StaticUniformBuffer
-		{
-			std::vector<VkBuffer> buffers;
-			std::vector<VkDeviceMemory> buffers_memory;
-			std::vector<void*> buffers_mapped;
-		} m_camera_uniform;
+		std::vector<UniformBuffer<CameraData>> m_camera_uniform_buffers;
 
-		// Dynamic Uniform Buffer
-		struct DynamicUniformBufferObject
+		// Model Dynamic Uniform Buffer
+		struct ModelData
 		{
 			glm::mat4 transform;
 			glm::mat4 rotation;
-		}* m_model_ubo_data = nullptr;
+		}* m_model_data = nullptr;
 
-		struct DynamicUniformBuffer
-		{
-			std::vector<VkBuffer> buffers;
-			std::vector<VkDeviceMemory> buffers_memory;
-			std::vector<void*> buffers_mapped;
-			const uint32_t num_objects = 128;
-			VkDeviceSize alignment;
-			VkDeviceSize buffer_size;
-		} m_model_uniform;
+		std::vector<DynamicUniformBuffer<ModelData>> m_model_dynamic_uniform_buffers;
 
 		std::vector<std::shared_ptr<Components::BasicBody3D>> m_objects;
 		std::shared_ptr<Camera3D> m_camera = nullptr;
@@ -81,13 +72,12 @@ namespace Lava
 
 		void createVulkanCommandPool();
 
-		void createStaticUniformBuffers();
-		void createDynamicUniformBuffers();
+		void createShaderDataBuffers();
 
 		void createVulkanDescriptorPool();
 		void createVulkanDescriptorSets();
 
-		std::vector<char> readShaderFile(const std::string& filename_);
+		std::vector<char> readShaderFile(const std::string& filename_) const;
 		VkShaderModule createShaderModule(const std::vector<char>& code_) const;
 	};
 }

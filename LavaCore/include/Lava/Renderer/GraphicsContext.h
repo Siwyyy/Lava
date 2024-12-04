@@ -27,8 +27,9 @@ namespace Lava
 	public:
 		inline auto& getDevice() { return m_device; }
 		inline auto& getGpu() { return m_gpu; }
+		inline auto& getGpuProps() { return m_gpu_props; }
 		inline auto& getRenderPass() { return m_render_pass; }
-		inline auto& getFramesInFlight() { return m_frames_in_flight; }
+		inline auto& getFramesCount() { return m_frames_count; }
 		inline auto& getExtent2D() { return m_extent_2d; }
 		inline auto& getGraphicsQueueIndex() { return m_queue_family_indices.graphics.value(); }
 		inline auto& getGraphicsQueue() { return m_graphics_queue; }
@@ -53,6 +54,7 @@ namespace Lava
 		// VkDevice
 		VkDevice m_device;
 		VkPhysicalDevice m_gpu;
+		VkPhysicalDeviceProperties m_gpu_props;
 		VkSurfaceKHR m_surface;
 
 		struct QueueFamilyIndices
@@ -86,7 +88,7 @@ namespace Lava
 		std::vector<VkSemaphore> m_semaphore_render_finished;
 		std::vector<VkFence> m_fence_in_flight;
 
-		uint32_t m_frames_in_flight = 2;
+		uint32_t m_frames_count     = 2;
 		uint32_t m_current_frame    = 0;
 		bool m_frame_buffer_resized = false;
 

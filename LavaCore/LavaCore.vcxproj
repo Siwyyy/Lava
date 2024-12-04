@@ -168,7 +168,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Components\BasicBody3D.cpp" />
-    <ClCompile Include="src\Renderer\Buffers.cpp" />
     <ClCompile Include="src\Renderer\ObjLoader.cpp" />
     <ClCompile Include="src\Renderer\Pipeline.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -192,11 +191,14 @@
     <ClInclude Include="include\Lava\Application.h" />
     <ClInclude Include="include\Lava\Components\Transform.h" />
     <ClInclude Include="include\Lava\Components\BasicBody3D.h" />
+    <ClInclude Include="include\Lava\Renderer\ResourceBuffer\DynamicUniformBuffer.h" />
     <ClInclude Include="include\Lava\Renderer\ObjLoader.h" />
     <ClInclude Include="include\Lava\Renderer\RenderObjects\Camera3D.h" />
     <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
     <ClInclude Include="include\Lava\Renderer\Initializers.h" />
     <ClInclude Include="include\Lava\Renderer\Pipeline.h" />
+    <ClInclude Include="include\Lava\Renderer\ResourceBuffer\ResourceBuffer.h" />
+    <ClInclude Include="include\Lava\Renderer\ResourceBuffer\UniformBuffer.h" />
     <ClInclude Include="include\Lava\Renderer\Vertex.h" />
     <ClInclude Include="include\Lava\LayerStack.h" />
     <ClInclude Include="include\Lava\Log.h" />
@@ -212,7 +214,7 @@
     <ClInclude Include="include\Lava\Window.h" />
     <ClInclude Include="include\Lava\Resources.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="include\Lava\Renderer\Buffers.h" />
+    <ClInclude Include="include\Lava\Renderer\Buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="shaders\compile.bat.txt" />

@@ -3,7 +3,7 @@
 #include "Lava/Components/BasicBody3D.h"
 
 #include "Lava/Application.h"
-#include "Lava/Renderer/Buffers.h"
+#include "Lava/Renderer/Buffer.h" 
 
 using namespace Lava::Components;
 

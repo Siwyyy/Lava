@@ -68,17 +68,7 @@ void SceneLayer::onUpdate() { m_camera->updateTransform(); }
 void SceneLayer::onEvent(Lava::Event& event_)
 {
 	Lava::EventDispatcher dispatcher(event_);
-	/*dispatcher.dispatch<Lava::MouseButtonPressedEvent>([this](auto&& e_) { return onMouseButtonPressed(e_); });*/
 	dispatcher.dispatch<Lava::KeyPressedEvent>([this](auto&& e_) { return onKeyPressed(e_); });
-}
-
-bool SceneLayer::onMouseButtonPressed(const Lava::MouseButtonPressedEvent& event_) const
-{
-	switch (event_.getButtonCode())
-	{
-	default:
-		return false;
-	}
 }
 
 bool SceneLayer::onKeyPressed(const Lava::KeyPressedEvent& event_) const
@@ -89,4 +79,5 @@ bool SceneLayer::onKeyPressed(const Lava::KeyPressedEvent& event_) const
 		Lava::Application::getInstance().shutdown();
 		return true;
 	}
+	return false;
 }

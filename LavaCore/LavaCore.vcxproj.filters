@@ -39,9 +39,6 @@
     <ClCompile Include="src\Renderer\Pipeline.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Renderer\Buffers.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
     <ClCompile Include="src\Components\BasicBody3D.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
@@ -116,7 +113,7 @@
     <ClInclude Include="include\Lava\Renderer\Pipeline.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="include\Lava\Renderer\Buffers.h">
+    <ClInclude Include="include\Lava\Renderer\Buffer.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="include\Lava\Renderer\Initializers.h">
@@ -135,6 +132,15 @@
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="include\Lava\Renderer\ObjLoader.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lava\Renderer\ResourceBuffer\UniformBuffer.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lava\Renderer\ResourceBuffer\DynamicUniformBuffer.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lava\Renderer\ResourceBuffer\ResourceBuffer.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

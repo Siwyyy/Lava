@@ -26,7 +26,7 @@ void GraphicsContext::init()
 
 void GraphicsContext::shutdown()
 {
-	for (size_t i = 0; i < m_frames_in_flight; i++)
+	for (size_t i = 0; i < m_frames_count; i++)
 	{
 		vkDestroySemaphore(m_device, m_semaphore_image_available[i], nullptr);
 		vkDestroySemaphore(m_device, m_semaphore_render_finished[i], nullptr);
@@ -51,13 +51,16 @@ void GraphicsContext::onUpdate()
 	glfwPollEvents();
 	draw();
 }
- 
+
 // Drawing //  
-  
-void GraphicsContext::draw() 
-{ 
+
+void GraphicsContext::draw()
+{
 	for (auto& pipeline : m_pipelines)
-		pipeline->updateVulkanUniformBuffer(m_current_frame);   
+	{
+		pipeline->updateCameraUniformBuffer(m_current_frame);
+		pipeline->updateModelDynamicUniformBuffer(m_current_frame);
+	}
 
 	vkWaitForFences(m_device, 1, &m_fence_in_flight[m_current_frame],VK_TRUE,UINT64_MAX);
 
@@ -65,9 +68,9 @@ void GraphicsContext::draw()
 	VkResult result = vkAcquireNextImageKHR(m_device,
 																					m_swapchain,
 																					UINT64_MAX,
-																					m_semaphore_image_available[m_current_frame], 
+																					m_semaphore_image_available[m_current_frame],
 																					VK_NULL_HANDLE,
-																					&image_index);  
+																					&image_index);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -120,12 +123,12 @@ void GraphicsContext::draw()
 		m_frame_buffer_resized = false;
 		return;
 	}
-	else if (result != VK_SUCCESS) 
+	else if (result != VK_SUCCESS)
 	{
 		LAVA_CORE_ERROR("Failed to acquire swapchain image!");
 	}
 
-	m_current_frame = (m_current_frame + 1) % m_frames_in_flight; 
+	m_current_frame = (m_current_frame + 1) % m_frames_count;
 }
 
 void GraphicsContext::recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const
@@ -307,9 +310,8 @@ void GraphicsContext::createVulkanDevice()
 	}
 	LAVA_ASSERT(selected_gpu_score, "Failed to create suitable GPU")
 
-	VkPhysicalDeviceProperties gpu_props;
-	vkGetPhysicalDeviceProperties(m_gpu, &gpu_props);
-	LAVA_CORE_INFO("Selected GPU: {0}", gpu_props.deviceName);
+	vkGetPhysicalDeviceProperties(m_gpu, &m_gpu_props);
+	LAVA_CORE_INFO("Selected GPU: {0}", m_gpu_props.deviceName);
 
 	// get VkSurface from GLFW //////////////////////////////
 	if (glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surface) != VK_SUCCESS)
@@ -659,7 +661,7 @@ void GraphicsContext::createVulkanCommandPool()
 
 void GraphicsContext::allocateVulkanCommandBuffers()
 {
-	m_command_buffers.resize(m_frames_in_flight);
+	m_command_buffers.resize(m_frames_count);
 
 	VkCommandBufferAllocateInfo command_buffer_allocate_info;
 	command_buffer_allocate_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -674,9 +676,9 @@ void GraphicsContext::allocateVulkanCommandBuffers()
 
 void GraphicsContext::createVulkanSyncObjects()
 {
-	m_semaphore_image_available.resize(m_frames_in_flight);
-	m_semaphore_render_finished.resize(m_frames_in_flight);
-	m_fence_in_flight.resize(m_frames_in_flight);
+	m_semaphore_image_available.resize(m_frames_count);
+	m_semaphore_render_finished.resize(m_frames_count);
+	m_fence_in_flight.resize(m_frames_count);
 
 	VkSemaphoreCreateInfo semaphore_create_info;
 	semaphore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -688,7 +690,7 @@ void GraphicsContext::createVulkanSyncObjects()
 	fence_create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 	fence_create_info.pNext = nullptr;
 
-	for (size_t i = 0; i < m_frames_in_flight; i++)
+	for (size_t i = 0; i < m_frames_count; i++)
 	{
 		if (vkCreateSemaphore(m_device, &semaphore_create_info, nullptr, &m_semaphore_image_available[i]) != VK_SUCCESS ||
 				vkCreateSemaphore(m_device, &semaphore_create_info, nullptr, &m_semaphore_render_finished[i]) != VK_SUCCESS ||

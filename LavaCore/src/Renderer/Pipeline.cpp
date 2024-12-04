@@ -4,13 +4,11 @@
 #include "Lava/Application.h"
 #include "Lava/Resources.h"
 #include "Lava/Components/BasicBody3D.h"
-#include "Lava/Renderer/Buffers.h"
-#include "Lava/Renderer/RenderObjects/Camera3D.h"
 #include "Lava/Renderer/Initializers.h"
 #include "Lava/Renderer/Vertex.h"
+#include "Lava/Renderer/RenderObjects/Camera3D.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
 
 using namespace Lava;
 
@@ -24,8 +22,7 @@ Pipeline::Pipeline()
 
 	createVulkanCommandPool();
 
-	createStaticUniformBuffers();
-	createDynamicUniformBuffers();
+	createShaderDataBuffers();
 	createVulkanDescriptorPool();
 	createVulkanDescriptorSets();
 }
@@ -33,14 +30,9 @@ Pipeline::Pipeline()
 Pipeline::~Pipeline()
 {
 	vkDestroyDescriptorPool(m_context->getDevice(), m_descriptor_pool, nullptr);
-	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
-	{
-		vkDestroyBuffer(m_context->getDevice(), m_camera_uniform.buffers[i], nullptr);
-		vkFreeMemory(m_context->getDevice(), m_camera_uniform.buffers_memory[i], nullptr);
-		vkDestroyBuffer(m_context->getDevice(), m_model_uniform.buffers[i], nullptr);
-		vkFreeMemory(m_context->getDevice(), m_model_uniform.buffers_memory[i], nullptr);
-	}
-	_aligned_free(m_model_ubo_data);
+	m_camera_uniform_buffers.clear();
+	m_model_dynamic_uniform_buffers.clear();
+	_aligned_free(m_model_data);
 
 	vkDestroyPipeline(m_context->getDevice(), m_pipeline, nullptr);
 	vkDestroyPipelineLayout(m_context->getDevice(), m_pipeline_layout, nullptr);
@@ -69,28 +61,32 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 
 	for (size_t i = 0; i < m_objects.size(); i++)
 	{
-		uint32_t dynamic_offset = static_cast<uint32_t>(i * m_model_uniform.alignment);
+		uint32_t dynamic_offset = static_cast<uint32_t>(i * m_model_dynamic_uniform_buffers[current_frame_].getAlignment());
 		vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[current_frame_], 1, &dynamic_offset);
 		m_objects[i]->drawIndexed(command_buffer_);
 	}
 }
 
-void Pipeline::updateVulkanUniformBuffer(uint32_t current_frame_)
+void Pipeline::updateCameraUniformBuffer(uint32_t current_frame_)
 {
-	m_camera_ubo_data.view       = m_camera->getViewMatrix();
-	m_camera_ubo_data.projection = glm::perspective(glm::radians(m_camera->getFov()), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
+	m_camera_data.view       = m_camera->getViewMatrix();
+	m_camera_data.projection = glm::perspective(glm::radians(m_camera->getFov()), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
 	//m_camera_ubo_data.projection[1][1] *= -1;
-	m_camera_ubo_data.calculateProjectionView();
+	m_camera_data.calculateProjectionView();
 
-	memcpy(m_camera_uniform.buffers_mapped[current_frame_], &m_camera_ubo_data, sizeof(m_camera_ubo_data));
+	m_camera_uniform_buffers[current_frame_].updateMemory(&m_camera_data);
+}
 
+void Pipeline::updateModelDynamicUniformBuffer(uint32_t current_frame_)
+{
 	for (size_t i = 0; i < m_objects.size(); i++)
 	{
-		auto model       = reinterpret_cast<DynamicUniformBufferObject*>(reinterpret_cast<uintptr_t>(m_model_ubo_data) + (i * m_model_uniform.alignment));
+		auto model       = reinterpret_cast<ModelData*>(reinterpret_cast<uintptr_t>(m_model_data) + (i * m_model_dynamic_uniform_buffers[0].getAlignment()));
 		model->transform = m_objects[i]->transform_data->getTranslationMatrix();
 		model->rotation  = m_objects[i]->transform_data->getRotationMatrix();
 	}
-	memcpy(m_model_uniform.buffers_mapped[current_frame_], m_model_ubo_data, m_model_uniform.alignment * m_objects.size());
+
+	m_model_dynamic_uniform_buffers[current_frame_].updateMemory(m_model_data, static_cast<uint32_t>(m_objects.size()));
 }
 
 void Pipeline::pushObjects(const std::shared_ptr<Components::BasicBody3D>& object_)
@@ -211,66 +207,28 @@ void Pipeline::createVulkanCommandPool()
 
 //
 
-void Pipeline::createStaticUniformBuffers()
+void Pipeline::createShaderDataBuffers()
 {
-	// Static
-	VkDeviceSize static_buffer_size = sizeof(StaticUniformBufferObject);
+	// camera
+	m_camera_uniform_buffers.resize(m_context->getFramesCount());
 
-	m_camera_uniform.buffers.resize(m_context->getFramesInFlight());
-	m_camera_uniform.buffers_memory.resize(m_context->getFramesInFlight());
-	m_camera_uniform.buffers_mapped.resize(m_context->getFramesInFlight());
+	// model
+	m_model_dynamic_uniform_buffers.reserve(m_context->getFramesCount());
+	for (size_t i = 0; i < m_context->getFramesCount(); i++)
+		m_model_dynamic_uniform_buffers.emplace_back(128);
 
-	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
-	{
-		Buffers::createVulkanBuffer(static_buffer_size,
-																VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-																VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-																m_camera_uniform.buffers[i],
-																m_camera_uniform.buffers_memory[i]);
-
-		vkMapMemory(m_context->getDevice(), m_camera_uniform.buffers_memory[i], 0, static_buffer_size,NULL, &m_camera_uniform.buffers_mapped[i]);
-	}
-}
-
-void Pipeline::createDynamicUniformBuffers()
-{
-	m_model_uniform.buffers.resize(m_context->getFramesInFlight());
-	m_model_uniform.buffers_memory.resize(m_context->getFramesInFlight());
-	m_model_uniform.buffers_mapped.resize(m_context->getFramesInFlight());
-
-	// Check gpu properties for min ubo alignment
-	VkPhysicalDeviceProperties deviceProperties;
-	vkGetPhysicalDeviceProperties(m_context->getGpu(), &deviceProperties);
-	VkDeviceSize min_ubo_alignment = deviceProperties.limits.minUniformBufferOffsetAlignment;
-
-	// Set ubo alignment and buffer size
-	m_model_uniform.alignment   = (sizeof(DynamicUniformBufferObject) + min_ubo_alignment - 1) & ~(min_ubo_alignment - 1);
-	m_model_uniform.buffer_size = m_model_uniform.alignment * m_model_uniform.num_objects;
-
-	// Create buffers
-	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
-	{
-		Buffers::createVulkanBuffer(m_model_uniform.buffer_size,
-																VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-																VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-																m_model_uniform.buffers[i],
-																m_model_uniform.buffers_memory[i]);
-
-		vkMapMemory(m_context->getDevice(), m_model_uniform.buffers_memory[i], 0, m_model_uniform.buffer_size, NULL, &m_model_uniform.buffers_mapped[i]);
-	}
-
-	m_model_ubo_data = static_cast<DynamicUniformBufferObject*>(_aligned_malloc(m_model_uniform.num_objects, m_model_uniform.alignment));
+	m_model_data = static_cast<ModelData*>(_aligned_malloc(128, m_model_dynamic_uniform_buffers[0].getAlignment()));
 }
 
 void Pipeline::createVulkanDescriptorPool()
 {
 	std::vector<VkDescriptorPoolSize> pool_sizes =
 	{
-		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_context->getFramesInFlight()),
-		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, m_context->getFramesInFlight())
+		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_context->getFramesCount()),
+		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, m_context->getFramesCount())
 	};
 
-	VkDescriptorPoolCreateInfo pool_create_info = Initializers::descriptorPoolCreateInfo(pool_sizes, m_context->getFramesInFlight());
+	VkDescriptorPoolCreateInfo pool_create_info = Initializers::descriptorPoolCreateInfo(pool_sizes, m_context->getFramesCount());
 
 	if (vkCreateDescriptorPool(m_context->getDevice(), &pool_create_info, nullptr, &m_descriptor_pool) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to create VkDescriptorPool!");
@@ -278,20 +236,20 @@ void Pipeline::createVulkanDescriptorPool()
 
 void Pipeline::createVulkanDescriptorSets()
 {
-	std::vector<VkDescriptorSetLayout> layouts(m_context->getFramesInFlight(), m_descriptor_set_layout);
+	std::vector<VkDescriptorSetLayout> layouts(m_context->getFramesCount(), m_descriptor_set_layout);
 	VkDescriptorSetAllocateInfo descriptor_set_allocate_info = Initializers::descriptorSetAllocateInfo(m_descriptor_pool, layouts);
 
-	m_descriptor_sets.resize(m_context->getFramesInFlight());
+	m_descriptor_sets.resize(m_context->getFramesCount());
 	if (vkAllocateDescriptorSets(m_context->getDevice(), &descriptor_set_allocate_info, m_descriptor_sets.data()) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to allocate descriptor sets!");
 
-	for (size_t i = 0; i < m_context->getFramesInFlight(); i++)
+	for (size_t i = 0; i < m_context->getFramesCount(); i++)
 	{
-		VkDescriptorBufferInfo static_buffer_info        = Initializers::descriptorBufferInfo(m_camera_uniform.buffers[i], 0, sizeof(StaticUniformBufferObject));
+		VkDescriptorBufferInfo static_buffer_info        = m_camera_uniform_buffers[i].getDescriptorBufferInfo();
 		VkWriteDescriptorSet static_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, static_buffer_info);
 		vkUpdateDescriptorSets(m_context->getDevice(), 1, &static_write_descriptor_set, 0, nullptr);
 
-		VkDescriptorBufferInfo dynamic_buffer_info        = Initializers::descriptorBufferInfo(m_model_uniform.buffers[i], 0, m_model_uniform.alignment);
+		VkDescriptorBufferInfo dynamic_buffer_info        = m_model_dynamic_uniform_buffers[i].getDescriptorBufferInfo();
 		VkWriteDescriptorSet dynamic_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 1, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, dynamic_buffer_info);
 		vkUpdateDescriptorSets(m_context->getDevice(), 1, &dynamic_write_descriptor_set, 0, nullptr);
 	}
@@ -299,7 +257,7 @@ void Pipeline::createVulkanDescriptorSets()
 
 //
 
-std::vector<char> Pipeline::readShaderFile(const std::string& filename_)
+std::vector<char> Pipeline::readShaderFile(const std::string& filename_) const
 {
 	std::filesystem::path shaders_path = Resources::getDir(ResourceDir::Shaders);
 	std::ifstream file(shaders_path /= filename_, std::ios::ate | std::ios::binary);
