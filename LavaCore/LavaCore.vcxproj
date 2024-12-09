@@ -198,6 +198,7 @@
     <ClInclude Include="include\Lava\Renderer\Initializers.h" />
     <ClInclude Include="include\Lava\Renderer\Pipeline.h" />
     <ClInclude Include="include\Lava\Renderer\ResourceBuffer\ResourceBuffer.h" />
+    <ClInclude Include="include\Lava\Renderer\ResourceBuffer\StorageBuffer.h" />
     <ClInclude Include="include\Lava\Renderer\ResourceBuffer\UniformBuffer.h" />
     <ClInclude Include="include\Lava\Renderer\Vertex.h" />
     <ClInclude Include="include\Lava\LayerStack.h" />

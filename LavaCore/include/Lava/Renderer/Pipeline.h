@@ -19,7 +19,7 @@ namespace Lava
 		~Pipeline();
 
 		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const;
-		void updateCameraUniformBuffer(uint32_t current_frame_);
+		void updateResourceBuffers(uint32_t current_frame_);
 		void updateModelDynamicUniformBuffer(uint32_t current_frame_);
 
 		void pushObjects(const std::shared_ptr<Components::BasicBody3D>& object_);

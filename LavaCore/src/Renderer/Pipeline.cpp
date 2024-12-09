@@ -67,18 +67,16 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 	}
 }
 
-void Pipeline::updateCameraUniformBuffer(uint32_t current_frame_)
+void Pipeline::updateResourceBuffers(uint32_t current_frame_)
 {
+	// Camera
 	m_camera_data.view       = m_camera->getViewMatrix();
 	m_camera_data.projection = glm::perspective(glm::radians(m_camera->getFov()), (float)m_context->getExtent2D().width / (float)m_context->getExtent2D().height, 0.1f, 100.0f);
-	//m_camera_ubo_data.projection[1][1] *= -1;
 	m_camera_data.calculateProjectionView();
 
 	m_camera_uniform_buffers[current_frame_].updateMemory(&m_camera_data);
-}
 
-void Pipeline::updateModelDynamicUniformBuffer(uint32_t current_frame_)
-{
+	// Model
 	for (size_t i = 0; i < m_objects.size(); i++)
 	{
 		auto model       = reinterpret_cast<ModelData*>(reinterpret_cast<uintptr_t>(m_model_data) + (i * m_model_dynamic_uniform_buffers[0].getAlignment()));
@@ -88,6 +86,8 @@ void Pipeline::updateModelDynamicUniformBuffer(uint32_t current_frame_)
 
 	m_model_dynamic_uniform_buffers[current_frame_].updateMemory(m_model_data, static_cast<uint32_t>(m_objects.size()));
 }
+
+void Pipeline::updateModelDynamicUniformBuffer(uint32_t current_frame_) {}
 
 void Pipeline::pushObjects(const std::shared_ptr<Components::BasicBody3D>& object_)
 {
@@ -224,8 +224,8 @@ void Pipeline::createVulkanDescriptorPool()
 {
 	std::vector<VkDescriptorPoolSize> pool_sizes =
 	{
-		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, m_context->getFramesCount()),
-		Initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, m_context->getFramesCount())
+		Initializers::descriptorPoolSize(m_camera_uniform_buffers[0].getDescriptorType(), m_context->getFramesCount()),
+		Initializers::descriptorPoolSize(m_model_dynamic_uniform_buffers[0].getDescriptorType(), m_context->getFramesCount())
 	};
 
 	VkDescriptorPoolCreateInfo pool_create_info = Initializers::descriptorPoolCreateInfo(pool_sizes, m_context->getFramesCount());
@@ -246,11 +246,11 @@ void Pipeline::createVulkanDescriptorSets()
 	for (size_t i = 0; i < m_context->getFramesCount(); i++)
 	{
 		VkDescriptorBufferInfo static_buffer_info        = m_camera_uniform_buffers[i].getDescriptorBufferInfo();
-		VkWriteDescriptorSet static_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, static_buffer_info);
+		VkWriteDescriptorSet static_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 0, 1, m_camera_uniform_buffers[0].getDescriptorType(), static_buffer_info);
 		vkUpdateDescriptorSets(m_context->getDevice(), 1, &static_write_descriptor_set, 0, nullptr);
 
 		VkDescriptorBufferInfo dynamic_buffer_info        = m_model_dynamic_uniform_buffers[i].getDescriptorBufferInfo();
-		VkWriteDescriptorSet dynamic_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 1, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, dynamic_buffer_info);
+		VkWriteDescriptorSet dynamic_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 1, 1, m_model_dynamic_uniform_buffers[0].getDescriptorType(), dynamic_buffer_info);
 		vkUpdateDescriptorSets(m_context->getDevice(), 1, &dynamic_write_descriptor_set, 0, nullptr);
 	}
 }

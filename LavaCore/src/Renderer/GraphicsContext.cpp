@@ -58,7 +58,7 @@ void GraphicsContext::draw()
 {
 	for (auto& pipeline : m_pipelines)
 	{
-		pipeline->updateCameraUniformBuffer(m_current_frame);
+		pipeline->updateResourceBuffers(m_current_frame);
 		pipeline->updateModelDynamicUniformBuffer(m_current_frame);
 	}
 
