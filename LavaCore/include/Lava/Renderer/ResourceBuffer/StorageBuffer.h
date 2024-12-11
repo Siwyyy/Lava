@@ -33,10 +33,10 @@ namespace Lava
 
 		inline void updateMemory(const T* data_, uint32_t size_ = 1) override
 		{
-			memcpy(this->m_mapped, data_, std::min(this->m_alignment * size_, this->m_memory_size));
+			memcpy(this->m_mapped, data_, std::min(size_ * this->m_alignment, this->m_memory_size));
 		}
 
 		inline VkDescriptorBufferInfo getDescriptorBufferInfo() const override { return Initializers::descriptorBufferInfo(this->m_buffer, 0, this->m_memory_size); }
-		inline VkDescriptorType getDescriptorType() const override { return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; }
+		inline VkDescriptorType getDescriptorType() const override { return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; }
 	};
 }

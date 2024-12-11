@@ -167,7 +167,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Components\BasicBody3D.cpp" />
+    <ClCompile Include="src\Components\Mesh.cpp" />
     <ClCompile Include="src\Renderer\ObjLoader.cpp" />
     <ClCompile Include="src\Renderer\Pipeline.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -190,7 +190,7 @@
     <ClInclude Include="include\Lava\Layer.h" />
     <ClInclude Include="include\Lava\Application.h" />
     <ClInclude Include="include\Lava\Components\Transform.h" />
-    <ClInclude Include="include\Lava\Components\BasicBody3D.h" />
+    <ClInclude Include="include\Lava\Components\Mesh.h" />
     <ClInclude Include="include\Lava\Renderer\ResourceBuffer\DynamicUniformBuffer.h" />
     <ClInclude Include="include\Lava\Renderer\ObjLoader.h" />
     <ClInclude Include="include\Lava\Renderer\RenderObjects\Camera3D.h" />

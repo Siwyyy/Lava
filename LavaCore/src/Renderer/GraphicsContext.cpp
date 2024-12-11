@@ -59,7 +59,6 @@ void GraphicsContext::draw()
 	for (auto& pipeline : m_pipelines)
 	{
 		pipeline->updateResourceBuffers(m_current_frame);
-		pipeline->updateModelDynamicUniformBuffer(m_current_frame);
 	}
 
 	vkWaitForFences(m_device, 1, &m_fence_in_flight[m_current_frame],VK_TRUE,UINT64_MAX);

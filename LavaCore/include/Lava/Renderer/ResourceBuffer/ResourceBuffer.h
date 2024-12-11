@@ -22,11 +22,11 @@ namespace Lava
 	protected:
 		const std::shared_ptr<GraphicsContext>& m_context = Application::getInstance().getWindow().getContext();
 
-		VkBuffer m_buffer;
-		VkDeviceMemory m_memory;
-		void* m_mapped;
+		VkBuffer m_buffer       = VK_NULL_HANDLE;
+		VkDeviceMemory m_memory = VK_NULL_HANDLE;
+		void* m_mapped          = nullptr;
 
-		VkDeviceSize m_memory_size;
-		VkDeviceSize m_alignment;
+		VkDeviceSize m_memory_size = 0;
+		VkDeviceSize m_alignment   = 0;
 	};
 }

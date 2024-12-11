@@ -3,7 +3,7 @@
 
 #include "Lava/Application.h"
 #include "Lava/Resources.h"
-#include "Lava/Components/BasicBody3D.h"
+#include "Lava/Components/Mesh.h"
 #include "Lava/Renderer/Initializers.h"
 #include "Lava/Renderer/Vertex.h"
 #include "Lava/Renderer/RenderObjects/Camera3D.h"
@@ -31,8 +31,7 @@ Pipeline::~Pipeline()
 {
 	vkDestroyDescriptorPool(m_context->getDevice(), m_descriptor_pool, nullptr);
 	m_camera_uniform_buffers.clear();
-	m_model_dynamic_uniform_buffers.clear();
-	_aligned_free(m_model_data);
+	m_model_storage_buffers.clear();
 
 	vkDestroyPipeline(m_context->getDevice(), m_pipeline, nullptr);
 	vkDestroyPipelineLayout(m_context->getDevice(), m_pipeline_layout, nullptr);
@@ -43,8 +42,6 @@ Pipeline::~Pipeline()
 
 void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const
 {
-	vkCmdBindPipeline(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
-
 	VkViewport viewport;
 	viewport.x        = 0.0f;
 	viewport.y        = 0.0f;
@@ -59,11 +56,12 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 	scissor.extent = m_context->getExtent2D();
 	vkCmdSetScissor(command_buffer_, 0, 1, &scissor);
 
-	for (size_t i = 0; i < m_objects.size(); i++)
+	vkCmdBindPipeline(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+	vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[current_frame_], 0, nullptr);
+
+	for (size_t i = 0; i < m_meshes.size(); i++)
 	{
-		uint32_t dynamic_offset = static_cast<uint32_t>(i * m_model_dynamic_uniform_buffers[current_frame_].getAlignment());
-		vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[current_frame_], 1, &dynamic_offset);
-		m_objects[i]->drawIndexed(command_buffer_);
+		m_meshes[i]->drawIndexed(command_buffer_, i);
 	}
 }
 
@@ -77,34 +75,28 @@ void Pipeline::updateResourceBuffers(uint32_t current_frame_)
 	m_camera_uniform_buffers[current_frame_].updateMemory(&m_camera_data);
 
 	// Model
-	for (size_t i = 0; i < m_objects.size(); i++)
+	for (size_t i = 0; i < m_meshes.size(); i++)
 	{
-		auto model       = reinterpret_cast<ModelData*>(reinterpret_cast<uintptr_t>(m_model_data) + (i * m_model_dynamic_uniform_buffers[0].getAlignment()));
-		model->transform = m_objects[i]->transform_data->getTranslationMatrix();
-		model->rotation  = m_objects[i]->transform_data->getRotationMatrix();
+		m_model_data[i].transform = m_meshes[i]->object_transform->getTranslationMatrix();
+		m_model_data[i].rotation  = m_meshes[i]->object_transform->getRotationMatrix();
 	}
 
-	m_model_dynamic_uniform_buffers[current_frame_].updateMemory(m_model_data, static_cast<uint32_t>(m_objects.size()));
+	m_model_storage_buffers[current_frame_].updateMemory(m_model_data.data(), static_cast<uint32_t>(m_meshes.size()));
 }
 
-void Pipeline::updateModelDynamicUniformBuffer(uint32_t current_frame_) {}
-
-void Pipeline::pushObjects(const std::shared_ptr<Components::BasicBody3D>& object_)
+void Pipeline::pushMeshes(const std::shared_ptr<Components::Mesh>& mesh_)
 {
-	if (!object_->basic_body_3d.ready_to_draw && object_->basic_body_3d.ready_to_copy)
-		object_->copyStgBuffersToGpu(m_copy_command_pool);
+	if (!mesh_->isLoaded())
+		mesh_->load(m_copy_command_pool);
 
-	m_objects.push_back(object_);
+	m_meshes.push_back(mesh_);
 }
 
-void Pipeline::pushObjects(const std::vector<std::shared_ptr<Components::BasicBody3D>>& objects_)
+void Pipeline::pushMeshes(const std::vector<std::shared_ptr<Components::Mesh>>& meshes_)
 {
-	for (auto& object : objects_)
+	for (auto& mesh : meshes_)
 	{
-		if (!object->basic_body_3d.ready_to_draw && object->basic_body_3d.ready_to_copy)
-			object->copyStgBuffersToGpu(m_copy_command_pool);
-
-		m_objects.push_back(object);
+		pushMeshes(mesh);
 	}
 }
 
@@ -115,7 +107,7 @@ void Pipeline::createVulkanDescriptorSetLayout()
 	std::vector<VkDescriptorSetLayoutBinding> set_layout_bindings =
 	{
 		Initializers::descriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT),
-		Initializers::descriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, VK_SHADER_STAGE_VERTEX_BIT)
+		Initializers::descriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 	};
 
 	VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info = Initializers::descriptorSetLayoutCreateInfo(set_layout_bindings);
@@ -213,11 +205,11 @@ void Pipeline::createShaderDataBuffers()
 	m_camera_uniform_buffers.resize(m_context->getFramesCount());
 
 	// model
-	m_model_dynamic_uniform_buffers.reserve(m_context->getFramesCount());
+	m_model_storage_buffers.reserve(m_context->getFramesCount());
 	for (size_t i = 0; i < m_context->getFramesCount(); i++)
-		m_model_dynamic_uniform_buffers.emplace_back(128);
+		m_model_storage_buffers.emplace_back(128);
 
-	m_model_data = static_cast<ModelData*>(_aligned_malloc(128, m_model_dynamic_uniform_buffers[0].getAlignment()));
+	m_model_data.reserve(1024);
 }
 
 void Pipeline::createVulkanDescriptorPool()
@@ -225,7 +217,7 @@ void Pipeline::createVulkanDescriptorPool()
 	std::vector<VkDescriptorPoolSize> pool_sizes =
 	{
 		Initializers::descriptorPoolSize(m_camera_uniform_buffers[0].getDescriptorType(), m_context->getFramesCount()),
-		Initializers::descriptorPoolSize(m_model_dynamic_uniform_buffers[0].getDescriptorType(), m_context->getFramesCount())
+		Initializers::descriptorPoolSize(m_model_storage_buffers[0].getDescriptorType(), m_context->getFramesCount())
 	};
 
 	VkDescriptorPoolCreateInfo pool_create_info = Initializers::descriptorPoolCreateInfo(pool_sizes, m_context->getFramesCount());
@@ -245,13 +237,13 @@ void Pipeline::createVulkanDescriptorSets()
 
 	for (size_t i = 0; i < m_context->getFramesCount(); i++)
 	{
-		VkDescriptorBufferInfo static_buffer_info        = m_camera_uniform_buffers[i].getDescriptorBufferInfo();
-		VkWriteDescriptorSet static_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 0, 1, m_camera_uniform_buffers[0].getDescriptorType(), static_buffer_info);
-		vkUpdateDescriptorSets(m_context->getDevice(), 1, &static_write_descriptor_set, 0, nullptr);
+		VkDescriptorBufferInfo camera_buffer_info        = m_camera_uniform_buffers[i].getDescriptorBufferInfo();
+		VkWriteDescriptorSet camera_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 0, 1, m_camera_uniform_buffers[0].getDescriptorType(), camera_buffer_info);
+		vkUpdateDescriptorSets(m_context->getDevice(), 1, &camera_write_descriptor_set, 0, nullptr);
 
-		VkDescriptorBufferInfo dynamic_buffer_info        = m_model_dynamic_uniform_buffers[i].getDescriptorBufferInfo();
-		VkWriteDescriptorSet dynamic_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 1, 1, m_model_dynamic_uniform_buffers[0].getDescriptorType(), dynamic_buffer_info);
-		vkUpdateDescriptorSets(m_context->getDevice(), 1, &dynamic_write_descriptor_set, 0, nullptr);
+		VkDescriptorBufferInfo model_buffer_info        = m_model_storage_buffers[i].getDescriptorBufferInfo();
+		VkWriteDescriptorSet model_write_descriptor_set = Initializers::writeDescriptorSet(m_descriptor_sets[i], 1, 1, m_model_storage_buffers[0].getDescriptorType(), model_buffer_info);
+		vkUpdateDescriptorSets(m_context->getDevice(), 1, &model_write_descriptor_set, 0, nullptr);
 	}
 }
 

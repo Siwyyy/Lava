@@ -2,11 +2,13 @@
 #include "Lava/Renderer/ResourceBuffer/DynamicUniformBuffer.h"
 #include "Lava/Renderer/ResourceBuffer/UniformBuffer.h"
 
+#include "ResourceBuffer/StorageBuffer.h"
+
 namespace Lava
 {
 	namespace Components
 	{
-		class BasicBody3D;
+		class Mesh;
 	}
 
 	class Camera3D;
@@ -20,10 +22,9 @@ namespace Lava
 
 		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const;
 		void updateResourceBuffers(uint32_t current_frame_);
-		void updateModelDynamicUniformBuffer(uint32_t current_frame_);
 
-		void pushObjects(const std::shared_ptr<Components::BasicBody3D>& object_);
-		void pushObjects(const std::vector<std::shared_ptr<Components::BasicBody3D>>& objects_);
+		void pushMeshes(const std::shared_ptr<Components::Mesh>& mesh_);
+		void pushMeshes(const std::vector<std::shared_ptr<Components::Mesh>>& meshes_);
 
 		inline void setCamera(const std::shared_ptr<Camera3D>& camera_) { m_camera = camera_; }
 
@@ -59,11 +60,13 @@ namespace Lava
 		{
 			glm::mat4 transform;
 			glm::mat4 rotation;
-		}* m_model_data = nullptr;
+		};
 
-		std::vector<DynamicUniformBuffer<ModelData>> m_model_dynamic_uniform_buffers;
+		std::vector<ModelData> m_model_data = std::vector<ModelData>(1024);
 
-		std::vector<std::shared_ptr<Components::BasicBody3D>> m_objects;
+		std::vector<StorageBuffer<ModelData>> m_model_storage_buffers;
+
+		std::vector<std::shared_ptr<Components::Mesh>> m_meshes;
 		std::shared_ptr<Camera3D> m_camera = nullptr;
 
 	private:

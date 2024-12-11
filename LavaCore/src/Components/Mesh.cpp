@@ -1,16 +1,16 @@
 ﻿#include "Lava/Lavapch.h"
 
-#include "Lava/Components/BasicBody3D.h"
+#include "Lava/Components/Mesh.h"
 
 #include "Lava/Application.h"
-#include "Lava/Renderer/Buffer.h" 
+#include "Lava/Renderer/Buffer.h"
 
 using namespace Lava::Components;
 
-BasicBody3D::BasicBody3D(const std::shared_ptr<Transform>& transform_,
-												 const std::vector<Vertex3Color>& vertices_,
-												 const std::vector<uint32_t>& indices_)
-	: transform_data(transform_)
+Mesh::Mesh(const std::shared_ptr<Transform>& transform_,
+					 const std::vector<Vertex3Color>& vertices_,
+					 const std::vector<uint32_t>& indices_)
+	: object_transform(transform_)
 	, m_vertices(vertices_)
 	, m_indices(indices_)
 {
@@ -44,10 +44,11 @@ BasicBody3D::BasicBody3D(const std::shared_ptr<Transform>& transform_,
 															m_index_buffer,
 															m_index_buffer_memory);
 
-	loadStgBuffers();
+	memcpy(m_vertex_staging_buffer_memory_mapped, m_vertices.data(), sizeof(m_vertices[0]) * m_vertices.size());
+	memcpy(m_index_staging_buffer_memory_mapped, m_indices.data(), sizeof(m_indices[0]) * m_indices.size());
 }
 
-BasicBody3D::~BasicBody3D()
+Mesh::~Mesh()
 {
 	auto context = Application::getInstance().getWindow().getContext();
 
@@ -62,7 +63,7 @@ BasicBody3D::~BasicBody3D()
 	vkFreeMemory(context->getDevice(), m_vertex_buffer_memory, nullptr);
 }
 
-void BasicBody3D::copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_)
+void Mesh::load(const VkCommandPool& copy_command_pool_)
 {
 	auto context = Application::getInstance().getWindow().getContext();
 	VkCommandBufferAllocateInfo command_buffer_allocate_info{};
@@ -112,23 +113,14 @@ void BasicBody3D::copyStgBuffersToGpu(const VkCommandPool& copy_command_pool_)
 
 	vkFreeCommandBuffers(context->getDevice(), copy_command_pool_, 1, &command_buffer);
 
-	basic_body_3d.ready_to_draw = true;
+	m_loaded = true;
 }
 
-void BasicBody3D::drawIndexed(const VkCommandBuffer& command_buffer_) const
+void Mesh::drawIndexed(const VkCommandBuffer& command_buffer_, uint32_t instance_index_) const
 {
 	const VkBuffer vertex_buffers[] = {m_vertex_buffer};
 	const VkDeviceSize offsets[]    = {0};
 	vkCmdBindVertexBuffers(command_buffer_, 0, 1, vertex_buffers, offsets);
 	vkCmdBindIndexBuffer(command_buffer_, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
-	vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
-}
-
-void BasicBody3D::init() {}
-
-void BasicBody3D::loadStgBuffers()
-{
-	memcpy(m_vertex_staging_buffer_memory_mapped, m_vertices.data(), sizeof(m_vertices[0]) * m_vertices.size());
-	memcpy(m_index_staging_buffer_memory_mapped, m_indices.data(), sizeof(m_indices[0]) * m_indices.size());
-	basic_body_3d.ready_to_copy = true;
+	vkCmdDrawIndexed(command_buffer_, static_cast<uint32_t>(m_indices.size()), 1, 0, 0, instance_index_);
 }

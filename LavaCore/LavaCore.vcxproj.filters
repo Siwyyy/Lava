@@ -39,7 +39,7 @@
     <ClCompile Include="src\Renderer\Pipeline.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Components\BasicBody3D.cpp">
+    <ClCompile Include="src\Components\Mesh.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\ObjLoader.cpp">
@@ -125,7 +125,7 @@
     <ClInclude Include="include\Lava\Components\Transform.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="include\Lava\Components\BasicBody3D.h">
+    <ClInclude Include="include\Lava\Components\Mesh.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
     <ClInclude Include="include\Lava\Time.h">
