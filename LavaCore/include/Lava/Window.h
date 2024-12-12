@@ -1,6 +1,8 @@
 #pragma once
 #include "Lava/Lavapch.h"
 
+#include "LayerStack.h"
+
 #include "Lava/Events/Event.h"
 #include "Lava/Renderer/GraphicsContext.h"
 
@@ -28,9 +30,9 @@ namespace Lava
 		~Window();
 
 		void init(const WindowProps& props_);
-		void shutdown();
+		void shutdown() const;
 
-		void onUpdate();
+		void onUpdate( LayerStack& layer_stack_) const;
 		void onMouseMoved(float angle_);
 
 		inline uint32_t getWidth() const { return m_data.width; }

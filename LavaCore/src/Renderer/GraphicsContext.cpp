@@ -49,12 +49,11 @@ void GraphicsContext::shutdown()
 void GraphicsContext::onUpdate()
 {
 	glfwPollEvents();
-	draw();
 }
 
 // Drawing //  
 
-void GraphicsContext::draw()
+void GraphicsContext::beginDraw()
 {
 	for (auto& pipeline : m_pipelines)
 	{
@@ -63,13 +62,12 @@ void GraphicsContext::draw()
 
 	vkWaitForFences(m_device, 1, &m_fence_in_flight[m_current_frame],VK_TRUE,UINT64_MAX);
 
-	uint32_t image_index;
 	VkResult result = vkAcquireNextImageKHR(m_device,
 																					m_swapchain,
 																					UINT64_MAX,
 																					m_semaphore_image_available[m_current_frame],
 																					VK_NULL_HANDLE,
-																					&image_index);
+																					&m_image_index);
 
 	if (result == VK_ERROR_OUT_OF_DATE_KHR)
 	{
@@ -83,7 +81,12 @@ void GraphicsContext::draw()
 
 	vkResetFences(m_device, 1, &m_fence_in_flight[m_current_frame]);
 	vkResetCommandBuffer(m_command_buffers[m_current_frame], NULL);
-	recordVulkanCommandBuffer(m_current_frame, image_index);
+	beginRecordVulkanCommandBuffer(m_image_index);
+}
+
+void GraphicsContext::endDraw()
+{
+	endRecordVulkanCommandBuffer();
 
 	VkSemaphore wait_semaphores[]      = {m_semaphore_image_available[m_current_frame]};
 	VkPipelineStageFlags wait_stages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
@@ -111,11 +114,11 @@ void GraphicsContext::draw()
 	present_info.pWaitSemaphores    = signal_semaphores;
 	present_info.swapchainCount     = 1;
 	present_info.pSwapchains        = swapchains;
-	present_info.pImageIndices      = &image_index;
+	present_info.pImageIndices      = &m_image_index;
 	present_info.pResults           = nullptr;
 	present_info.pNext              = nullptr;
 
-	result = vkQueuePresentKHR(m_present_queue, &present_info);
+	VkResult result = vkQueuePresentKHR(m_present_queue, &present_info);
 	if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_frame_buffer_resized)
 	{
 		recreateVulkanSwapchain();
@@ -130,7 +133,7 @@ void GraphicsContext::draw()
 	m_current_frame = (m_current_frame + 1) % m_frames_count;
 }
 
-void GraphicsContext::recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const
+void GraphicsContext::beginRecordVulkanCommandBuffer(const uint32_t& image_index_) const
 {
 	VkCommandBufferBeginInfo command_buffer_begin_info;
 	command_buffer_begin_info.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -138,7 +141,7 @@ void GraphicsContext::recordVulkanCommandBuffer(const uint32_t& command_buffer_i
 	command_buffer_begin_info.flags            = NULL;
 	command_buffer_begin_info.pInheritanceInfo = nullptr;
 
-	if (vkBeginCommandBuffer(m_command_buffers[command_buffer_index_], &command_buffer_begin_info) != VK_SUCCESS)
+	if (vkBeginCommandBuffer(m_command_buffers[m_current_frame], &command_buffer_begin_info) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to begin command buffer recording!");
 
 	const VkClearValue clear_value = {{{0.01f,0.01f,0.01f,0.0f}}};
@@ -151,14 +154,14 @@ void GraphicsContext::recordVulkanCommandBuffer(const uint32_t& command_buffer_i
 	render_pass_begin_info.clearValueCount   = 1;
 	render_pass_begin_info.pClearValues      = &clear_value;
 	render_pass_begin_info.pNext             = nullptr;
-	vkCmdBeginRenderPass(m_command_buffers[command_buffer_index_], &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBeginRenderPass(m_command_buffers[m_current_frame], &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+}
 
-	for (auto& pipeline : m_pipelines)
-		pipeline->draw(m_command_buffers[command_buffer_index_], m_current_frame);
+void GraphicsContext::endRecordVulkanCommandBuffer() const
+{
+	vkCmdEndRenderPass(m_command_buffers[m_current_frame]);
 
-	vkCmdEndRenderPass(m_command_buffers[command_buffer_index_]);
-
-	if (vkEndCommandBuffer(m_command_buffers[command_buffer_index_]) != VK_SUCCESS)
+	if (vkEndCommandBuffer(m_command_buffers[m_current_frame]) != VK_SUCCESS)
 		LAVA_CORE_ERROR("Failed to record command buffer!");
 }
 

@@ -40,8 +40,10 @@ Pipeline::~Pipeline()
 	vkDestroyDescriptorSetLayout(m_context->getDevice(), m_descriptor_set_layout, nullptr);
 }
 
-void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const
+void Pipeline::bind() const
 {
+	const auto& command_buffer = Application::getInstance().getWindow().getContext()->getCurrentCommandBuffer();
+	const auto frame           = Application::getInstance().getWindow().getContext()->getCurrentFrameIndex();
 	VkViewport viewport;
 	viewport.x        = 0.0f;
 	viewport.y        = 0.0f;
@@ -49,19 +51,19 @@ void Pipeline::draw(const VkCommandBuffer& command_buffer_, uint32_t current_fra
 	viewport.height   = static_cast<float>(m_context->getExtent2D().height);
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
-	vkCmdSetViewport(command_buffer_, 0, 1, &viewport);
+	vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 
 	VkRect2D scissor;
 	scissor.offset = {0,0};
 	scissor.extent = m_context->getExtent2D();
-	vkCmdSetScissor(command_buffer_, 0, 1, &scissor);
+	vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
-	vkCmdBindPipeline(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
-	vkCmdBindDescriptorSets(command_buffer_, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[current_frame_], 0, nullptr);
+	vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+	vkCmdBindDescriptorSets(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline_layout, 0, 1, &m_descriptor_sets[frame], 0, nullptr);
 
-	for (size_t i = 0; i < m_meshes.size(); i++)
+	for (uint32_t i = 0; i < m_meshes.size(); i++)
 	{
-		m_meshes[i]->drawIndexed(command_buffer_, i);
+		m_meshes[i]->drawIndexed(command_buffer, i);
 	}
 }
 

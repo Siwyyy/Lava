@@ -12,11 +12,9 @@ public:
 	SceneLayer() = default;
 
 	void onAttach() override;
-
 	void onDetach() override;
-
 	void onUpdate() override;
-
+	void onDraw() override;
 	void onEvent(Lava::Event& event_) override;
 
 private:
@@ -24,6 +22,7 @@ private:
 	std::shared_ptr<Camera> m_camera;
 	std::vector<std::shared_ptr<ObjectTest>> m_objects;
 
-	bool onMouseButtonPressed(const Lava::MouseButtonPressedEvent& event_) const;
 	bool onKeyPressed(const Lava::KeyPressedEvent& event_) const;
+
+public:
 };

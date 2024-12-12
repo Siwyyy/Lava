@@ -1,8 +1,7 @@
 ﻿#pragma once
-#include "Lava/Renderer/ResourceBuffer/DynamicUniformBuffer.h"
-#include "Lava/Renderer/ResourceBuffer/UniformBuffer.h"
 
-#include "ResourceBuffer/StorageBuffer.h"
+#include "Lava/Renderer/ResourceBuffer/StorageBuffer.h"
+#include "Lava/Renderer/ResourceBuffer/UniformBuffer.h"
 
 namespace Lava
 {
@@ -20,7 +19,7 @@ namespace Lava
 		Pipeline();
 		~Pipeline();
 
-		void draw(const VkCommandBuffer& command_buffer_, uint32_t current_frame_) const;
+		void bind() const;
 		void updateResourceBuffers(uint32_t current_frame_);
 
 		void pushMeshes(const std::shared_ptr<Components::Mesh>& mesh_);

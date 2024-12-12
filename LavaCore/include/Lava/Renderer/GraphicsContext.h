@@ -20,6 +20,8 @@ namespace Lava
 		void shutdown();
 
 		void onUpdate();
+		void beginDraw();
+		void endDraw();
 
 	public:
 		inline void pushPipeline(const std::shared_ptr<Pipeline>& pipeline_) { m_pipelines.push_back(pipeline_); }
@@ -30,13 +32,15 @@ namespace Lava
 		inline auto& getGpuProps() { return m_gpu_props; }
 		inline auto& getRenderPass() { return m_render_pass; }
 		inline auto& getFramesCount() { return m_frames_count; }
+		inline auto getCurrentFrameIndex() const { return m_current_frame; }
 		inline auto& getExtent2D() { return m_extent_2d; }
 		inline auto& getGraphicsQueueIndex() { return m_queue_family_indices.graphics.value(); }
 		inline auto& getGraphicsQueue() { return m_graphics_queue; }
+		inline const auto& getCurrentCommandBuffer() const { return m_command_buffers[m_current_frame]; }
 
 	private:
-		void draw();
-		void recordVulkanCommandBuffer(const uint32_t& command_buffer_index_, const uint32_t& image_index_) const;
+		void beginRecordVulkanCommandBuffer(const uint32_t& image_index_) const;
+		void endRecordVulkanCommandBuffer() const;
 
 	private:
 		GLFWwindow* m_window;
@@ -78,6 +82,7 @@ namespace Lava
 		// VkRenderPass
 		VkRenderPass m_render_pass;
 		std::vector<VkFramebuffer> m_framebuffers;
+		uint32_t m_image_index;
 
 		// VkCommandPool
 		VkCommandPool m_command_pool;

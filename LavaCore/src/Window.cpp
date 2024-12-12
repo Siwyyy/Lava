@@ -32,15 +32,19 @@ void Window::init(const WindowProps& props_)
 	createGlfwWindow();
 }
 
-void Window::shutdown()
+void Window::shutdown() const
 {
 	glfwDestroyWindow(m_window);
 	glfwTerminate();
 }
 
-void Window::onUpdate()
+void Window::onUpdate(LayerStack& layer_stack_) const
 {
 	m_graphics_context->onUpdate();
+	m_graphics_context->beginDraw();
+	for (Layer* layer : layer_stack_)
+		layer->onDraw();
+	m_graphics_context->endDraw();
 }
 
 void Window::createGlfwWindow()

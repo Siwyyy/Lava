@@ -146,6 +146,12 @@
     <ClInclude Include="include\Lava\Renderer\ResourceBuffer\StorageBuffer.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
+    <ClInclude Include="include\Lava\Renderer\Shader.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Lava\GameObject.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="shaders\compile.bat.txt" />

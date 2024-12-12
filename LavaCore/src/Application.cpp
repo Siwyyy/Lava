@@ -34,7 +34,7 @@ namespace Lava
 			for (Layer* layer : m_layer_stack)
 				layer->onUpdate();
 
-			m_window->onUpdate();
+			m_window->onUpdate(m_layer_stack);
 		}
 	}
 

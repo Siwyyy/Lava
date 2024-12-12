@@ -63,7 +63,12 @@ void SceneLayer::onAttach()
 
 void SceneLayer::onDetach() {}
 
-void SceneLayer::onUpdate() { m_camera->updateTransform(); }
+void SceneLayer::onUpdate()
+{
+	m_camera->updateTransform();
+}
+
+void SceneLayer::onDraw() { m_pipeline->bind(); }
 
 void SceneLayer::onEvent(Lava::Event& event_)
 {

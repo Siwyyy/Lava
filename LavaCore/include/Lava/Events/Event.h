@@ -7,7 +7,7 @@ namespace Lava
 {
 	enum class EventType
 	{
-		None = 0,
+		None,
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 		KeyPressed, KeyReleased,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
