@@ -1,25 +1,31 @@
 ﻿#pragma once
 #include "Lava/Lavapch.h"
 
-#include "Component.h"
+#include "AActor.h"
+#include "CComponent.h"
+#include "CTransform.h"
+
 #include "Lava/Renderer/Vertex.h"
 
 namespace Lava::ObjectSystem
 {
-	class MeshComponent final : public Component
+	class CMesh final : public CComponent
 	{
 	public:
-		MeshComponent(const std::string& component_name_,
-									const std::vector<Vertex3Color>& vertices_,
-									const std::vector<uint32_t>& indices_);
+		CMesh(const std::string& component_name_,
+					const std::vector<Vertex3Color>& vertices_,
+					const std::vector<uint32_t>& indices_);
 
-		~MeshComponent() override;
+		~CMesh() override;
 
-		void initialize() override {};
-		void tick(float delta_time_) override {};
+		void initialize() override { CComponent::initialize(); }
+		void tick(float delta_time_) override { CComponent::tick(delta_time_); }
 
 		void load(const VkCommandPool& copy_command_pool_);
 		void drawIndexed(const VkCommandBuffer& command_buffer_, uint32_t instance_index_ = 0) const;
+
+		inline glm::mat4 getTranslationMatrix() const { return getOwner()->getComponent<CTransform>()->getTranslationMatrix(); }
+		inline glm::mat4 getRotationMatrix() const { return getOwner()->getComponent<CTransform>()->getRotationMatrix(); }
 
 		inline bool isLoaded() const { return m_loaded; }
 

@@ -1,22 +1,22 @@
 #pragma once
-#include "Component.h"
+#include "CComponent.h"
 
 namespace Lava::ObjectSystem
 {
-	class TransformComponent final : public Component
+	class CTransform : public CComponent
 	{
 	public:
-		TransformComponent(const std::string& component_name_,
-											 const glm::vec3& position_ = glm::vec3(0.f),
-											 const glm::quat& rotation_ = glm::quat(),
-											 const glm::vec3& scale_    = glm::vec3(1.f))
-			: Component(component_name_)
+		CTransform(const std::string& component_name_,
+							 const glm::vec3& position_ = glm::vec3(0.f),
+							 const glm::quat& rotation_ = glm::quat(),
+							 const glm::vec3& scale_    = glm::vec3(1.f))
+			: CComponent(component_name_)
 			, m_position(position_)
 			, m_rotation(rotation_)
 			, m_scale(scale_) {}
 
-		void initialize() override {};
-		void tick(float delta_time_) override {};
+		void initialize() override { CComponent::initialize(); }
+		void tick(float delta_time_) override { CComponent::tick(delta_time_); }
 
 		inline void setPosition(const glm::vec3& position_) { m_position = position_; }
 		inline void setRotation(const glm::quat& rotation_) { m_rotation = rotation_; }
@@ -36,8 +36,8 @@ namespace Lava::ObjectSystem
 		inline glm::mat4 getRotationMatrix() const { return glm::toMat4(m_rotation); }
 
 	private:
-		TransformComponent* m_parent = nullptr;
-		std::vector<TransformComponent*> m_children;
+		CTransform* m_parent = nullptr;
+		std::vector<CTransform*> m_children;
 
 		glm::vec3 m_position;
 		glm::quat m_rotation;

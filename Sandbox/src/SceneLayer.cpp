@@ -53,7 +53,7 @@ void SceneLayer::onAttach()
 	m_pipeline->setCamera(m_camera);
 	for (const auto& object : m_objects)
 	{
-		m_pipeline->registerMesh(object->getComponent<Lava::ObjectSystem::MeshComponent>());
+		m_pipeline->registerMesh(object->getComponent<Lava::ObjectSystem::CMesh>());
 	}
 	Lava::Application::getInstance().getWindow().getContext()->pushPipeline(m_pipeline);
 }
@@ -62,7 +62,7 @@ void SceneLayer::onDetach() {}
 
 void SceneLayer::onUpdate()
 {
-	m_camera->updateTransform();
+	m_camera->processController();
 }
 
 void SceneLayer::onDraw() { m_pipeline->bind(); }

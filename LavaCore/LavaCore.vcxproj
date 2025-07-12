@@ -167,9 +167,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\ActorComponentSystem\Actor.cpp" />
-    <ClCompile Include="src\ActorComponentSystem\MeshComponent.cpp" />
-    <ClCompile Include="src\ActorComponentSystem\TransformComponent.cpp" />
+    <ClCompile Include="src\ObjectSystem\AActor.cpp" />
+    <ClCompile Include="src\ObjectSystem\CMesh.cpp" />
+    <ClCompile Include="src\ObjectSystem\CTransform.cpp" />
     <ClCompile Include="src\Renderer\ObjLoader.cpp" />
     <ClCompile Include="src\Renderer\Pipeline.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -185,8 +185,11 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Lava\ObjectSystem\Actor.h" />
-    <ClInclude Include="include\Lava\ObjectSystem\Component.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\AActor.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\CCamera.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\CComponent.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\CMesh.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\CTransform.h" />
     <ClInclude Include="include\Lava\ObjectSystem\Object.h" />
     <ClInclude Include="include\Lava\Input\GLFW\GLFWInput.h" />
     <ClInclude Include="include\Lava\Input\Input.h" />
@@ -194,11 +197,8 @@
     <ClInclude Include="include\Lava\Input\MouseButtonCodes.h" />
     <ClInclude Include="include\Lava\Layer.h" />
     <ClInclude Include="include\Lava\Application.h" />
-    <ClInclude Include="include\Lava\ObjectSystem\TransformComponent.h" />
-    <ClInclude Include="include\Lava\ObjectSystem\MeshComponent.h" />
     <ClInclude Include="include\Lava\Renderer\ResourceBuffer\DynamicUniformBuffer.h" />
     <ClInclude Include="include\Lava\Renderer\ObjLoader.h" />
-    <ClInclude Include="include\Lava\Renderer\RenderObjects\Camera3D.h" />
     <ClInclude Include="include\Lava\Renderer\GraphicsContext.h" />
     <ClInclude Include="include\Lava\Renderer\Initializers.h" />
     <ClInclude Include="include\Lava\Renderer\Pipeline.h" />
@@ -220,14 +220,10 @@
     <ClInclude Include="include\Lava\Time.h" />
     <ClInclude Include="include\Lava\Window.h" />
     <ClInclude Include="include\Lava\Resources.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="include\Lava\Renderer\Buffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="shaders\compile.bat.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="LavaCore.rc" />
+    <Folder Include="include\Lava\Renderer\RenderObjects\" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

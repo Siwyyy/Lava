@@ -21,7 +21,7 @@ void Camera::movement()
 
 	glm::quat q_yaw = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0, 0, 1));
 	direction       = conjugate(q_yaw) * glm::normalize(direction) * m_speed * Lava::Time::deltaTime();
-	moveBy(direction);
+	move(direction);
 }
 
 void Camera::rotation()

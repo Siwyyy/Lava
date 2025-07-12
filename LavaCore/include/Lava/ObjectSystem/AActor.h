@@ -3,10 +3,10 @@
 
 namespace Lava::ObjectSystem
 {
-	class Actor : public Object
+	class AActor : public Object
 	{
 	public:
-		Actor(const std::string& actor_name_) : Object(actor_name_) {}
+		AActor(const std::string& actor_name_) : Object(actor_name_) {}
 
 		inline std::string getClassName() const override { return "Actor"; }
 
@@ -20,7 +20,7 @@ namespace Lava::ObjectSystem
 		template <typename T, typename... Args>
 		T* addComponent(Args... args_)
 		{
-			static_assert(std::is_base_of_v<Component, T>, "T must be a subclass of Component");
+			static_assert(std::is_base_of_v<CComponent, T>, "T must be a subclass of Component");
 
 			std::unique_ptr<T> component = std::make_unique<T>(std::forward<Args>(args_)...);
 			T* component_ptr             = component.get();
@@ -39,11 +39,11 @@ namespace Lava::ObjectSystem
 			return nullptr;
 		}
 
-		virtual void initialize() = 0;
+		virtual void initialize() {}
 		virtual void tick(float delta_time_);
 
 	private:
 		bool m_is_active = true;
-		std::vector<std::unique_ptr<class Component>> m_components;
+		std::vector<std::unique_ptr<class CComponent>> m_components;
 	};
 }

@@ -3,12 +3,14 @@
 
 #include "Lava/Application.h"
 #include "Lava/Resources.h"
-#include "Lava/ObjectSystem/MeshComponent.h"
+#include "Lava/ObjectSystem/CCamera.h"
+#include "Lava/ObjectSystem/CMesh.h"
 #include "Lava/Renderer/Initializers.h"
 #include "Lava/Renderer/Vertex.h"
-#include "Lava/Renderer/RenderObjects/Camera3D.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
+
+#include "Lava/ObjectSystem/AActor.h"
 
 using namespace Lava;
 
@@ -79,14 +81,14 @@ void Pipeline::updateResourceBuffers(uint32_t current_frame_)
 	// Model
 	for (size_t i = 0; i < m_meshes.size(); i++)
 	{
-		m_model_data[i].transform = m_meshes[i]->getOwner()->getComponent<ObjectSystem::TransformComponent>()->getTranslationMatrix();
-		m_model_data[i].rotation  = m_meshes[i]->getOwner()->getComponent<ObjectSystem::TransformComponent>()->getRotationMatrix();
+		m_model_data[i].transform = m_meshes[i]->getTranslationMatrix();
+		m_model_data[i].rotation  = m_meshes[i]->getRotationMatrix();
 	}
 
 	m_model_storage_buffers[current_frame_].updateMemory(m_model_data.data(), static_cast<uint32_t>(m_meshes.size()));
 }
 
-void Pipeline::registerMesh(ObjectSystem::MeshComponent* mesh_)
+void Pipeline::registerMesh(ObjectSystem::CMesh* mesh_)
 {
 	if (!mesh_->isLoaded())
 		mesh_->load(m_copy_command_pool);
@@ -94,7 +96,7 @@ void Pipeline::registerMesh(ObjectSystem::MeshComponent* mesh_)
 	m_meshes.push_back(mesh_);
 }
 
-void Pipeline::registerMesh(const std::vector<ObjectSystem::MeshComponent*>& meshes_)
+void Pipeline::registerMesh(const std::vector<ObjectSystem::CMesh*>& meshes_)
 {
 	for (auto& mesh : meshes_)
 	{

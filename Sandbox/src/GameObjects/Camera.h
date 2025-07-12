@@ -1,20 +1,19 @@
 ﻿#pragma once
 
-#include "Lava/Renderer/RenderObjects/Camera3D.h"
+#include "Lava/ObjectSystem/CCamera.h"
 
-class Camera final : public Lava::ObjectSystem::Camera3D
+class Camera final : public Lava::ObjectSystem::CCamera
 {
 public:
-	Camera(const glm::vec3& position_ = glm::vec3(0.0f)) : Camera3D("Cam", position_) {}
-	~Camera() override = default;
+	Camera(const glm::vec3& position_ = glm::vec3(0.0f)) : CCamera("Cam", position_) {}
 
-	inline void updateTransform()
+	inline void processController()
 	{
 		movement();
 		rotation();
 	}
 
-	void initialize() override {};
+	void initialize() override { CCamera::initialize(); };
 
 private:
 	glm::vec2 m_last_mouse_pos = {0.0f,0.0f};
