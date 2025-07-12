@@ -1,8 +1,6 @@
 #include "Camera.h"
 
-#include "Lava/Time.h"
-#include "Lava/Input/Input.h"
-#include "Lava/Input/KeyCodes.h"
+#include "Lava.h"
 
 #include <algorithm>
 
@@ -18,7 +16,7 @@ void Camera::movement()
 	if (Lava::Input::isKeyPressed(LAVA_KEY_SPACE)) { direction.z += 1.0f; }
 	if (Lava::Input::isKeyPressed(LAVA_KEY_LEFT_SHIFT)) { direction.z += -1.0f; }
 
-	if (!((bool)direction.x || (bool)direction.y || (bool)direction.z))
+	if (!(direction.x != 0.f || direction.y != 0.f || direction.z != 0.f))
 		return;
 
 	glm::quat q_yaw = glm::angleAxis(glm::radians(m_yaw), glm::vec3(0, 0, 1));

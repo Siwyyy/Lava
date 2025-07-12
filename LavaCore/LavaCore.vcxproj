@@ -167,7 +167,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Components\Mesh.cpp" />
+    <ClCompile Include="src\ActorComponentSystem\Actor.cpp" />
+    <ClCompile Include="src\ActorComponentSystem\MeshComponent.cpp" />
+    <ClCompile Include="src\ActorComponentSystem\TransformComponent.cpp" />
     <ClCompile Include="src\Renderer\ObjLoader.cpp" />
     <ClCompile Include="src\Renderer\Pipeline.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -183,15 +185,17 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Lava\GameObject.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\Actor.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\Component.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\Object.h" />
     <ClInclude Include="include\Lava\Input\GLFW\GLFWInput.h" />
     <ClInclude Include="include\Lava\Input\Input.h" />
     <ClInclude Include="include\Lava\Input\KeyCodes.h" />
     <ClInclude Include="include\Lava\Input\MouseButtonCodes.h" />
     <ClInclude Include="include\Lava\Layer.h" />
     <ClInclude Include="include\Lava\Application.h" />
-    <ClInclude Include="include\Lava\Components\Transform.h" />
-    <ClInclude Include="include\Lava\Components\Mesh.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\TransformComponent.h" />
+    <ClInclude Include="include\Lava\ObjectSystem\MeshComponent.h" />
     <ClInclude Include="include\Lava\Renderer\ResourceBuffer\DynamicUniformBuffer.h" />
     <ClInclude Include="include\Lava\Renderer\ObjLoader.h" />
     <ClInclude Include="include\Lava\Renderer\RenderObjects\Camera3D.h" />

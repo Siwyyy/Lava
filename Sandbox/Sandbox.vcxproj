@@ -174,7 +174,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameObjects\Camera.h" />
-    <ClInclude Include="src\GameObjects\ObjectTest.h" />
+    <ClInclude Include="src\GameObjects\Triangle.h" />
     <ClInclude Include="src\SceneLayer.h" />
   </ItemGroup>
   <ItemGroup>

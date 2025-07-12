@@ -1,8 +1,6 @@
 #include "Lava.h"
 #include "Lava/EntryPoint.h"
 
-#include "Lava/Resources.h"
-
 #include "SceneLayer.h"
 
 class Sandbox final : public Lava::Application

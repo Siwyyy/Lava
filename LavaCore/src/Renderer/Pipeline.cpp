@@ -3,7 +3,7 @@
 
 #include "Lava/Application.h"
 #include "Lava/Resources.h"
-#include "Lava/Components/Mesh.h"
+#include "Lava/ObjectSystem/MeshComponent.h"
 #include "Lava/Renderer/Initializers.h"
 #include "Lava/Renderer/Vertex.h"
 #include "Lava/Renderer/RenderObjects/Camera3D.h"
@@ -54,7 +54,7 @@ void Pipeline::bind() const
 	vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 
 	VkRect2D scissor;
-	scissor.offset = {0,0};
+	scissor.offset = {.x = 0,.y = 0};
 	scissor.extent = m_context->getExtent2D();
 	vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
@@ -79,14 +79,14 @@ void Pipeline::updateResourceBuffers(uint32_t current_frame_)
 	// Model
 	for (size_t i = 0; i < m_meshes.size(); i++)
 	{
-		m_model_data[i].transform = m_meshes[i]->object_transform->getTranslationMatrix();
-		m_model_data[i].rotation  = m_meshes[i]->object_transform->getRotationMatrix();
+		m_model_data[i].transform = m_meshes[i]->getOwner()->getComponent<ObjectSystem::TransformComponent>()->getTranslationMatrix();
+		m_model_data[i].rotation  = m_meshes[i]->getOwner()->getComponent<ObjectSystem::TransformComponent>()->getRotationMatrix();
 	}
 
 	m_model_storage_buffers[current_frame_].updateMemory(m_model_data.data(), static_cast<uint32_t>(m_meshes.size()));
 }
 
-void Pipeline::pushMeshes(const std::shared_ptr<Components::Mesh>& mesh_)
+void Pipeline::registerMesh(ObjectSystem::MeshComponent* mesh_)
 {
 	if (!mesh_->isLoaded())
 		mesh_->load(m_copy_command_pool);
@@ -94,11 +94,11 @@ void Pipeline::pushMeshes(const std::shared_ptr<Components::Mesh>& mesh_)
 	m_meshes.push_back(mesh_);
 }
 
-void Pipeline::pushMeshes(const std::vector<std::shared_ptr<Components::Mesh>>& meshes_)
+void Pipeline::registerMesh(const std::vector<ObjectSystem::MeshComponent*>& meshes_)
 {
 	for (auto& mesh : meshes_)
 	{
-		pushMeshes(mesh);
+		registerMesh(mesh);
 	}
 }
 

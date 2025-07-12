@@ -5,12 +5,12 @@
 
 namespace Lava
 {
-	namespace Components
+	namespace ObjectSystem
 	{
-		class Mesh;
+		class MeshComponent;
+		class Camera3D;
 	}
 
-	class Camera3D;
 	class GraphicsContext;
 
 	class Pipeline
@@ -22,10 +22,10 @@ namespace Lava
 		void bind() const;
 		void updateResourceBuffers(uint32_t current_frame_);
 
-		void pushMeshes(const std::shared_ptr<Components::Mesh>& mesh_);
-		void pushMeshes(const std::vector<std::shared_ptr<Components::Mesh>>& meshes_);
+		void registerMesh(ObjectSystem::MeshComponent* mesh_);
+		void registerMesh(const std::vector<ObjectSystem::MeshComponent*>& meshes_);
 
-		inline void setCamera(const std::shared_ptr<Camera3D>& camera_) { m_camera = camera_; }
+		inline void setCamera(const std::shared_ptr<ObjectSystem::Camera3D>& camera_) { m_camera = camera_; }
 
 	private:
 		std::shared_ptr<GraphicsContext> m_context;
@@ -65,8 +65,8 @@ namespace Lava
 
 		std::vector<StorageBuffer<ModelData>> m_model_storage_buffers;
 
-		std::vector<std::shared_ptr<Components::Mesh>> m_meshes;
-		std::shared_ptr<Camera3D> m_camera = nullptr;
+		std::vector<ObjectSystem::MeshComponent*> m_meshes;
+		std::shared_ptr<ObjectSystem::Camera3D> m_camera = nullptr;
 
 	private:
 		void createVulkanDescriptorSetLayout();

@@ -3,7 +3,7 @@
 #include "Lava.h"
 #include "Lava/Events/KeyEvent.h"
 
-class ObjectTest;
+class Triangle;
 class Camera;
 
 class SceneLayer final : public Lava::Layer
@@ -20,7 +20,7 @@ public:
 private:
 	std::shared_ptr<Lava::Pipeline> m_pipeline;
 	std::shared_ptr<Camera> m_camera;
-	std::vector<std::shared_ptr<ObjectTest>> m_objects;
+	std::vector<std::shared_ptr<Triangle>> m_objects;
 
 	bool onKeyPressed(const Lava::KeyPressedEvent& event_) const;
 

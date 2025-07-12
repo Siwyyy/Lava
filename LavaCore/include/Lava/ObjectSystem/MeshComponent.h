@@ -1,30 +1,27 @@
 ﻿#pragma once
-
 #include "Lava/Lavapch.h"
+
+#include "Component.h"
 #include "Lava/Renderer/Vertex.h"
 
-namespace Lava::Components
+namespace Lava::ObjectSystem
 {
-	class Transform;
-}
-
-namespace Lava::Components
-{
-	class Mesh
+	class MeshComponent final : public Component
 	{
 	public:
-		Mesh(const std::shared_ptr<Transform>& transform_,
-				 const std::vector<Vertex3Color>& vertices_,
-				 const std::vector<uint32_t>& indices_);
+		MeshComponent(const std::string& component_name_,
+									const std::vector<Vertex3Color>& vertices_,
+									const std::vector<uint32_t>& indices_);
 
-		~Mesh();
+		~MeshComponent() override;
+
+		void initialize() override {};
+		void tick(float delta_time_) override {};
 
 		void load(const VkCommandPool& copy_command_pool_);
 		void drawIndexed(const VkCommandBuffer& command_buffer_, uint32_t instance_index_ = 0) const;
 
 		inline bool isLoaded() const { return m_loaded; }
-
-		const std::shared_ptr<Transform> object_transform = nullptr;
 
 	private:
 		std::vector<Vertex3Color> m_vertices;
