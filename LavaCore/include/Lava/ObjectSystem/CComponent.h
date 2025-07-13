@@ -1,4 +1,5 @@
 #pragma once
+#include "AActor.h"
 #include "Object.h"
 
 namespace Lava::ObjectSystem

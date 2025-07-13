@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "Lava/LavaPCH.h"
 
-#include "AActor.h"
 #include "CComponent.h"
 #include "CTransform.h"
 
