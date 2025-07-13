@@ -1,5 +1,5 @@
 #pragma once
-#include "Lava/Lavapch.h"
+#include "Lava/LavaPCH.h"
 
 #include "Lava/Core.h"
 
