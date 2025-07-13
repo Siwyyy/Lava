@@ -1,4 +1,4 @@
-#include "Lava/Lavapch.h"
+#include "Lava/LavaPCH.h"
 #include "Lava/Window.h"
 
 #include "Lava/Events/ApplicationEvent.h"

@@ -1,4 +1,4 @@
-#include "Lava/Lavapch.h"
+#include "Lava/LavaPCH.h"
 #include "Lava/Application.h"
 
 #include "Lava/Time.h"
