@@ -2,15 +2,12 @@
 #include "Lava/Renderer/Pipeline.h"
 
 #include "Lava/Application.h"
-#include "Lava/Resources.h"
 #include "Lava/ObjectSystem/CCamera.h"
 #include "Lava/ObjectSystem/CMesh.h"
 #include "Lava/Renderer/Initializers.h"
 #include "Lava/Renderer/Vertex.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
-
-#include "Lava/ObjectSystem/AActor.h"
 
 using namespace Lava;
 
@@ -124,8 +121,8 @@ void Pipeline::createVulkanDescriptorSetLayout()
 
 void Pipeline::createVulkanGraphicsPipeline()
 {
-	auto vert_shader_code = readShaderFile("basic.vert.spv");
-	auto frag_shader_code = readShaderFile("basic.frag.spv");
+	auto vert_shader_code = readShaderFile("Shaders/basic.vert.spv");
+	auto frag_shader_code = readShaderFile("Shaders/basic.frag.spv");
 
 	m_vert_shader_module = createShaderModule(vert_shader_code);
 	m_frag_shader_module = createShaderModule(frag_shader_code);
@@ -253,10 +250,10 @@ void Pipeline::createVulkanDescriptorSets()
 
 //
 
-std::vector<char> Pipeline::readShaderFile(const std::string& filename_) const
+std::vector<char> Pipeline::readShaderFile(const std::string& file_path_) const
 {
-	std::filesystem::path shaders_path = Resources::getDir(ResourceDir::Shaders);
-	std::ifstream file(shaders_path /= filename_, std::ios::ate | std::ios::binary);
+	std::filesystem::path assets_path = Application::getInstance().getAssetsPath();
+	std::ifstream file(assets_path /= file_path_, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
 		LAVA_CORE_ERROR("Failed to open shader file!");

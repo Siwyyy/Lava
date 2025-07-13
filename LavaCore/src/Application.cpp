@@ -1,14 +1,11 @@
 #include "Lava/Lavapch.h"
 #include "Lava/Application.h"
 
-#include "Lava/Resources.h"
 #include "Lava/Time.h"
 
 namespace Lava
 {
-	Application* Application::s_instance           = nullptr;
-	std::filesystem::path Resources::m_shaders_dir = "Shaders/Dir/Not/Set";
-	std::filesystem::path Resources::m_models_dir  = "Models/Dir/Not/Set";
+	Application* Application::s_instance = nullptr;
 
 	void Application::init()
 	{
@@ -17,7 +14,7 @@ namespace Lava
 
 		Time::s_instance = new Time();
 
-		initResources();
+		m_assets_path = std::filesystem::current_path() / "Assets";
 
 		m_window = std::make_unique<Window>(WindowProps("Lava Engine - Test", 720, 480));
 		m_window->setEventCallback([this](auto&& e_) { onEvent(e_); });

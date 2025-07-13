@@ -150,8 +150,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\Shaders\basic.frag" />
-    <CopyFileToFolders Include="resources\Shaders\basic.vert.spv">
+    <None Include="assets\Shaders\basic.frag" />
+    <CopyFileToFolders Include="assets\Shaders\basic.vert.spv">
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <FileType>Document</FileType>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">true</DeploymentContent>
@@ -160,7 +160,7 @@
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="resources\Shaders\basic.frag.spv">
+    <CopyFileToFolders Include="assets\Shaders\basic.frag.spv">
       <FileType>Document</FileType>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">true</DeploymentContent>
@@ -169,8 +169,8 @@
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
     </CopyFileToFolders>
-    <None Include="resources\Shaders\basic.vert" />
-    <None Include="resources\Shaders\compile.bat" />
+    <None Include="assets\Shaders\basic.vert" />
+    <None Include="assets\Shaders\compile.bat" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameObjects\Camera.h" />
@@ -178,7 +178,7 @@
     <ClInclude Include="src\SceneLayer.h" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="resources\Models\Arrow.obj">
+    <CopyFileToFolders Include="assets\Models\Arrow.obj">
       <FileType>Document</FileType>
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/Models/</DestinationFolders>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>

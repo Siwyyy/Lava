@@ -4,7 +4,7 @@
 
 extern Lava::Application* Lava::createApplication();
 
-int main(int argc, char** argv)
+int main(int argc_, char** argv_)
 {
 	try
 	{

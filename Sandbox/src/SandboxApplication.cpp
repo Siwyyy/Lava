@@ -10,12 +10,6 @@ public:
 	~Sandbox() override = default;
 
 private:
-	void initResources() override
-	{
-		Lava::Resources::setDir(Lava::ResourceDir::Shaders, "./resources/Shaders");
-		Lava::Resources::setDir(Lava::ResourceDir::Models, "./resources/Models");
-	}
-
 	void initApp() override
 	{
 		pushLayer(new SceneLayer());

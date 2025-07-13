@@ -2,7 +2,6 @@
 
 #include "Lava/Application.h"
 #include "Lava/Log.h"
-#include "Lava/Resources.h"
 #include "Lava/Time.h"
 #include "Lava/Events/KeyEvent.h"
 #include "Lava/Input/Input.h"

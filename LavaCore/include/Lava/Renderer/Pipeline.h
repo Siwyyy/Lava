@@ -79,7 +79,7 @@ namespace Lava
 		void createVulkanDescriptorPool();
 		void createVulkanDescriptorSets();
 
-		std::vector<char> readShaderFile(const std::string& filename_) const;
+		std::vector<char> readShaderFile(const std::string& file_path_) const;
 		VkShaderModule createShaderModule(const std::vector<char>& code_) const;
 	};
 }
