@@ -2,6 +2,7 @@
 
 #define NOMINMAX
 
+// Log
 #include "Lava/Log.h"
 
 // Vulkan
