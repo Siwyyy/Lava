@@ -3,6 +3,9 @@
 
 namespace Lava::ObjectSystem
 {
+	template <typename T>
+	concept is_component = std::is_base_of_v<class CComponent, T>;
+
 	class AActor : public Object
 	{
 	public:
@@ -17,24 +20,22 @@ namespace Lava::ObjectSystem
 		// template <typename T>
 		// T* getComponent() const;
 
-		template <typename T, typename... Args>
-		T* addComponent(Args... args_)
+		template <is_component ComponentT, typename... Args>
+		ComponentT* addComponent(Args... args_)
 		{
-			static_assert(std::is_base_of_v<CComponent, T>, "T must be a subclass of Component");
-
-			std::unique_ptr<T> component = std::make_unique<T>(std::forward<Args>(args_)...);
-			T* component_ptr             = component.get();
+			std::unique_ptr<ComponentT> component = std::make_unique<ComponentT>(std::forward<Args>(args_)...);
+			ComponentT* component_ptr             = component.get();
 			component_ptr->setOwner(this);
 			m_components.push_back(std::move(component));
 			component_ptr->initialize();
 			return component_ptr;
 		}
 
-		template <typename T>
-		T* getComponent() const
+		template <is_component ComponentT>
+		ComponentT* getComponent() const
 		{
 			for (const auto& component : m_components)
-				if (T* casted_component = dynamic_cast<T*>(component.get()))
+				if (ComponentT* casted_component = dynamic_cast<ComponentT*>(component.get()))
 					return casted_component;
 			return nullptr;
 		}
