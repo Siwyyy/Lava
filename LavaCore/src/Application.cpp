@@ -14,7 +14,7 @@ namespace Lava
 
 		Time::s_instance = new Time();
 
-		m_assets_path = std::filesystem::current_path() / "Assets";
+		m_assets_path = std::filesystem::current_path() / "assets";
 
 		m_window = std::make_unique<Window>(WindowProps("Lava Engine - Test", 720, 480));
 		m_window->setEventCallback([this](auto&& e_) { onEvent(e_); });
