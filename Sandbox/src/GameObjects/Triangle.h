@@ -25,6 +25,4 @@ public:
 
 		auto mesh = addComponent<Lava::ObjectSystem::CMesh>("Mesh", vertices_, indices_);
 	}
-
-	void initialize() override { AActor::initialize(); }
 };

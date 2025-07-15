@@ -253,7 +253,8 @@ void Pipeline::createVulkanDescriptorSets()
 std::vector<char> Pipeline::readShaderFile(const std::string& file_path_) const
 {
 	std::filesystem::path assets_path = Application::getInstance().getAssetsPath();
-	std::ifstream file(assets_path /= file_path_, std::ios::ate | std::ios::binary);
+	std::filesystem::path shader_path = assets_path / file_path_;
+	std::ifstream file(shader_path, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
 		LAVA_CORE_ERROR("Failed to open shader file!");
