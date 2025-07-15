@@ -150,43 +150,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\Shaders\basic.frag" />
-    <CopyFileToFolders Include="resources\Shaders\basic.vert.spv">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <FileType>Document</FileType>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="resources\Shaders\basic.frag.spv">
-      <FileType>Document</FileType>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/Shaders/</DestinationFolders>
-    </CopyFileToFolders>
-    <None Include="resources\Shaders\basic.vert" />
-    <None Include="resources\Shaders\compile.bat" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="src\GameObjects\Camera.h" />
     <ClInclude Include="src\GameObjects\Triangle.h" />
     <ClInclude Include="src\SceneLayer.h" />
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="resources\Models\Arrow.obj">
-      <FileType>Document</FileType>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/resources/Models/</DestinationFolders>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/resources/Models/</DestinationFolders>
-      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">$(OutDir)/resources/Models/</DestinationFolders>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">true</DeploymentContent>
-    </CopyFileToFolders>
+    <Content Include="assets\Models\Arrow.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="assets\shaders\basic.frag" />
+    <None Include="assets\shaders\basic.frag.spv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assets\shaders\basic.vert" />
+    <None Include="assets\shaders\basic.vert.spv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="assets\shaders\compile.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,7 +3,6 @@
 #include "Core.h"
 
 #include <spdlog/spdlog.h>
-#include <spdlog/fmt/ostr.h>
 
 namespace Lava
 {
@@ -42,19 +41,19 @@ namespace Lava
 
 // Client logger macros
 #if defined LAVA_DEBUG || defined LAVA_RELEASE
-#define LAVA_CLIENT_TRACE(...)     ::Lava::Log::getClientLogger()->trace(__VA_ARGS__)
-#define LAVA_CLIENT_DEBUG(...)     ::Lava::Log::getClientLogger()->debug(__VA_ARGS__)
-#define LAVA_CLIENT_INFO(...)      ::Lava::Log::getClientLogger()->info(__VA_ARGS__)
-#define LAVA_CLIENT_WARN(...)      ::Lava::Log::getClientLogger()->warn(__VA_ARGS__)
-#define LAVA_CLIENT_ERROR(...)     ::Lava::Log::getClientLogger()->error(__VA_ARGS__)
-#define LAVA_CLIENT_CRITICAL(...)  ::Lava::Log::getClientLogger()->critical(__VA_ARGS__)
+#define LAVA_LOG_TRACE(...)     ::Lava::Log::getClientLogger()->trace(__VA_ARGS__)
+#define LAVA_LOG_DEBUG(...)     ::Lava::Log::getClientLogger()->debug(__VA_ARGS__)
+#define LAVA_LOG_INFO(...)      ::Lava::Log::getClientLogger()->info(__VA_ARGS__)
+#define LAVA_LOG_WARN(...)      ::Lava::Log::getClientLogger()->warn(__VA_ARGS__)
+#define LAVA_LOG_ERROR(...)     ::Lava::Log::getClientLogger()->error(__VA_ARGS__)
+#define LAVA_LOG_CRITICAL(...)  ::Lava::Log::getClientLogger()->critical(__VA_ARGS__)
 #else
-#define LAVA_CLIENT_TRACE(...)
-#define LAVA_CLIENT_DEBUG(...)
-#define LAVA_CLIENT_INFO(...)
-#define LAVA_CLIENT_WARN(...)
-#define LAVA_CLIENT_ERROR(...)
-#define LAVA_CLIENT_CRITICAL(...)
+#define LAVA_LOG_TRACE(...)
+#define LAVA_LOG_DEBUG(...)
+#define LAVA_LOG_INFO(...)
+#define LAVA_LOG_WARN(...)
+#define LAVA_LOG_ERROR(...)
+#define LAVA_LOG_CRITICAL(...)
 #endif
 
 #if defined LAVA_DEBUG || defined LAVA_RELEASE

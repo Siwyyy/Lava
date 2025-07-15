@@ -1,15 +1,15 @@
 ﻿#pragma once
 
-#include "Lava/ObjectSystem/Actor.h"
-#include "Lava/ObjectSystem/MeshComponent.h"
-#include "Lava/ObjectSystem/TransformComponent.h"
+#include "Lava/ObjectSystem/AActor.h"
+#include "Lava/ObjectSystem/CMesh.h"
+#include "Lava/ObjectSystem/CTransform.h"
 
 namespace Lava
 {
 	struct Vertex3Color;
 }
 
-class Triangle : public Lava::ObjectSystem::Actor
+class Triangle : public Lava::ObjectSystem::AActor
 {
 public:
 	Triangle(const std::string& name_,
@@ -17,16 +17,12 @@ public:
 					 const std::vector<uint32_t>& indices_,
 					 const glm::vec3& position_ = glm::vec3(0.f),
 					 const glm::quat& rotation_ = glm::quat())
-		: Actor(name_)
+		: AActor(name_)
 	{
-		auto transform = addComponent<Lava::ObjectSystem::TransformComponent>("Transform");
+		auto transform = addComponent<Lava::ObjectSystem::CTransform>("Transform");
 		transform->setPosition(position_);
 		transform->setRotation(rotation_);
 
-		auto mesh = addComponent<Lava::ObjectSystem::MeshComponent>("Mesh", vertices_, indices_);
+		auto mesh = addComponent<Lava::ObjectSystem::CMesh>("Mesh", vertices_, indices_);
 	}
-
-	~Triangle() override = default;
-
-	void initialize() override {};
 };

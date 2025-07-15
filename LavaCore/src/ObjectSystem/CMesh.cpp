@@ -1,16 +1,16 @@
-﻿#include "Lava/Lavapch.h"
+﻿#include "Lava/LavaPCH.h"
 
-#include "Lava/ObjectSystem/MeshComponent.h"
+#include "Lava/ObjectSystem/CMesh.h"
 
 #include "Lava/Application.h"
 #include "Lava/Renderer/Buffer.h"
 
 using namespace Lava::ObjectSystem;
 
-MeshComponent::MeshComponent(const std::string& component_name_,
+CMesh::CMesh(const std::string& component_name_,
 					 const std::vector<Vertex3Color>& vertices_,
 					 const std::vector<uint32_t>& indices_)
-	: Component(component_name_)
+	: CComponent(component_name_)
 	, m_vertices(vertices_)
 	, m_indices(indices_)
 {
@@ -48,7 +48,7 @@ MeshComponent::MeshComponent(const std::string& component_name_,
 	memcpy(m_index_staging_buffer_memory_mapped, m_indices.data(), sizeof(m_indices[0]) * m_indices.size());
 }
 
-MeshComponent::~MeshComponent()
+CMesh::~CMesh()
 {
 	auto context = Application::getInstance().getWindow().getContext();
 
@@ -63,7 +63,7 @@ MeshComponent::~MeshComponent()
 	vkFreeMemory(context->getDevice(), m_vertex_buffer_memory, nullptr);
 }
 
-void MeshComponent::load(const VkCommandPool& copy_command_pool_)
+void CMesh::load(const VkCommandPool& copy_command_pool_)
 {
 	auto context = Application::getInstance().getWindow().getContext();
 	VkCommandBufferAllocateInfo command_buffer_allocate_info{};
@@ -116,7 +116,7 @@ void MeshComponent::load(const VkCommandPool& copy_command_pool_)
 	m_loaded = true;
 }
 
-void MeshComponent::drawIndexed(const VkCommandBuffer& command_buffer_, uint32_t instance_index_) const
+void CMesh::drawIndexed(const VkCommandBuffer& command_buffer_, uint32_t instance_index_) const
 {
 	const VkBuffer vertex_buffers[] = {m_vertex_buffer};
 	const VkDeviceSize offsets[]    = {0};

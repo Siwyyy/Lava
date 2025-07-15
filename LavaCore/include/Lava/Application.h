@@ -1,11 +1,8 @@
 #pragma once
 
 #include "LayerStack.h"
-
-#include "Events/ApplicationEvent.h"
-#include "Events/MouseEvent.h"
-
 #include "Window.h"
+#include "Events/ApplicationEvent.h"
 
 namespace Lava
 {
@@ -17,6 +14,7 @@ namespace Lava
 
 		static Application& getInstance() { return *s_instance; }
 		inline Window& getWindow() const { return *m_window; }
+		inline const std::filesystem::path& getAssetsPath() const { return m_assets_path; }
 
 		void init();
 		void run();
@@ -28,7 +26,7 @@ namespace Lava
 		void pushOverlay(Layer* overlay_);
 
 	private:
-		virtual void initResources() = 0;
+		// virtual void initResources() = 0;
 		virtual void initApp() = 0;
 
 	private:
@@ -38,6 +36,7 @@ namespace Lava
 		bool m_running = true;
 		LayerStack m_layer_stack;
 
+		std::filesystem::path m_assets_path;
 		static Application* s_instance;
 	};
 

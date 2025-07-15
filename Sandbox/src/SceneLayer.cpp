@@ -28,20 +28,25 @@ void SceneLayer::onAttach()
 	const std::vector<uint32_t> indices2 = {1,3,0,3,2,0,2,1,0,2,3,1};
 	m_objects.push_back(std::make_shared<Triangle>("Tri_2", vertices2, indices2));
 
+	std::filesystem::path assets_path = Lava::Application::getInstance().getAssetsPath();
+
+	// ArrowY
 	std::vector<Lava::Vertex3Color> y_arrow_vertices{};
 	std::vector<uint32_t> y_arrow_indices{};
-	Lava::loadModel(Lava::Resources::getDir(Lava::ResourceDir::Models) /= "Arrow.obj", {1.0f,0.0f,0.0f}, y_arrow_vertices, y_arrow_indices);
+	Lava::loadModel(assets_path / "Models/Arrow.obj", {1.0f,0.0f,0.0f}, y_arrow_vertices, y_arrow_indices);
 	m_objects.push_back(std::make_shared<Triangle>("ArrowY", y_arrow_vertices, y_arrow_indices));
 
+	// ArrowX
 	std::vector<Lava::Vertex3Color> x_arrow_vertices{};
 	std::vector<uint32_t> x_arrow_indices{};
-	Lava::loadModel(Lava::Resources::getDir(Lava::ResourceDir::Models) /= "Arrow.obj", {0.0f,1.0f,0.0f}, x_arrow_vertices, x_arrow_indices);
+	Lava::loadModel(assets_path / "Models/Arrow.obj", {0.0f,1.0f,0.0f}, x_arrow_vertices, x_arrow_indices);
 	glm::mat4 x_arrow_rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.f, 0.f, -1.f));
 	m_objects.push_back(std::make_shared<Triangle>("ArrowX", x_arrow_vertices, x_arrow_indices, glm::vec3(0.f), x_arrow_rotation));
 
+	// ArrowZ
 	std::vector<Lava::Vertex3Color> z_arrow_vertices{};
 	std::vector<uint32_t> z_arrow_indices{};
-	Lava::loadModel(Lava::Resources::getDir(Lava::ResourceDir::Models) /= "Arrow.obj", {0.0f,0.0f,1.0f}, z_arrow_vertices, z_arrow_indices);
+	Lava::loadModel(assets_path / "Models/Arrow.obj", {0.0f,0.0f,1.0f}, z_arrow_vertices, z_arrow_indices);
 	glm::mat4 z_arrow_rotation = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.f, 0.f, 0.f));
 	m_objects.push_back(std::make_shared<Triangle>("ArrowZ", z_arrow_vertices, z_arrow_indices, glm::vec3(0.f), z_arrow_rotation));
 
@@ -53,7 +58,7 @@ void SceneLayer::onAttach()
 	m_pipeline->setCamera(m_camera);
 	for (const auto& object : m_objects)
 	{
-		m_pipeline->registerMesh(object->getComponent<Lava::ObjectSystem::MeshComponent>());
+		m_pipeline->registerMesh(object->getComponent<Lava::ObjectSystem::CMesh>());
 	}
 	Lava::Application::getInstance().getWindow().getContext()->pushPipeline(m_pipeline);
 }
@@ -62,7 +67,7 @@ void SceneLayer::onDetach() {}
 
 void SceneLayer::onUpdate()
 {
-	m_camera->updateTransform();
+	m_camera->processController();
 }
 
 void SceneLayer::onDraw() { m_pipeline->bind(); }
